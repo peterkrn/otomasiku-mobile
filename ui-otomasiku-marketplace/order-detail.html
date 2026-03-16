@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detail Pesanan - Otomasiku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/dark-mode.css" />
+    <script src="assets/dark-mode.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              mitsubishi: {
+                red: "#E7192D",
+                dark: "#1a1a1a",
+                grey: "#727070",
+                green: "#88C83A",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f9fafb;
+      }
+      .dark body {
+        background-color: #0f0f0f !important;
+      }
+      }
+      .timeline-line {
+        position: absolute;
+        left: 15px;
+        top: 40px;
+        bottom: 0;
+        width: 2px;
+        background: #e5e7eb;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 pb-8">
+    <header
+      class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm"
+    >
+      <div
+        class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between"
+      >
+        <a
+          href="profile.html"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100"
+        >
+          <i class="fas fa-arrow-left text-gray-600 text-lg"></i>
+        </a>
+        <div class="text-center">
+          <h1 class="text-lg font-bold text-gray-900">Detail Pesanan</h1>
+          <p class="text-xs text-gray-500">INV-2024-8XJ2M9</p>
+        </div>
+        <button
+          onclick="shareOrder()"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100"
+        >
+          <i class="fas fa-share-alt text-gray-600"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 pt-6 space-y-6">
+      <div
+        class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-5 text-white shadow-lg"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-blue-100 text-sm mb-1">Status Pesanan</p>
+            <h2 class="text-xl font-bold flex items-center gap-2">
+              <i class="fas fa-box-open"></i>Sedang Diproses
+            </h2>
+          </div>
+          <div
+            class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center"
+          >
+            <i class="fas fa-clock text-2xl"></i>
+          </div>
+        </div>
+        <p class="text-sm text-blue-100 mt-2">
+          Estimasi pengiriman: 13-15 Maret 2024
+        </p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <h3 class="font-bold text-gray-900 mb-4">Riwayat Status</h3>
+        <div class="relative space-y-6">
+          <div class="timeline-line"></div>
+          <div class="flex items-start gap-3 relative">
+            <div
+              class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 z-10"
+            >
+              <i class="fas fa-check text-white text-xs"></i>
+            </div>
+            <div class="flex-1 pt-1">
+              <p class="font-semibold text-sm text-gray-900">
+                Pembayaran Diterima
+              </p>
+              <p class="text-xs text-gray-500">10 Mar 2024, 14:25</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 relative">
+            <div
+              class="w-8 h-8 rounded-full bg-mitsubishi-red flex items-center justify-center flex-shrink-0 z-10 animate-pulse"
+            >
+              <i class="fas fa-box text-white text-xs"></i>
+            </div>
+            <div class="flex-1 pt-1">
+              <p class="font-semibold text-sm text-gray-900">Sedang Diproses</p>
+              <p class="text-xs text-gray-500">Verifikasi stok dan packaging</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <h3 class="font-bold text-gray-900 mb-4">Item Dipesan</h3>
+        <div class="space-y-4">
+          <div class="flex gap-3 pb-3 border-b border-gray-100">
+            <div
+              class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
+            >
+              <img
+                src="../assets/01-fr-a820-0.4k.jpg"
+                alt="FR-A820-0.4K-1"
+                class="w-full h-full object-cover"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+              />
+              <i class="fas fa-bolt text-xl text-gray-400" style="display: none"></i>
+            </div>
+            <div class="flex-1">
+              <h4 class="font-semibold text-sm text-gray-900">
+                FR-A820-0.4K-1
+              </h4>
+              <p class="text-xs text-gray-500">2 unit × Rp 5.200.000</p>
+              <p class="font-semibold text-sm mt-1">Rp 10.400.000</p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-gray-100">
+          <div class="flex justify-between font-bold text-base">
+            <span>Total</span>
+            <span class="text-mitsubishi-red">Rp 19.813.000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <h3 class="font-bold text-gray-900 mb-3">Info Pengiriman</h3>
+        <div class="bg-gray-50 rounded-lg p-3 mb-3">
+          <p class="text-sm font-semibold text-gray-900 mb-1">Alamat Tujuan</p>
+          <p class="text-xs text-gray-600 leading-relaxed">
+            Stefani (PT Otomasi Indonesia)<br />
+            Jl. Sudirman Kav. 28-30, Jakarta Selatan, 12920<br />
+            Telp: +62 812 3456 7890
+          </p>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-gray-500">
+          <i class="fas fa-info-circle"></i>
+          <span>Nomor resi akan muncul setelah barang dikirim</span>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <button
+          onclick="downloadReceipt()"
+          class="w-full bg-white border-2 border-gray-200 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-50 flex items-center justify-center gap-2"
+        >
+          <i class="fas fa-file-invoice"></i>Unduh Invoice
+        </button>
+        <button
+          onclick="contactSupport()"
+          class="w-full bg-mitsubishi-red text-white font-bold py-3 rounded-xl hover:bg-red-700 flex items-center justify-center gap-2"
+        >
+          <i class="fas fa-headset"></i>Hubungi Support
+        </button>
+      </div>
+    </main>
+
+    <script>
+      function shareOrder() {
+        alert("Link pesanan disalin");
+      }
+      function downloadReceipt() {
+        alert("Mengunduh invoice...");
+      }
+      function contactSupport() {
+        window.open("https://wa.me/6212345678", "_blank");
+      }
+    </script>
+  </body>
+</html>

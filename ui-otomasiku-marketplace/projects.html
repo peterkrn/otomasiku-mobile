@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proyek Saya - Otomasiku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/dark-mode.css" />
+    <script src="assets/dark-mode.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              mitsubishi: { red: "#E7192D", dark: "#1a1a1a", grey: "#727070" },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f9fafb;
+      }
+      .dark body {
+        background-color: #0f0f0f !important;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 pb-24">
+    <header class="sticky top-0 z-40 bg-white border-b border-gray-100">
+      <div
+        class="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between"
+      >
+        <a
+          href="home.html"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100"
+        >
+          <i class="fas fa-arrow-left text-gray-600"></i>
+        </a>
+        <h1 class="font-semibold text-gray-900">Proyek Saya</h1>
+        <button
+          onclick="createNewProject()"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 text-mitsubishi-red"
+        >
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-6">
+      <div class="grid grid-cols-3 gap-3 mb-6">
+        <div
+          class="bg-white rounded-xl p-3 text-center shadow-sm border border-gray-100"
+        >
+          <p class="text-2xl font-bold text-gray-900 leading-tight">3</p>
+          <p class="text-[11px] text-gray-500 mt-0.5">Proyek Aktif</p>
+        </div>
+        <div
+          class="bg-white rounded-xl p-3 text-center shadow-sm border border-gray-100"
+        >
+          <p class="text-2xl font-bold text-mitsubishi-red leading-tight">12</p>
+          <p class="text-[11px] text-gray-500 mt-0.5">Total Item</p>
+        </div>
+        <div
+          class="bg-white rounded-xl p-3 text-center shadow-sm border border-gray-100 overflow-hidden"
+        >
+          <p class="text-[10px] font-medium text-gray-400 leading-none">Rp</p>
+          <p class="text-2xl font-bold text-gray-900 leading-tight">145jt</p>
+          <p class="text-[11px] text-gray-500 mt-0.5">Total Estimasi</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div
+          class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+        >
+          <div class="p-4 border-b border-gray-100">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <h3 class="font-bold text-gray-900">
+                  Maintenance Line Conveyor 3
+                </h3>
+                <p class="text-xs text-gray-500">Dibuat 15 Jan 2024</p>
+              </div>
+              <button
+                onclick="shareProject('Maintenance Line 3')"
+                class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400"
+              >
+                <i class="fas fa-share-alt text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="px-4 py-3 space-y-2">
+            <div class="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+              <div
+                class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center flex-shrink-0"
+              >
+                <i class="fas fa-bolt text-gray-400"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium truncate">FR-A840-2.2K-1</p>
+                <p class="text-xs text-gray-500">2 unit × Rp 15jt</p>
+              </div>
+              <span class="text-sm font-semibold">Rp 30jt</span>
+            </div>
+          </div>
+
+          <div class="px-4 pb-4 pt-2">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-xs text-gray-500">4 item total</span>
+              <span class="font-bold text-mitsubishi-red"
+                >Total: Rp 58.500.000</span
+              >
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <a
+                href="checkout.html"
+                class="block text-center bg-mitsubishi-red text-white py-2.5 rounded-xl text-sm font-semibold"
+                >Checkout Proyek</a
+              >
+              <button
+                onclick="openRFQ()"
+                class="block text-center border-2 border-gray-200 text-gray-700 py-2.5 rounded-xl text-sm font-semibold"
+              >
+                Ajukan RFQ
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div
+      id="createModal"
+      class="fixed inset-0 bg-black/50 z-50 hidden items-end justify-center"
+    >
+      <div class="bg-white w-full max-w-lg rounded-t-2xl p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold">Proyek Baru</h3>
+          <button
+            onclick="closeCreateModal()"
+            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <form
+          onsubmit="
+            event.preventDefault();
+            saveProject();
+          "
+          class="space-y-4"
+        >
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Nama Proyek</label
+            >
+            <input
+              type="text"
+              id="projectName"
+              placeholder="Contoh: Maintenance Line 4"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-mitsubishi-red text-white font-bold py-3 rounded-xl"
+          >
+            Buat Proyek
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <nav
+      class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40"
+      style="padding-bottom: env(safe-area-inset-bottom)"
+    >
+      <div class="flex items-stretch">
+        <a
+          href="home.html"
+          class="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-gray-600 py-3 px-4 flex-1 min-h-[56px]"
+          style="touch-action: manipulation"
+        >
+          <i class="fas fa-home text-xl"></i>
+          <span class="text-[10px] font-medium">Beranda</span>
+        </a>
+        <a
+          href="search-results.html"
+          class="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-gray-600 py-3 px-4 flex-1 min-h-[56px]"
+          style="touch-action: manipulation"
+        >
+          <i class="fas fa-search text-xl"></i>
+          <span class="text-[10px] font-medium">Cari</span>
+        </a>
+        <a
+          href="projects.html"
+          class="flex flex-col items-center justify-center gap-1 text-mitsubishi-red py-3 px-4 flex-1 min-h-[56px]"
+          style="touch-action: manipulation"
+        >
+          <i class="fas fa-folder text-xl"></i>
+          <span class="text-[10px] font-medium">Proyek</span>
+        </a>
+        <a
+          href="profile.html"
+          class="flex flex-col items-center justify-center gap-1 text-gray-400 hover:text-gray-600 py-3 px-4 flex-1 min-h-[56px]"
+          style="touch-action: manipulation"
+        >
+          <i class="fas fa-user text-xl"></i>
+          <span class="text-[10px] font-medium">Profil</span>
+        </a>
+      </div>
+    </nav>
+
+    <script>
+      function createNewProject() {
+        document.getElementById("createModal").classList.remove("hidden");
+        document.getElementById("createModal").classList.add("flex");
+      }
+      function closeCreateModal() {
+        document.getElementById("createModal").classList.add("hidden");
+        document.getElementById("createModal").classList.remove("flex");
+      }
+      function saveProject() {
+        const name = document.getElementById("projectName").value;
+        if (name) {
+          alert(`Proyek "${name}" berhasil dibuat!`);
+          closeCreateModal();
+        }
+      }
+      function shareProject(name) {
+        alert(`Link proyek "${name}" disalin`);
+      }
+      function openRFQ() {
+        alert("RFQ dikirim");
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,285 @@
+/* ============================================
+   Dark Mode Styles - Otomasiku
+   Fixed: color hierarchy, colored backgrounds,
+   missing selectors, and header transparency
+   ============================================ */
+
+/* ── Base ─────────────────────────────────── */
+.dark body {
+  background-color: #111111 !important;
+  color: #e5e5e5 !important;
+}
+
+/* ── Header ───────────────────────────────── */
+.dark header {
+  background-color: #1a1a1a !important;
+  /* Fix: bg-white/90 backdrop-blur tetap gelap */
+  background-color: rgba(26, 26, 26, 0.95) !important;
+  border-color: #2a2a2a !important;
+}
+
+.dark header h1,
+.dark header p {
+  color: #e5e5e5 !important;
+}
+
+/* ── Cards & Containers ───────────────────── */
+/* bg-white → card utama, sedikit lebih terang dari bg */
+.dark .bg-white {
+  background-color: #1e1e1e !important;
+  border-color: #2a2a2a !important;
+}
+
+/* bg-gray-50 → info section di dalam card, lebih gelap agar beda */
+.dark .bg-gray-50 {
+  background-color: #181818 !important;
+}
+
+/* bg-gray-100 → thumbnail / chip / tag */
+.dark .bg-gray-100 {
+  background-color: #2a2a2a !important;
+}
+
+.dark .bg-gray-200 {
+  background-color: #333333 !important;
+  color: #e5e5e5 !important;
+}
+
+/* ── Colored Tint Backgrounds (FIX UTAMA) ─── */
+/* Green tints — info box stok, badge, dll */
+.dark .bg-green-50 {
+  background-color: #0a1f0d !important;
+}
+
+/* Blue tints — status, info */
+.dark .bg-blue-50 {
+  background-color: #0a1220 !important;
+}
+
+/* Red tints — warning, selected address */
+.dark .bg-red-50 {
+  background-color: #1f0a0a !important;
+}
+
+/* Orange tints */
+.dark .bg-orange-50 {
+  background-color: #1f1208 !important;
+}
+
+/* Yellow tints */
+.dark .bg-yellow-50 {
+  background-color: #1f1a08 !important;
+}
+
+/* ── Colored Borders ──────────────────────── */
+.dark .border-green-200 {
+  border-color: #1a4a25 !important;
+}
+
+.dark .border-blue-200 {
+  border-color: #1a2a4a !important;
+}
+
+.dark .border-red-200 {
+  border-color: #4a1a1a !important;
+}
+
+.dark .border-orange-200 {
+  border-color: #4a2a1a !important;
+}
+
+/* ── Text Colors ──────────────────────────── */
+.dark .text-gray-900 {
+  color: #f0f0f0 !important;
+}
+
+/* FIX: text-gray-800 (dipakai di body checkout) */
+.dark .text-gray-800 {
+  color: #e5e5e5 !important;
+}
+
+.dark .text-gray-700 {
+  color: #d4d4d4 !important;
+}
+
+.dark .text-gray-600 {
+  color: #a3a3a3 !important;
+}
+
+.dark .text-gray-500 {
+  color: #737373 !important;
+}
+
+.dark .text-gray-400 {
+  color: #5a5a5a !important;
+}
+
+.dark .text-gray-300 {
+  color: #d4d4d4 !important;
+}
+
+/* ── Borders ──────────────────────────────── */
+/* FIX: border-gray-50 sebelumnya tidak ada */
+.dark .border-gray-50 {
+  border-color: #222222 !important;
+}
+
+.dark .border-gray-100 {
+  border-color: #2a2a2a !important;
+}
+
+.dark .border-gray-200 {
+  border-color: #333333 !important;
+}
+
+.dark .border-gray-300 {
+  border-color: #404040 !important;
+}
+
+/* ── Form Elements ────────────────────────── */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: #262626 !important;
+  border-color: #404040 !important;
+  color: #e5e5e5 !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #737373 !important;
+}
+
+/* ── Hover States ─────────────────────────── */
+.dark .hover\:bg-gray-50:hover {
+  background-color: #262626 !important;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  background-color: #333333 !important;
+}
+
+/* ── Bottom Navigation ────────────────────── */
+.dark nav.bg-white,
+.dark nav {
+  background-color: #1a1a1a !important;
+  border-color: #2a2a2a !important;
+}
+
+/* ── Footer (fixed bottom bar) ───────────── */
+.dark footer {
+  background-color: #1a1a1a !important;
+  border-color: #2a2a2a !important;
+}
+
+/* ── Divider / Separator ──────────────────── */
+.dark .bg-gray-100.h-px,
+.dark .h-px.bg-gray-100 {
+  background-color: #2a2a2a !important;
+}
+
+/* ── Shadows ──────────────────────────────── */
+.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark .shadow {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ── Scrollbar ────────────────────────────── */
+.dark ::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #404040 !important;
+}
+
+/* ── Custom Components ────────────────────── */
+
+/* Search bar */
+.dark .search-bar {
+  background-color: #262626 !important;
+  border-color: #404040 !important;
+}
+
+/* Product cards */
+.dark .product-card {
+  background-color: #1e1e1e !important;
+  border-color: #2a2a2a !important;
+}
+
+.dark .product-card:hover {
+  background-color: #262626 !important;
+}
+
+/* Quantity control buttons */
+.dark .quantity-bg {
+  background-color: #262626 !important;
+}
+
+/* Accordion */
+.dark .accordion-bg {
+  background-color: #262626 !important;
+}
+
+/* Info boxes */
+.dark .info-box {
+  background-color: #1e1e1e !important;
+  border-color: #2a2a2a !important;
+}
+
+/* Stat cards (profile page) */
+.dark .stat-card {
+  background-color: #1e1e1e !important;
+  border-color: #2a2a2a !important;
+}
+
+/* Menu items (profile) */
+.dark .menu-item {
+  border-color: #2a2a2a !important;
+}
+
+/* Toast */
+.dark .toast {
+  background: #2a2a2a !important;
+  color: #e5e5e5 !important;
+}
+
+/* Category chips */
+.dark .category-chip {
+  background-color: #2a2a2a !important;
+  color: #e5e5e5 !important;
+}
+
+/* Compare grid labels */
+.dark .compare-label {
+  background-color: #262626 !important;
+}
+
+/* Timeline line (order-detail) */
+.dark .timeline-line {
+  background: #333333 !important;
+}
+
+/* Hero banner */
+.dark .hero-banner {
+  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%) !important;
+}
+
+/* ── Hero Banner Detail Button ────────────── */
+/* Exclude dari override bg-white global agar tidak hitam di dark mode */
+.dark .hero-detail-btn {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+.dark .hero-detail-btn:hover {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+}

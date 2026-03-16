@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pembayaran Berhasil - Otomasiku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/dark-mode.css" />
+    <script src="assets/dark-mode.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              mitsubishi: {
+                red: "#E7192D",
+                dark: "#1a1a1a",
+                grey: "#727070",
+                green: "#88C83A",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f9fafb;
+      }
+      .dark body {
+        background-color: #0f0f0f !important;
+      }
+      }
+      .success-animation {
+        animation: scaleIn 0.5s ease-out;
+      }
+      @keyframes scaleIn {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <main class="max-w-3xl mx-auto px-4 py-12">
+      <div
+        class="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 text-center"
+      >
+        <div class="w-24 h-24 mx-auto mb-6 success-animation">
+          <svg viewBox="0 0 100 100" class="w-full h-full">
+            <circle cx="50" cy="50" r="45" fill="#88C83A" opacity="0.2" />
+            <circle cx="50" cy="50" r="35" fill="#88C83A" />
+            <path
+              d="M30 50 L45 65 L70 35"
+              fill="none"
+              stroke="white"
+              stroke-width="6"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">
+          Pembayaran Berhasil!
+        </h1>
+        <p class="text-gray-500 mb-6">
+          Terima kasih, pembayaran Anda telah terverifikasi
+        </p>
+
+        <div class="bg-gray-50 rounded-2xl p-5 mb-6 text-left">
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-sm text-gray-500">Nomor Invoice</span>
+            <span class="font-bold text-gray-900 font-mono"
+              >INV-2024-8XJ2M9</span
+            >
+          </div>
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-sm text-gray-500">Tanggal Pembayaran</span>
+            <span class="font-medium text-gray-900"
+              >10 Maret 2024, 14:25 WIB</span
+            >
+          </div>
+          <div class="h-px bg-gray-200 my-3"></div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-500">Total Pembayaran</span>
+            <span class="text-xl font-bold text-mitsubishi-red"
+              >Rp 19.813.000</span
+            >
+          </div>
+        </div>
+
+        <div class="text-left mb-6">
+          <h3 class="font-bold text-gray-900 mb-4">Status Pesanan</h3>
+          <div class="space-y-4">
+            <div class="flex items-start gap-3">
+              <div
+                class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0"
+              >
+                <i class="fas fa-check text-white text-xs"></i>
+              </div>
+              <div class="flex-1 pt-1">
+                <p class="font-semibold text-sm text-gray-900">
+                  Pembayaran Diterima
+                </p>
+                <p class="text-xs text-gray-500">10 Mar 2024, 14:25</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div
+                class="w-8 h-8 rounded-full bg-mitsubishi-red flex items-center justify-center flex-shrink-0 animate-pulse"
+              >
+                <i class="fas fa-box text-white text-xs"></i>
+              </div>
+              <div class="flex-1 pt-1">
+                <p class="font-semibold text-sm text-gray-900">
+                  Sedang Diproses
+                </p>
+                <p class="text-xs text-gray-500">
+                  Tim kami sedang menyiapkan barang
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-left mb-6"
+        >
+          <p class="text-sm font-semibold text-blue-900">Apa selanjutnya?</p>
+          <ul
+            class="text-xs text-blue-700 mt-1 space-y-1 list-disc list-inside"
+          >
+            <li>Tim kami akan memverifikasi stok dalam 1x24 jam</li>
+            <li>Anda akan menerima email konfirmasi pengiriman</li>
+            <li>Receipt akan diunggah setelah barang dikirim</li>
+          </ul>
+        </div>
+
+        <div class="space-y-3">
+          <a
+            href="order-detail.html"
+            class="block w-full bg-mitsubishi-red text-white font-bold py-4 rounded-xl hover:bg-red-700"
+            >Lihat Detail Pesanan</a
+          >
+          <a
+            href="home.html"
+            class="block w-full border-2 border-gray-200 text-gray-700 font-semibold py-4 rounded-xl hover:bg-gray-50"
+            >Kembali ke Beranda</a
+          >
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Confetti effect
+      function createConfetti() {
+        const colors = ["#E7192D", "#88C83A", "#0066AE", "#FFD700"];
+        for (let i = 0; i < 50; i++) {
+          const confetti = document.createElement("div");
+          confetti.style.cssText = `position:fixed;left:${Math.random() * 100}vw;top:-10px;width:10px;height:10px;background:${colors[Math.floor(Math.random() * colors.length)]};z-index:9999;animation:fall ${Math.random() * 3 + 2}s linear forwards`;
+          document.body.appendChild(confetti);
+          setTimeout(() => confetti.remove(), 5000);
+        }
+      }
+      const style = document.createElement("style");
+      style.textContent =
+        "@keyframes fall{to{transform:translateY(100vh) rotate(720deg);opacity:0}}";
+      document.head.appendChild(style);
+      window.addEventListener("load", createConfetti);
+    </script>
+  </body>
+</html>

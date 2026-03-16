@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pesanan Saya - Oseï</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/dark-mode.css" />
+    <script src="assets/dark-mode.js"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: { colors: { mitsubishi: { red: "#E7192D" } } } },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f9fafb;
+      }
+      .dark body {
+        background-color: #0f0f0f !important;
+      }
+      .tab-active {
+        color: #e7192d;
+        border-bottom: 2px solid #e7192d;
+      }
+      .tab-inactive {
+        color: #6b7280;
+        border-bottom: 2px solid transparent;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .fade-in {
+        animation: fadeIn 0.2s ease forwards;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 pb-10">
+    <header
+      class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm"
+    >
+      <div
+        class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between"
+      >
+        <a
+          href="profile.html"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+        >
+          <i class="fas fa-arrow-left text-gray-600 text-lg"></i>
+        </a>
+        <h1 class="text-lg font-bold text-gray-900">Pesanan Saya</h1>
+        <div class="w-10"></div>
+      </div>
+      <div class="flex border-b border-gray-100">
+        <button
+          onclick="setFilter('all')"
+          id="tab-all"
+          class="flex-1 py-3 text-sm font-semibold tab-active"
+          style="touch-action: manipulation"
+        >
+          Semua
+        </button>
+        <button
+          onclick="setFilter('process')"
+          id="tab-process"
+          class="flex-1 py-3 text-sm font-semibold tab-inactive"
+          style="touch-action: manipulation"
+        >
+          Diproses
+        </button>
+        <button
+          onclick="setFilter('selesai')"
+          id="tab-selesai"
+          class="flex-1 py-3 text-sm font-semibold tab-inactive"
+          style="touch-action: manipulation"
+        >
+          Selesai
+        </button>
+      </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 pt-4 space-y-3" id="orderList"></main>
+
+    <div
+      id="emptyState"
+      class="hidden max-w-3xl mx-auto px-4 pt-20 text-center"
+    >
+      <div
+        class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"
+      >
+        <i class="fas fa-box-open text-3xl text-gray-300"></i>
+      </div>
+      <p class="text-gray-500 font-medium mb-1">Belum ada pesanan</p>
+      <a
+        href="home.html"
+        class="text-sm text-mitsubishi-red font-semibold hover:underline"
+        >Mulai Belanja</a
+      >
+    </div>
+
+    <script>
+      const DEMO = [
+        {
+          id: "ORD-20250110",
+          date: "10 Jan 2025",
+          status: "selesai",
+          total: "Rp 10.400.000",
+          items: [{ name: "FR-A820-0.4K", qty: 2, unitPrice: 5200000 }],
+        },
+        {
+          id: "ORD-20250118",
+          date: "18 Jan 2025",
+          status: "selesai",
+          total: "Rp 8.500.000",
+          items: [{ name: "FX5U-32MT/ESS", qty: 1, unitPrice: 8500000 }],
+        },
+        {
+          id: "ORD-20250125",
+          date: "25 Jan 2025",
+          status: "selesai",
+          total: "Rp 25.000.000",
+          items: [{ name: "FC-302P1K5", qty: 2, unitPrice: 12500000 }],
+        },
+        {
+          id: "ORD-20250202",
+          date: "2 Feb 2025",
+          status: "selesai",
+          total: "Rp 13.600.000",
+          items: [{ name: "MR-J4-10B", qty: 2, unitPrice: 6800000 }],
+        },
+        {
+          id: "ORD-20250210",
+          date: "10 Feb 2025",
+          status: "selesai",
+          total: "Rp 5.200.000",
+          items: [{ name: "FR-A820-0.4K", qty: 1, unitPrice: 5200000 }],
+        },
+        {
+          id: "ORD-20250214",
+          date: "14 Feb 2025",
+          status: "selesai",
+          total: "Rp 17.000.000",
+          items: [
+            { name: "FC-302P1K5", qty: 1, unitPrice: 12500000 },
+            { name: "MR-J4-10B", qty: 1, unitPrice: 6800000 },
+          ],
+        },
+        {
+          id: "ORD-20250220",
+          date: "20 Feb 2025",
+          status: "selesai",
+          total: "Rp 8.500.000",
+          items: [{ name: "FX5U-32MT/ESS", qty: 1, unitPrice: 8500000 }],
+        },
+        {
+          id: "ORD-20250228",
+          date: "28 Feb 2025",
+          status: "selesai",
+          total: "Rp 10.400.000",
+          items: [{ name: "FR-A820-0.4K", qty: 2, unitPrice: 5200000 }],
+        },
+        {
+          id: "ORD-20250305",
+          date: "5 Mar 2025",
+          status: "selesai",
+          total: "Rp 6.800.000",
+          items: [{ name: "MR-J4-10B", qty: 1, unitPrice: 6800000 }],
+        },
+        {
+          id: "ORD-20250310",
+          date: "10 Mar 2025",
+          status: "selesai",
+          total: "Rp 21.000.000",
+          items: [
+            { name: "FC-302P1K5", qty: 1, unitPrice: 12500000 },
+            { name: "FX5U-32MT/ESS", qty: 1, unitPrice: 8500000 },
+          ],
+        },
+        {
+          id: "ORD-20250315",
+          date: "15 Mar 2025",
+          status: "selesai",
+          total: "Rp 5.200.000",
+          items: [{ name: "FR-A820-0.4K", qty: 1, unitPrice: 5200000 }],
+        },
+        {
+          id: "ORD-20250320",
+          date: "20 Mar 2025",
+          status: "selesai",
+          total: "Rp 8.500.000",
+          items: [{ name: "FX5U-32MT/ESS", qty: 1, unitPrice: 8500000 }],
+        },
+        {
+          id: "ORD-20250325",
+          date: "25 Mar 2025",
+          status: "selesai",
+          total: "Rp 13.600.000",
+          items: [{ name: "MR-J4-10B", qty: 2, unitPrice: 6800000 }],
+        },
+        {
+          id: "ORD-20250330",
+          date: "30 Mar 2025",
+          status: "selesai",
+          total: "Rp 25.000.000",
+          items: [{ name: "FC-302P1K5", qty: 2, unitPrice: 12500000 }],
+        },
+        {
+          id: "ORD-20250405",
+          date: "5 Apr 2025",
+          status: "selesai",
+          total: "Rp 10.400.000",
+          items: [{ name: "FR-A820-0.4K", qty: 2, unitPrice: 5200000 }],
+        },
+        {
+          id: "ORD-20250410",
+          date: "10 Apr 2025",
+          status: "selesai",
+          total: "Rp 8.500.000",
+          items: [{ name: "FX5U-32MT/ESS", qty: 1, unitPrice: 8500000 }],
+        },
+        {
+          id: "ORD-20250415",
+          date: "15 Apr 2025",
+          status: "selesai",
+          total: "Rp 5.200.000",
+          items: [{ name: "FR-A820-0.4K", qty: 1, unitPrice: 5200000 }],
+        },
+        {
+          id: "ORD-20250420",
+          date: "20 Apr 2025",
+          status: "selesai",
+          total: "Rp 6.800.000",
+          items: [{ name: "MR-J4-10B", qty: 1, unitPrice: 6800000 }],
+        },
+        {
+          id: "ORD-20250425",
+          date: "25 Apr 2025",
+          status: "selesai",
+          total: "Rp 21.000.000",
+          items: [
+            { name: "FC-302P1K5", qty: 1, unitPrice: 12500000 },
+            { name: "FX5U-32MT/ESS", qty: 1, unitPrice: 8500000 },
+          ],
+        },
+        {
+          id: "ORD-20250430",
+          date: "30 Apr 2025",
+          status: "selesai",
+          total: "Rp 13.600.000",
+          items: [{ name: "MR-J4-10B", qty: 2, unitPrice: 6800000 }],
+        },
+        {
+          id: "ORD-20250501",
+          date: "1 Mei 2025",
+          status: "process",
+          total: "Rp 19.813.000",
+          items: [
+            { name: "FR-A820-0.4K", qty: 2, unitPrice: 5200000 },
+            { name: "FX5U-32MT/ESS", qty: 1, unitPrice: 8500000 },
+          ],
+        },
+        {
+          id: "ORD-20250505",
+          date: "5 Mei 2025",
+          status: "process",
+          total: "Rp 12.500.000",
+          items: [{ name: "FC-302P1K5", qty: 1, unitPrice: 12500000 }],
+        },
+        {
+          id: "ORD-20250508",
+          date: "8 Mei 2025",
+          status: "process",
+          total: "Rp 6.800.000",
+          items: [{ name: "MR-J4-10B", qty: 1, unitPrice: 6800000 }],
+        },
+        {
+          id: "ORD-20250510",
+          date: "10 Mei 2025",
+          status: "process",
+          total: "Rp 8.500.000",
+          items: [{ name: "FX5U-32MT/ESS", qty: 1, unitPrice: 8500000 }],
+        },
+      ];
+
+      // Seed demo data jika belum ada
+      if (!localStorage.getItem("orders_seeded_v2")) {
+        localStorage.setItem("orders", JSON.stringify(DEMO));
+        localStorage.setItem("orders_seeded_v2", "1");
+      }
+
+      let currentFilter =
+        new URLSearchParams(window.location.search).get("filter") || "all";
+
+      function renderOrders() {
+        const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+        const filtered = (
+          currentFilter === "all"
+            ? [...orders]
+            : orders.filter((o) => o.status === currentFilter)
+        ).reverse();
+
+        const list = document.getElementById("orderList");
+        const empty = document.getElementById("emptyState");
+
+        if (filtered.length === 0) {
+          list.innerHTML = "";
+          empty.classList.remove("hidden");
+          return;
+        }
+        empty.classList.add("hidden");
+
+        list.innerHTML = filtered
+          .map((order) => {
+            const isProcess = order.status === "process";
+            const statusBadge = isProcess
+              ? `<span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-orange-100 text-orange-600">Diproses</span>`
+              : `<span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700">Selesai</span>`;
+            const statusIcon = isProcess
+              ? `<div class="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0"><i class="fas fa-clock text-orange-500 text-sm"></i></div>`
+              : `<div class="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0"><i class="fas fa-check text-green-600 text-sm"></i></div>`;
+            const totalQty = order.items.reduce((s, i) => s + i.qty, 0);
+            const itemRows = order.items
+              .map(
+                (i) =>
+                  `<div class="flex justify-between items-center py-1.5 border-b border-gray-50 last:border-0">
+                        <span class="text-sm text-gray-700">${i.name} <span class="text-gray-400 text-xs">×${i.qty}</span></span>
+                        <span class="text-sm font-medium text-gray-800">Rp ${(i.unitPrice * i.qty).toLocaleString("id-ID")}</span>
+                    </div>`,
+              )
+              .join("");
+
+            return `
+                <div class="fade-in bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="px-4 pt-4 pb-3 flex items-center justify-between border-b border-gray-50">
+                        <div class="flex items-center gap-2.5">
+                            ${statusIcon}
+                            <div>
+                                <p class="font-bold text-sm text-gray-900">${order.id}</p>
+                                <p class="text-xs text-gray-400">${order.date}</p>
+                            </div>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    <div class="px-4 py-2">${itemRows}</div>
+                    <div class="px-4 pb-4 pt-2 flex items-center justify-between">
+                        <div>
+                            <p class="text-[11px] text-gray-400">${totalQty} item · Total</p>
+                            <p class="font-bold text-[#E7192D]">${order.total}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            ${isProcess ? `<button onclick="markDone('${order.id}')" class="text-xs border border-green-500 text-green-600 px-3 py-1.5 rounded-lg font-semibold hover:bg-green-50 transition">✓ Selesai</button>` : ""}
+                            <a href="order-detail.html" class="text-xs bg-gray-900 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-gray-700 transition">Detail</a>
+                        </div>
+                    </div>
+                </div>`;
+          })
+          .join("");
+      }
+
+      function setFilter(filter) {
+        currentFilter = filter;
+        ["all", "process", "selesai"].forEach((f) => {
+          document.getElementById("tab-" + f).className =
+            "flex-1 py-3 text-sm font-semibold " +
+            (f === filter ? "tab-active" : "tab-inactive");
+        });
+        history.replaceState({}, "", "?filter=" + filter);
+        renderOrders();
+      }
+
+      function markDone(orderId) {
+        const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+        const o = orders.find((x) => x.id === orderId);
+        if (o) {
+          o.status = "selesai";
+          localStorage.setItem("orders", JSON.stringify(orders));
+        }
+        renderOrders();
+      }
+
+      setFilter(currentFilter);
+    </script>
+  </body>
+</html>

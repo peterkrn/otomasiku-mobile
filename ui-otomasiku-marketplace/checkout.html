@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout - Otomasiku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/dark-mode.css" />
+    <script src="assets/dark-mode.js"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              mitsubishi: {
+                red: "#E7192D",
+                dark: "#1a1a1a",
+                grey: "#727070",
+                green: "#88C83A",
+              },
+              bca: { blue: "#0066AE", light: "#E3F2FD" },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f9fafb;
+      }
+      .dark body {
+        background-color: #0f0f0f !important;
+      }
+      /* Radio dots - dark mode */
+      .radio-dot {
+        background-color: white;
+      }
+      html.dark .radio-dot {
+        background-color: #1e1e1e !important;
+      }
+      html.dark .radio-dot.border-bca-blue,
+      html.dark .radio-dot.border-\[\#0066AE\] {
+        border-color: #3b82f6 !important;
+      }
+      html.dark .radio-dot.border-mitsubishi-red {
+        border-color: #e7192d !important;
+      }
+      .checkbox-custom:checked {
+        background-color: #e7192d;
+        border-color: #e7192d;
+      }
+    </style>
+  </head>
+  <body class="bg-mitsubishi-light text-gray-800 pb-32">
+    <header
+      class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm"
+    >
+      <div
+        class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between"
+      >
+        <a
+          href="home.html"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+        >
+          <i class="fas fa-arrow-left text-gray-600 text-lg"></i>
+        </a>
+        <h1 class="text-lg font-bold text-gray-900">Checkout</h1>
+        <div class="w-10"></div>
+      </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 pt-6 space-y-6">
+      <section
+        class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="font-bold text-lg text-gray-900">Ringkasan Pesanan</h2>
+          <span
+            class="text-xs font-medium text-mitsubishi-grey bg-gray-100 px-2 py-1 rounded-md"
+            id="itemCountEl"
+            >2 item</span
+          >
+        </div>
+
+        <div
+          class="item-row flex gap-4 mb-4 pb-4 border-b border-gray-50"
+          data-id="1"
+          data-unit-price="5200000"
+          data-discount-per-unit="300000"
+        >
+          <div
+            class="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden"
+          >
+            <img
+              src="../assets/01-fr-a820-0.4k.jpg"
+              alt="FR-A820-0.4K-1"
+              class="w-full h-full object-cover"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
+            />
+            <i
+              class="fas fa-bolt text-2xl text-gray-400"
+              style="display: none"
+            ></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <h3 class="text-sm font-semibold text-gray-900">
+                FR-A820-0.4K-1
+              </h3>
+              <button
+                onclick="removeItem(1)"
+                class="text-gray-400 hover:text-mitsubishi-red"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <p class="text-xs text-mitsubishi-grey mt-1">
+              Mitsubishi Inverter 0.4kW
+            </p>
+            <div class="flex justify-between items-end mt-3">
+              <div
+                class="flex items-center border border-gray-200 rounded-lg h-8"
+              >
+                <button
+                  onclick="updateItemQty(1, -1)"
+                  class="w-8 h-full flex items-center justify-center text-gray-500"
+                >
+                  -
+                </button>
+                <span class="text-xs font-medium w-8 text-center" id="qty-1"
+                  >2</span
+                >
+                <button
+                  onclick="updateItemQty(1, 1)"
+                  class="w-8 h-full flex items-center justify-center text-gray-500"
+                >
+                  +
+                </button>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-mitsubishi-red" id="item-price-1">
+                  Rp 10.400.000
+                </p>
+                <p class="text-[10px] text-green-600">Hemat Rp 600rb</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="item-row flex gap-4"
+          data-id="2"
+          data-unit-price="8500000"
+          data-discount-per-unit="0"
+        >
+          <div
+            class="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden"
+          >
+            <img
+              src="../assets/03-fx5u-32mt-es.jpg"
+              alt="FX5U-32MT/ESS"
+              class="w-full h-full object-cover"
+              onerror="
+                this.style.display = 'none';
+                this.nextElementSibling.style.display = 'flex';
+              "
+            />
+            <i
+              class="fas fa-microchip text-2xl text-gray-400"
+              style="display: none"
+            ></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <h3 class="text-sm font-semibold text-gray-900">FX5U-32MT/ESS</h3>
+              <button
+                onclick="removeItem(2)"
+                class="text-gray-400 hover:text-mitsubishi-red"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <p class="text-xs text-mitsubishi-grey mt-1">PLC CPU 32 I/O</p>
+            <div class="flex justify-between items-end mt-3">
+              <div
+                class="flex items-center border border-gray-200 rounded-lg h-8"
+              >
+                <button
+                  onclick="updateItemQty(2, -1)"
+                  class="w-8 h-full flex items-center justify-center text-gray-500"
+                >
+                  -
+                </button>
+                <span class="text-xs font-medium w-8 text-center" id="qty-2"
+                  >1</span
+                >
+                <button
+                  onclick="updateItemQty(2, 1)"
+                  class="w-8 h-full flex items-center justify-center text-gray-500"
+                >
+                  +
+                </button>
+              </div>
+              <span class="font-bold text-mitsubishi-red" id="item-price-2"
+                >Rp 8.500.000</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="font-bold text-lg text-gray-900">Alamat Pengiriman</h2>
+          <a
+            href="shipping.html"
+            class="text-xs font-semibold text-mitsubishi-red hover:underline"
+            >Ubah</a
+          >
+        </div>
+        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 relative">
+          <div class="absolute top-4 right-4 text-mitsubishi-red">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="font-semibold text-sm text-gray-900">Stefani</h3>
+            <span
+              class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded"
+              >Utama</span
+            >
+          </div>
+          <p class="text-xs text-mitsubishi-grey leading-relaxed">
+            PT Otomasi Indonesia<br />
+            Jl. Sudirman Kav. 28-30<br />
+            Jakarta Selatan, 12920<br />
+            +62 812 3456 7890
+          </p>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-gray-100">
+          <label class="block text-xs font-medium text-gray-700 mb-1.5"
+            >Nomor PO Perusahaan (Opsional)</label
+          >
+          <input
+            type="text"
+            placeholder="PO/2024/001"
+            class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+          />
+        </div>
+      </section>
+
+      <section
+        class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100"
+      >
+        <h2 class="font-bold text-lg text-gray-900 mb-4">Metode Pembayaran</h2>
+        <div class="space-y-3">
+          <div
+            class="flex items-center justify-between p-4 border-2 border-bca-blue bg-bca-light dark:bg-blue-900/30 dark:border-blue-800 rounded-xl"
+          >
+            <div class="flex items-center gap-3">
+              <div
+                class="radio-dot w-5 h-5 rounded-full border-4 border-bca-blue flex-shrink-0"
+              ></div>
+              <div>
+                <span class="font-semibold text-sm block dark:text-blue-100"
+                  >BCA Virtual Account</span
+                >
+                <span class="text-xs text-gray-500 dark:text-blue-300"
+                  >Transfer Bank (Dicek Otomatis)</span
+                >
+              </div>
+            </div>
+            <div
+              class="w-12 h-8 bg-[#0066AE] rounded flex items-center justify-center text-white font-bold text-xs"
+            >
+              BCA
+            </div>
+          </div>
+          <div
+            class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 flex items-start gap-2"
+          >
+            <i class="fas fa-info-circle text-blue-500 mt-0.5 text-xs"></i>
+            <div class="text-xs text-blue-800 dark:text-blue-300">
+              <p class="font-semibold mb-1">Cara Pembayaran:</p>
+              <ol class="list-decimal list-inside space-y-0.5 text-[11px]">
+                <li>Klik "Buat Invoice" untuk mendapat nomor VA</li>
+                <li>Transfer melalui BCA Mobile/ATM</li>
+                <li>Otomatis terverifikasi dalam 5 menit</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="bg-white dark:bg-mitsubishi-dark rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-800"
+      >
+        <h2 class="font-bold text-lg text-gray-900 dark:text-white mb-4">
+          Pengiriman
+        </h2>
+        <div
+          class="flex items-center justify-between p-4 border-2 border-mitsubishi-red bg-red-50/30 dark:bg-red-900/20 rounded-xl"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="radio-dot w-5 h-5 rounded-full border-4 border-mitsubishi-red flex-shrink-0"
+            ></div>
+            <div>
+              <span class="font-semibold text-sm block dark:text-red-100"
+                >Pengiriman Standar</span
+              >
+              <span class="text-xs text-gray-500 dark:text-gray-400"
+                >Estimasi 3-5 hari kerja</span
+              >
+            </div>
+          </div>
+          <span class="font-bold text-green-600 dark:text-green-400 text-sm"
+            >GRATIS</span
+          >
+        </div>
+      </section>
+
+      <section
+        class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100"
+      >
+        <h2 class="font-bold text-lg text-gray-900 mb-4">
+          Ringkasan Pembayaran
+        </h2>
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between text-gray-600">
+            <span id="subtotalLabelEl">Subtotal (3 item)</span>
+            <span class="font-medium text-gray-900" id="subtotalEl"
+              >Rp 18.900.000</span
+            >
+          </div>
+          <div class="flex justify-between text-gray-600">
+            <span>Diskon Volume</span>
+            <span class="font-medium text-green-600" id="discountEl"
+              >- Rp 600.000</span
+            >
+          </div>
+          <div class="flex justify-between text-gray-600">
+            <span>Ongkir</span>
+            <span class="font-medium text-green-600">GRATIS</span>
+          </div>
+          <div class="flex justify-between text-gray-600">
+            <span>PPN (11%)</span>
+            <span class="font-medium text-gray-900" id="ppnEl"
+              >Rp 2.013.000</span
+            >
+          </div>
+          <div class="h-px bg-gray-100 my-2"></div>
+          <div class="flex justify-between items-center pt-2">
+            <span class="font-bold text-base text-gray-900"
+              >Total Pembayaran</span
+            >
+            <span class="font-bold text-xl text-mitsubishi-red" id="totalEl"
+              >Rp 19.813.000</span
+            >
+          </div>
+        </div>
+        <div class="mt-6 flex items-start gap-2">
+          <input
+            type="checkbox"
+            id="terms"
+            class="mt-0.5 w-4 h-4 text-mitsubishi-red border-gray-300 rounded focus:ring-mitsubishi-red checkbox-custom"
+          />
+          <label for="terms" class="text-xs text-gray-500 leading-relaxed">
+            Saya menyetujui
+            <a href="#" class="text-mitsubishi-red underline"
+              >Syarat dan Ketentuan</a
+            >
+          </label>
+        </div>
+      </section>
+    </main>
+
+    <footer
+      class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 shadow-lg"
+    >
+      <div class="max-w-3xl mx-auto">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-sm text-gray-600">Total</span>
+          <span class="font-bold text-lg text-mitsubishi-red" id="totalFooterEl"
+            >Rp 19.813.000</span
+          >
+        </div>
+        <button
+          onclick="createInvoice()"
+          class="w-full bg-mitsubishi-red hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+        >
+          <span>Buat Invoice & Bayar</span>
+          <i class="fas fa-file-invoice text-sm"></i>
+        </button>
+      </div>
+    </footer>
+
+    <script>
+      const PPN_RATE = 0.11;
+
+      function fmt(n) {
+        return "Rp " + Math.round(n).toLocaleString("id-ID");
+      }
+
+      function recalculate() {
+        let subtotal = 0;
+        let totalDiscount = 0;
+        let totalQty = 0;
+
+        document.querySelectorAll(".item-row").forEach((row) => {
+          const id = row.dataset.id;
+          const unitPrice = parseInt(row.dataset.unitPrice);
+          const discountPerUnit = parseInt(row.dataset.discountPerUnit) || 0;
+          const qty = parseInt(
+            document.getElementById("qty-" + id)?.textContent || 0,
+          );
+
+          const rowTotal = unitPrice * qty;
+          const rowDiscount = discountPerUnit * qty;
+          subtotal += rowTotal;
+          totalDiscount += rowDiscount;
+          totalQty += qty;
+
+          // Update item row price
+          const priceEl = document.getElementById("item-price-" + id);
+          if (priceEl) priceEl.textContent = fmt(rowTotal);
+        });
+
+        const afterDiscount = subtotal - totalDiscount;
+        const ppn = afterDiscount * PPN_RATE;
+        const total = afterDiscount + ppn;
+
+        // Item count
+        const rowCount = document.querySelectorAll(".item-row").length;
+        document.getElementById("itemCountEl").textContent = rowCount + " item";
+        document.getElementById("subtotalLabelEl").textContent =
+          "Subtotal (" + totalQty + " item)";
+        document.getElementById("subtotalEl").textContent = fmt(subtotal);
+        document.getElementById("discountEl").textContent =
+          totalDiscount > 0 ? "- " + fmt(totalDiscount) : "Rp 0";
+        document.getElementById("ppnEl").textContent = fmt(ppn);
+        document.getElementById("totalEl").textContent = fmt(total);
+        document.getElementById("totalFooterEl").textContent = fmt(total);
+      }
+
+      function updateItemQty(itemId, change) {
+        const qtyEl = document.getElementById("qty-" + itemId);
+        let qty = parseInt(qtyEl.textContent) + change;
+        if (qty < 1) qty = 1;
+        qtyEl.textContent = qty;
+        recalculate();
+      }
+
+      function removeItem(itemId) {
+        if (confirm("Hapus item ini?")) {
+          const row = document.querySelector(
+            '.item-row[data-id="' + itemId + '"]',
+          );
+          if (row) row.remove();
+          recalculate();
+        }
+      }
+
+      function createInvoice() {
+        const terms = document.getElementById("terms").checked;
+        if (!terms) {
+          alert("Silakan centang persetujuan");
+          return;
+        }
+
+        // Kumpulkan item dari DOM
+        const items = [];
+        document.querySelectorAll(".item-row").forEach((row) => {
+          const id = row.dataset.id;
+          const qty = parseInt(
+            document.getElementById("qty-" + id)?.textContent || 1,
+          );
+          const unitPrice = parseInt(row.dataset.unitPrice);
+          const name = row.querySelector("h3")?.textContent?.trim() || id;
+          items.push({ id, name, qty, unitPrice });
+        });
+
+        // Hitung total
+        const totalEl = document.getElementById("totalEl");
+        const totalText = totalEl?.textContent || "Rp 0";
+
+        // Simpan ke localStorage
+        const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+        const newOrder = {
+          id: "ORD-" + Date.now(),
+          date: new Date().toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          }),
+          status: "process",
+          items: items,
+          total: totalText,
+          address:
+            "Stefani — PT Otomasi Indonesia, Jl. Sudirman Kav. 28-30, Jakarta Selatan",
+        };
+        orders.push(newOrder);
+        localStorage.setItem("orders", JSON.stringify(orders));
+
+        window.location.href = "payment.html";
+      }
+
+      // Init
+      recalculate();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1367 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasil Pencarian - Otomasiku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/dark-mode.css" />
+    <script src="assets/dark-mode.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              mitsubishi: { red: "#E7192D", dark: "#1a1a1a", grey: "#727070" },
+              danfoss: { blue: "#005A8C" },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f9fafb;
+      }
+      .dark body {
+        background-color: #0f0f0f !important;
+      }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <header class="sticky top-0 z-40 bg-white border-b border-gray-100">
+      <div class="max-w-7xl mx-auto px-4 h-16 flex items-center gap-3">
+        <a
+          href="home.html"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100"
+        >
+          <i class="fas fa-arrow-left text-gray-600"></i>
+        </a>
+        <div class="flex-1 relative">
+          <form id="searchForm" class="w-full relative">
+            <input
+              type="text"
+              id="searchInput"
+              value=""
+              class="w-full bg-gray-100 rounded-xl py-2.5 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-mitsubishi-red/20"
+              placeholder="Cari produk..."
+            />
+            <i class="fas fa-search absolute left-3.5 top-3 text-gray-400"></i>
+            <button
+              type="button"
+              id="clearSearch"
+              class="absolute right-3 top-3 text-gray-400 hover:text-gray-600 hidden"
+            >
+              <i class="fas fa-times-circle"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <div class="bg-white border-b border-gray-100 px-4 py-3">
+      <div
+        class="flex items-center gap-2 overflow-x-auto hide-scrollbar"
+        id="activeFilters"
+      >
+        <span class="text-xs text-gray-500 whitespace-nowrap shrink-0"
+          >Filter aktif:</span
+        >
+
+        <div id="filterTagsContainer" class="flex items-center gap-2">
+          <span
+            class="filter-tag bg-mitsubishi-red/10 text-mitsubishi-red text-xs px-3 py-1 rounded-full flex items-center gap-1 whitespace-nowrap transition-all duration-200"
+            data-filter="inverter"
+          >
+            Inverter
+            <i
+              class="fas fa-times-circle cursor-pointer hover:opacity-70 transition-opacity"
+            ></i>
+          </span>
+          <span
+            class="filter-tag bg-mitsubishi-red/10 text-mitsubishi-red text-xs px-3 py-1 rounded-full flex items-center gap-1 whitespace-nowrap transition-all duration-200"
+            data-filter="ready-stock"
+          >
+            Ready Stock
+            <i
+              class="fas fa-times-circle cursor-pointer hover:opacity-70 transition-opacity"
+            ></i>
+          </span>
+        </div>
+
+        <!-- Tambah Filter Button -->
+        <button
+          id="addFilterBtn"
+          onclick="openFilterModal()"
+          class="shrink-0 flex items-center gap-1.5 text-xs font-medium text-mitsubishi-red border border-mitsubishi-red/30 bg-mitsubishi-red/5 hover:bg-mitsubishi-red/10 px-3 py-1 rounded-full whitespace-nowrap transition-all duration-200"
+        >
+          <i class="fas fa-plus text-[10px]"></i>
+          Tambah Filter
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Modal Overlay -->
+    <div
+      id="filterOverlay"
+      class="fixed inset-0 bg-black/40 z-50 hidden"
+      onclick="closeFilterModal()"
+    ></div>
+
+    <!-- Filter Bottom Sheet -->
+    <div
+      id="filterModal"
+      class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-50 transform translate-y-full transition-transform duration-300 ease-out max-h-[85vh] overflow-y-auto"
+    >
+      <!-- Handle -->
+      <div class="flex justify-center pt-3 pb-1">
+        <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+      </div>
+
+      <!-- Header -->
+      <div
+        class="flex items-center justify-between px-5 py-3 border-b border-gray-100"
+      >
+        <h2 class="font-bold text-gray-900 text-base">Tambah Filter</h2>
+        <button
+          onclick="closeFilterModal()"
+          class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+        >
+          <i class="fas fa-times text-gray-500 text-sm"></i>
+        </button>
+      </div>
+
+      <div class="px-5 py-4 space-y-5 pb-8">
+        <!-- Kategori Produk -->
+        <div>
+          <p
+            class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+          >
+            Kategori Produk
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="inverter"
+              data-label="Inverter"
+            >
+              Inverter
+            </button>
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="servo"
+              data-label="Servo"
+            >
+              Servo
+            </button>
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="plc"
+              data-label="PLC"
+            >
+              PLC
+            </button>
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="hmi"
+              data-label="HMI"
+            >
+              HMI
+            </button>
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="sensor"
+              data-label="Sensor"
+            >
+              Sensor
+            </button>
+          </div>
+        </div>
+
+        <!-- Ketersediaan Stok -->
+        <div>
+          <p
+            class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+          >
+            Ketersediaan Stok
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="ready-stock"
+              data-label="Ready Stock"
+            >
+              Ready Stock
+            </button>
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="indent"
+              data-label="Indent"
+            >
+              Indent
+            </button>
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="pre-order"
+              data-label="Pre-Order"
+            >
+              Pre-Order
+            </button>
+          </div>
+        </div>
+
+        <!-- Brand -->
+        <div>
+          <p
+            class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+          >
+            Brand
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="mitsubishi"
+              data-label="Mitsubishi"
+            >
+              Mitsubishi
+            </button>
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="danfoss"
+              data-label="Danfoss"
+            >
+              Danfoss
+            </button>
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="siemens"
+              data-label="Siemens"
+            >
+              Siemens
+            </button>
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="omron"
+              data-label="Omron"
+            >
+              Omron
+            </button>
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="schneider"
+              data-label="Schneider"
+            >
+              Schneider
+            </button>
+          </div>
+        </div>
+
+        <!-- Rentang Daya -->
+        <div>
+          <p
+            class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+          >
+            Rentang Daya
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="daya-kecil"
+              data-label="≤ 2.2 kW"
+            >
+              ≤ 2.2 kW
+            </button>
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="daya-menengah"
+              data-label="3.7–15 kW"
+            >
+              3.7–15 kW
+            </button>
+            <button
+              class="filter-option text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:border-mitsubishi-red hover:text-mitsubishi-red transition-all duration-150"
+              data-filter="daya-besar"
+              data-label="≥ 18.5 kW"
+            >
+              ≥ 18.5 kW
+            </button>
+          </div>
+        </div>
+
+        <!-- Apply Button -->
+        <div class="pt-2">
+          <button
+            onclick="applySelectedFilters()"
+            class="w-full bg-mitsubishi-red text-white text-sm font-semibold py-3 rounded-xl hover:bg-red-700 transition-colors"
+          >
+            Terapkan Filter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 py-4">
+      <div class="flex justify-between items-center mb-4">
+        <p class="text-sm text-gray-600">
+          Ditemukan
+          <span class="font-bold text-gray-900" id="productCount">10</span>
+          produk
+        </p>
+        <select
+          id="sortSelect"
+          class="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-mitsubishi-red/20 cursor-pointer"
+        >
+          <option value="relevance">Relevansi</option>
+          <option value="price-low">Harga Terendah</option>
+          <option value="price-high">Harga Tertinggi</option>
+          <option value="name-asc">Nama A-Z</option>
+          <option value="name-desc">Nama Z-A</option>
+        </select>
+      </div>
+
+      <div class="space-y-3" id="productList">
+        <!-- Produk 1 -->
+        <div
+          class="product-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex gap-4"
+          data-name="FR-A820-0.4K-1"
+          data-price="5200000"
+          data-category="inverter"
+          data-brand="mitsubishi"
+          data-stock="ready-stock"
+          data-power="daya-kecil"
+        >
+          <div
+            class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              src="../assets/01-fr-a820-0.4k.jpg"
+              alt="FR-A820-0.4K-1"
+              class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+            />
+            <i class="fas fa-bolt text-3xl text-gray-400" style="display: none"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <div>
+                <span
+                  class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-medium"
+                  >24 Unit Tersedia</span
+                >
+                <h3 class="font-bold text-gray-900 mt-1">FR-A820-0.4K-1</h3>
+                <p class="text-xs text-gray-500">
+                  Mitsubishi Inverter FR-A800 Series • 0.4kW • 200V
+                </p>
+              </div>
+              <button
+                onclick="addToCompare('FR-A820-0.4K')"
+                class="text-gray-400 hover:text-mitsubishi-red transition-colors"
+              >
+                <i class="fas fa-balance-scale"></i>
+              </button>
+            </div>
+            <div class="flex gap-3 mt-2 text-[10px] text-gray-600">
+              <span class="bg-gray-100 px-2 py-0.5 rounded">0.4 kW</span>
+              <span class="bg-gray-100 px-2 py-0.5 rounded">200V</span>
+              <span class="bg-gray-100 px-2 py-0.5 rounded">3-phase</span>
+            </div>
+            <div class="flex justify-between items-end mt-3">
+              <div>
+                <p class="text-lg font-bold text-mitsubishi-red">
+                  Rp 5.200.000
+                </p>
+                <p class="text-xs text-gray-400">Harga per unit</p>
+              </div>
+              <a
+                href="product-detail.html"
+                class="px-4 py-2 bg-mitsubishi-red text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                >Detail</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Produk 2 -->
+        <div
+          class="product-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex gap-4"
+          data-name="FR-A820-2.2K-1"
+          data-price="12500000"
+          data-category="inverter"
+          data-brand="mitsubishi"
+          data-stock="indent"
+          data-power="daya-kecil"
+        >
+          <div
+            class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              src="../assets/02-fr-a820-2.2k.jpg"
+              alt="FR-A820-2.2K-1"
+              class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+            />
+            <i class="fas fa-bolt text-3xl text-gray-400" style="display: none"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <div>
+                <span
+                  class="text-[10px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded font-medium"
+                  >Indent 14 Hari</span
+                >
+                <h3 class="font-bold text-gray-900 mt-1">FR-A820-2.2K-1</h3>
+                <p class="text-xs text-gray-500">
+                  Mitsubishi Inverter • 2.2kW • 200V
+                </p>
+              </div>
+              <button
+                onclick="addToCompare('FR-A820-2.2K')"
+                class="text-gray-400 hover:text-mitsubishi-red transition-colors"
+              >
+                <i class="fas fa-balance-scale"></i>
+              </button>
+            </div>
+            <div class="mt-2 bg-gray-50 rounded-lg p-2">
+              <p class="text-[10px] text-gray-600 mb-1">Harga bertingkat:</p>
+              <div class="flex gap-2 text-[10px]">
+                <span class="bg-white px-2 py-1 rounded border"
+                  >1-5: Rp 12.5jt</span
+                >
+                <span
+                  class="bg-green-50 text-green-700 px-2 py-1 rounded border border-green-200"
+                  >6+: Rp 11.8jt</span
+                >
+              </div>
+            </div>
+            <div class="flex justify-between items-end mt-3">
+              <p class="text-lg font-bold text-mitsubishi-red">Rp 12.500.000</p>
+              <a
+                href="product-detail.html"
+                class="px-4 py-2 bg-mitsubishi-red text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                >Detail</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Produk 3 -->
+        <div
+          class="product-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex gap-4"
+          data-name="FX5U-32MT/ES"
+          data-price="8800000"
+          data-category="plc"
+          data-brand="mitsubishi"
+          data-stock="ready-stock"
+          data-power="daya-kecil"
+        >
+          <div
+            class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              src="../assets/03-fx5u-32mt-es.jpg"
+              alt="FX5U-32MT/ES"
+              class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+            />
+            <i class="fas fa-microchip text-3xl text-gray-400" style="display: none"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <div>
+                <span
+                  class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-medium"
+                  >8 Unit Tersedia</span
+                >
+                <h3 class="font-bold text-gray-900 mt-1">FX5U-32MT/ES</h3>
+                <p class="text-xs text-gray-500">
+                  Mitsubishi PLC CPU 32 I/O • Transistor Output
+                </p>
+              </div>
+              <button
+                onclick="addToCompare('FX5U-32MT/ES')"
+                class="text-gray-400 hover:text-mitsubishi-red transition-colors"
+              >
+                <i class="fas fa-balance-scale"></i>
+              </button>
+            </div>
+            <div class="flex gap-3 mt-2 text-[10px] text-gray-600">
+              <span class="bg-gray-100 px-2 py-0.5 rounded">32 I/O</span>
+              <span class="bg-gray-100 px-2 py-0.5 rounded">Transistor</span>
+            </div>
+            <div class="flex justify-between items-end mt-3">
+              <div>
+                <p class="text-lg font-bold text-mitsubishi-red">
+                  Rp 8.800.000
+                </p>
+                <p class="text-xs text-gray-400">Harga per unit</p>
+              </div>
+              <a
+                href="product-detail.html"
+                class="px-4 py-2 bg-mitsubishi-red text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                >Detail</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Produk 4 -->
+        <div
+          class="product-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex gap-4"
+          data-name="MR-J4-10B"
+          data-price="6800000"
+          data-category="servo"
+          data-brand="mitsubishi"
+          data-stock="low-stock"
+          data-power="daya-kecil"
+        >
+          <div
+            class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              src="../assets/04-mr-j4-10b.jpg"
+              alt="MR-J4-10B"
+              class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+            />
+            <i class="fas fa-cog text-3xl text-gray-400" style="display: none"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <div>
+                <span
+                  class="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded font-medium"
+                  >Hanya 3 Unit</span
+                >
+                <h3 class="font-bold text-gray-900 mt-1">MR-J4-10B</h3>
+                <p class="text-xs text-gray-500">
+                  Mitsubishi Servo Amplifier • 100W • SSCNET III/H
+                </p>
+              </div>
+              <button
+                onclick="addToCompare('MR-J4-10B')"
+                class="text-gray-400 hover:text-mitsubishi-red transition-colors"
+              >
+                <i class="fas fa-balance-scale"></i>
+              </button>
+            </div>
+            <div class="flex gap-3 mt-2 text-[10px] text-gray-600">
+              <span class="bg-gray-100 px-2 py-0.5 rounded">100W</span>
+              <span class="bg-gray-100 px-2 py-0.5 rounded">SSCNET</span>
+            </div>
+            <div class="flex justify-between items-end mt-3">
+              <div>
+                <p class="text-lg font-bold text-mitsubishi-red">
+                  Rp 6.800.000
+                </p>
+                <p class="text-xs text-gray-400">Harga per unit</p>
+              </div>
+              <a
+                href="product-detail.html"
+                class="px-4 py-2 bg-mitsubishi-red text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                >Detail</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Produk 5 -->
+        <div
+          class="product-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex gap-4"
+          data-name="FC 302 131B0078"
+          data-price="12500000"
+          data-category="inverter"
+          data-brand="danfoss"
+          data-stock="ready-stock"
+          data-power="daya-kecil"
+        >
+          <div
+            class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              src="../assets/05-fc-302-1.5kw.jpg"
+              alt="FC 302 131B0078"
+              class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+            />
+            <i class="fas fa-bolt text-3xl text-gray-400" style="display: none"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <div>
+                <span
+                  class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-medium"
+                  >8 Unit Tersedia</span
+                >
+                <h3 class="font-bold text-gray-900 mt-1">FC 302 131B0078</h3>
+                <p class="text-xs text-gray-500">
+                  Danfoss VLT AutomationDrive • 1.5kW • 380-480V
+                </p>
+              </div>
+              <button
+                onclick="addToCompare('FC-302-131B0078')"
+                class="text-gray-400 hover:text-mitsubishi-red transition-colors"
+              >
+                <i class="fas fa-balance-scale"></i>
+              </button>
+            </div>
+            <div class="flex gap-3 mt-2 text-[10px] text-gray-600">
+              <span class="bg-gray-100 px-2 py-0.5 rounded">1.5 kW</span>
+              <span class="bg-gray-100 px-2 py-0.5 rounded">380-480V</span>
+            </div>
+            <div class="flex justify-between items-end mt-3">
+              <div>
+                <p class="text-lg font-bold text-mitsubishi-red">
+                  Rp 12.500.000
+                </p>
+                <p class="text-xs text-gray-400">Harga per unit</p>
+              </div>
+              <a
+                href="product-detail.html"
+                class="px-4 py-2 bg-mitsubishi-red text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                >Detail</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Produk 6 -->
+        <div
+          class="product-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex gap-4"
+          data-name="FR-D720-0.75K"
+          data-price="3200000"
+          data-category="inverter"
+          data-brand="mitsubishi"
+          data-stock="ready-stock"
+          data-power="daya-kecil"
+        >
+          <div
+            class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              src="../assets/06-fr-d720-0.75k.jpg"
+              alt="FR-D720-0.75K"
+              class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+            />
+            <i class="fas fa-bolt text-3xl text-gray-400" style="display: none"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <div>
+                <span
+                  class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-medium"
+                  >24 Unit Tersedia</span
+                >
+                <h3 class="font-bold text-gray-900 mt-1">FR-D720-0.75K</h3>
+                <p class="text-xs text-gray-500">
+                  Mitsubishi Inverter FR-D700 • 0.75kW • 200V
+                </p>
+              </div>
+              <button
+                onclick="addToCompare('FR-D720-0.75K')"
+                class="text-gray-400 hover:text-mitsubishi-red transition-colors"
+              >
+                <i class="fas fa-balance-scale"></i>
+              </button>
+            </div>
+            <div class="flex gap-3 mt-2 text-[10px] text-gray-600">
+              <span class="bg-gray-100 px-2 py-0.5 rounded">0.75 kW</span>
+              <span class="bg-gray-100 px-2 py-0.5 rounded">200V</span>
+            </div>
+            <div class="flex justify-between items-end mt-3">
+              <div>
+                <p class="text-lg font-bold text-mitsubishi-red">
+                  Rp 3.200.000
+                </p>
+                <p class="text-xs text-gray-400">Harga per unit</p>
+              </div>
+              <a
+                href="product-detail.html"
+                class="px-4 py-2 bg-mitsubishi-red text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                >Detail</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Produk 7 -->
+        <div
+          class="product-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex gap-4"
+          data-name="FX3G-24MR/ES-A"
+          data-price="5800000"
+          data-category="plc"
+          data-brand="mitsubishi"
+          data-stock="ready-stock"
+          data-power="daya-kecil"
+        >
+          <div
+            class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              src="../assets/07-fx3g-24mr-es.jpg"
+              alt="FX3G-24MR/ES-A"
+              class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+            />
+            <i class="fas fa-microchip text-3xl text-gray-400" style="display: none"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <div>
+                <span
+                  class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-medium"
+                  >10 Unit Tersedia</span
+                >
+                <h3 class="font-bold text-gray-900 mt-1">FX3G-24MR/ES-A</h3>
+                <p class="text-xs text-gray-500">
+                  Mitsubishi PLC CPU 24 I/O • Relay Output
+                </p>
+              </div>
+              <button
+                onclick="addToCompare('FX3G-24MR/ES-A')"
+                class="text-gray-400 hover:text-mitsubishi-red transition-colors"
+              >
+                <i class="fas fa-balance-scale"></i>
+              </button>
+            </div>
+            <div class="flex gap-3 mt-2 text-[10px] text-gray-600">
+              <span class="bg-gray-100 px-2 py-0.5 rounded">24 I/O</span>
+              <span class="bg-gray-100 px-2 py-0.5 rounded">Relay</span>
+            </div>
+            <div class="flex justify-between items-end mt-3">
+              <div>
+                <p class="text-lg font-bold text-mitsubishi-red">
+                  Rp 5.800.000
+                </p>
+                <p class="text-xs text-gray-400">Harga per unit</p>
+              </div>
+              <a
+                href="product-detail.html"
+                class="px-4 py-2 bg-mitsubishi-red text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                >Detail</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Produk 8 -->
+        <div
+          class="product-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex gap-4"
+          data-name="GT2103-PMBDS"
+          data-price="6500000"
+          data-category="hmi"
+          data-brand="mitsubishi"
+          data-stock="ready-stock"
+          data-power="daya-kecil"
+        >
+          <div
+            class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              src="../assets/08-gt2103-pmbds.jpg"
+              alt="GT2103-PMBDS"
+              class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+            />
+            <i class="fas fa-desktop text-3xl text-gray-400" style="display: none"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <div>
+                <span
+                  class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-medium"
+                  >12 Unit Tersedia</span
+                >
+                <h3 class="font-bold text-gray-900 mt-1">GT2103-PMBDS</h3>
+                <p class="text-xs text-gray-500">
+                  Mitsubishi HMI GOT2000 • 3.8" TFT
+                </p>
+              </div>
+              <button
+                onclick="addToCompare('GT2103-PMBDS')"
+                class="text-gray-400 hover:text-mitsubishi-red transition-colors"
+              >
+                <i class="fas fa-balance-scale"></i>
+              </button>
+            </div>
+            <div class="flex gap-3 mt-2 text-[10px] text-gray-600">
+              <span class="bg-gray-100 px-2 py-0.5 rounded">3.8"</span>
+              <span class="bg-gray-100 px-2 py-0.5 rounded">TFT</span>
+            </div>
+            <div class="flex justify-between items-end mt-3">
+              <div>
+                <p class="text-lg font-bold text-mitsubishi-red">
+                  Rp 6.500.000
+                </p>
+                <p class="text-xs text-gray-400">Harga per unit</p>
+              </div>
+              <a
+                href="product-detail.html"
+                class="px-4 py-2 bg-mitsubishi-red text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                >Detail</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Produk 9 -->
+        <div
+          class="product-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex gap-4"
+          data-name="MR-J4-10A"
+          data-price="6200000"
+          data-category="servo"
+          data-brand="mitsubishi"
+          data-stock="ready-stock"
+          data-power="daya-kecil"
+        >
+          <div
+            class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              src="../assets/09-mr-j4-10a.jpg"
+              alt="MR-J4-10A"
+              class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+            />
+            <i class="fas fa-cog text-3xl text-gray-400" style="display: none"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <div>
+                <span
+                  class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-medium"
+                  >10 Unit Tersedia</span
+                >
+                <h3 class="font-bold text-gray-900 mt-1">MR-J4-10A</h3>
+                <p class="text-xs text-gray-500">
+                  Mitsubishi Servo Amplifier • 100W • Standalone
+                </p>
+              </div>
+              <button
+                onclick="addToCompare('MR-J4-10A')"
+                class="text-gray-400 hover:text-mitsubishi-red transition-colors"
+              >
+                <i class="fas fa-balance-scale"></i>
+              </button>
+            </div>
+            <div class="flex gap-3 mt-2 text-[10px] text-gray-600">
+              <span class="bg-gray-100 px-2 py-0.5 rounded">100W</span>
+              <span class="bg-gray-100 px-2 py-0.5 rounded">Standalone</span>
+            </div>
+            <div class="flex justify-between items-end mt-3">
+              <div>
+                <p class="text-lg font-bold text-mitsubishi-red">
+                  Rp 6.200.000
+                </p>
+                <p class="text-xs text-gray-400">Harga per unit</p>
+              </div>
+              <a
+                href="product-detail.html"
+                class="px-4 py-2 bg-mitsubishi-red text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                >Detail</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Produk 10 -->
+        <div
+          class="product-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex gap-4"
+          data-name="FC 051 132F0003"
+          data-price="3200000"
+          data-category="inverter"
+          data-brand="danfoss"
+          data-stock="ready-stock"
+          data-power="daya-kecil"
+        >
+          <div
+            class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              src="../assets/10-fc-051-0.75kw.jpg"
+              alt="FC 051 132F0003"
+              class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+            />
+            <i class="fas fa-bolt text-3xl text-gray-400" style="display: none"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <div>
+                <span
+                  class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-medium"
+                  >25 Unit Tersedia</span
+                >
+                <h3 class="font-bold text-gray-900 mt-1">FC 051 132F0003</h3>
+                <p class="text-xs text-gray-500">
+                  Danfoss VLT Micro Drive • 0.75kW • 1-phase
+                </p>
+              </div>
+              <button
+                onclick="addToCompare('FC-051-132F0003')"
+                class="text-gray-400 hover:text-mitsubishi-red transition-colors"
+              >
+                <i class="fas fa-balance-scale"></i>
+              </button>
+            </div>
+            <div class="flex gap-3 mt-2 text-[10px] text-gray-600">
+              <span class="bg-gray-100 px-2 py-0.5 rounded">0.75 kW</span>
+              <span class="bg-gray-100 px-2 py-0.5 rounded">1-phase</span>
+            </div>
+            <div class="flex justify-between items-end mt-3">
+              <div>
+                <p class="text-lg font-bold text-mitsubishi-red">
+                  Rp 3.200.000
+                </p>
+                <p class="text-xs text-gray-400">Harga per unit</p>
+              </div>
+              <a
+                href="product-detail.html"
+                class="px-4 py-2 bg-mitsubishi-red text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                >Detail</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State (Hidden by default) -->
+      <div id="emptyState" class="hidden text-center py-12">
+        <div
+          class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"
+        >
+          <i class="fas fa-search text-2xl text-gray-400"></i>
+        </div>
+        <h3 class="text-gray-900 font-semibold mb-1">
+          Tidak ada produk ditemukan
+        </h3>
+        <p class="text-sm text-gray-500">
+          Coba ubah kata kunci pencarian atau filter
+        </p>
+      </div>
+    </main>
+
+    <div
+      id="compareBar"
+      class="fixed bottom-4 left-4 right-4 bg-white rounded-xl shadow-2xl border border-gray-200 p-3 hidden z-30 transform transition-transform duration-300"
+    >
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span
+            class="bg-mitsubishi-red text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center"
+            id="compareCount"
+            >0</span
+          >
+          <span class="text-sm font-medium">Produk dipilih</span>
+        </div>
+        <div class="flex gap-2">
+          <button
+            onclick="clearCompare()"
+            class="text-xs text-gray-500 hover:text-mitsubishi-red px-3 py-2"
+          >
+            Hapus
+          </button>
+          <a
+            href="compare.html"
+            class="bg-mitsubishi-red text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+            >Bandingkan</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ==================== FILTER FUNCTIONALITY ====================
+      let activeFilters = {
+        inverter: "Inverter",
+        "ready-stock": "Ready Stock",
+      };
+
+      // Bind close buttons on existing tags + render
+      function bindFilterTags() {
+        document.querySelectorAll(".filter-tag").forEach((tag) => {
+          const closeBtn = tag.querySelector(".fa-times-circle");
+          if (closeBtn && !closeBtn._bound) {
+            closeBtn._bound = true;
+            closeBtn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              removeFilter(tag.dataset.filter);
+            });
+          }
+        });
+      }
+
+      function removeFilter(filterValue) {
+        const tag = document.querySelector(
+          `.filter-tag[data-filter="${filterValue}"]`,
+        );
+        if (tag) {
+          tag.style.transform = "scale(0.8)";
+          tag.style.opacity = "0";
+          setTimeout(() => {
+            delete activeFilters[filterValue];
+            tag.remove();
+            renderEmptyFilterState();
+            syncModalOptions();
+            applyFilters();
+            console.log("Filter removed:", filterValue);
+          }, 200);
+        }
+      }
+
+      function addFilterTag(filterKey, filterLabel) {
+        if (activeFilters[filterKey]) return; // Already exists
+        activeFilters[filterKey] = filterLabel;
+
+        const container = document.getElementById("filterTagsContainer");
+        const span = document.createElement("span");
+        span.className =
+          "filter-tag bg-mitsubishi-red/10 text-mitsubishi-red text-xs px-3 py-1 rounded-full flex items-center gap-1 whitespace-nowrap transition-all duration-200";
+        span.dataset.filter = filterKey;
+        span.style.opacity = "0";
+        span.style.transform = "scale(0.8)";
+        span.innerHTML = `${filterLabel} <i class="fas fa-times-circle cursor-pointer hover:opacity-70 transition-opacity"></i>`;
+
+        container.appendChild(span);
+        requestAnimationFrame(() => {
+          span.style.transition = "all 0.2s ease";
+          span.style.opacity = "1";
+          span.style.transform = "scale(1)";
+        });
+        bindFilterTags();
+        renderEmptyFilterState();
+      }
+
+      function renderEmptyFilterState() {
+        const container = document.getElementById("filterTagsContainer");
+        const addBtn = document.getElementById("addFilterBtn");
+        if (Object.keys(activeFilters).length === 0) {
+          // Show placeholder text only if no tags
+          if (!document.getElementById("noFilterText")) {
+            const placeholder = document.createElement("span");
+            placeholder.id = "noFilterText";
+            placeholder.className = "text-xs text-gray-400 italic";
+            placeholder.textContent = "Tidak ada filter aktif";
+            container.appendChild(placeholder);
+          }
+        } else {
+          const ph = document.getElementById("noFilterText");
+          if (ph) ph.remove();
+        }
+      }
+
+      // ==================== FILTER MODAL ====================
+      function openFilterModal() {
+        syncModalOptions();
+        const overlay = document.getElementById("filterOverlay");
+        const modal = document.getElementById("filterModal");
+        overlay.classList.remove("hidden");
+        requestAnimationFrame(() => {
+          modal.style.transform = "translateY(0)";
+        });
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeFilterModal() {
+        const overlay = document.getElementById("filterOverlay");
+        const modal = document.getElementById("filterModal");
+        modal.style.transform = "translateY(100%)";
+        setTimeout(() => overlay.classList.add("hidden"), 300);
+        document.body.style.overflow = "";
+      }
+
+      function syncModalOptions() {
+        // Highlight already-active filters in the modal
+        document.querySelectorAll(".filter-option").forEach((btn) => {
+          const key = btn.dataset.filter;
+          if (activeFilters[key]) {
+            btn.classList.add(
+              "border-mitsubishi-red",
+              "text-mitsubishi-red",
+              "bg-mitsubishi-red/10",
+            );
+            btn.classList.remove("border-gray-200", "text-gray-700");
+          } else {
+            btn.classList.remove(
+              "border-mitsubishi-red",
+              "text-mitsubishi-red",
+              "bg-mitsubishi-red/10",
+            );
+            btn.classList.add("border-gray-200", "text-gray-700");
+          }
+        });
+      }
+
+      // Toggle selection inside modal
+      document.querySelectorAll(".filter-option").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          const key = this.dataset.filter;
+          if (activeFilters[key]) {
+            // Deselect
+            delete activeFilters[key];
+            this.classList.remove(
+              "border-mitsubishi-red",
+              "text-mitsubishi-red",
+              "bg-mitsubishi-red/10",
+            );
+            this.classList.add("border-gray-200", "text-gray-700");
+          } else {
+            // Select
+            activeFilters[key] = this.dataset.label;
+            this.classList.add(
+              "border-mitsubishi-red",
+              "text-mitsubishi-red",
+              "bg-mitsubishi-red/10",
+            );
+            this.classList.remove("border-gray-200", "text-gray-700");
+          }
+        });
+      });
+
+      function applySelectedFilters() {
+        // Rebuild all filter tags from activeFilters
+        const container = document.getElementById("filterTagsContainer");
+        container.innerHTML = "";
+        Object.entries(activeFilters).forEach(([key, label]) => {
+          const span = document.createElement("span");
+          span.className =
+            "filter-tag bg-mitsubishi-red/10 text-mitsubishi-red text-xs px-3 py-1 rounded-full flex items-center gap-1 whitespace-nowrap transition-all duration-200";
+          span.dataset.filter = key;
+          span.innerHTML = `${label} <i class="fas fa-times-circle cursor-pointer hover:opacity-70 transition-opacity"></i>`;
+          container.appendChild(span);
+        });
+        bindFilterTags();
+        renderEmptyFilterState();
+        closeFilterModal();
+        applyFilters();
+      }
+
+      // ==================== APPLY FILTERS TO PRODUCTS ====================
+      function applyFilters() {
+        const products = document.querySelectorAll(".product-card");
+        const keys = Object.keys(activeFilters);
+
+        // Group filters by type
+        const categories = ["inverter", "servo", "plc", "hmi", "sensor"];
+        const stocks = ["ready-stock", "indent", "pre-order"];
+        const brands = [
+          "mitsubishi",
+          "danfoss",
+          "siemens",
+          "omron",
+          "schneider",
+        ];
+        const powers = ["daya-kecil", "daya-menengah", "daya-besar"];
+
+        const activeCategories = keys.filter((k) => categories.includes(k));
+        const activeStocks = keys.filter((k) => stocks.includes(k));
+        const activeBrands = keys.filter((k) => brands.includes(k));
+        const activePowers = keys.filter((k) => powers.includes(k));
+
+        let visibleCount = 0;
+        products.forEach((p) => {
+          const cat = p.dataset.category || "";
+          const stock = p.dataset.stock || "";
+          const brand = p.dataset.brand || "";
+          const power = p.dataset.power || "";
+
+          const matchCat =
+            activeCategories.length === 0 || activeCategories.includes(cat);
+          const matchStock =
+            activeStocks.length === 0 || activeStocks.includes(stock);
+          const matchBrand =
+            activeBrands.length === 0 || activeBrands.includes(brand);
+          const matchPower =
+            activePowers.length === 0 || activePowers.includes(power);
+
+          const visible = matchCat && matchStock && matchBrand && matchPower;
+          p.style.display = visible ? "flex" : "none";
+          if (visible) visibleCount++;
+        });
+
+        document.getElementById("productCount").textContent = visibleCount;
+        document
+          .getElementById("emptyState")
+          .classList.toggle("hidden", visibleCount > 0);
+      }
+
+      // Initialize
+      bindFilterTags();
+      syncModalOptions();
+      applyFilters();
+
+      // ==================== SEARCH FUNCTIONALITY ====================
+      const searchInput = document.getElementById("searchInput");
+      const clearSearch = document.getElementById("clearSearch");
+      const searchForm = document.getElementById("searchForm");
+
+      // Show/hide clear button
+      searchInput.addEventListener("input", function () {
+        clearSearch.classList.toggle("hidden", this.value.length === 0);
+      });
+
+      // Clear search
+      clearSearch.addEventListener("click", function () {
+        searchInput.value = "";
+        clearSearch.classList.add("hidden");
+        searchInput.focus();
+      });
+
+      // Search on Enter
+      searchForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const query = searchInput.value.trim();
+        if (query) {
+          console.log("Searching for:", query);
+          // In real app: window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
+          // For demo: filter products locally
+          filterProducts(query);
+        }
+      });
+
+      // Real-time search (optional - debounced)
+      let searchTimeout;
+      searchInput.addEventListener("input", function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          const query = this.value.trim();
+          if (query) filterProducts(query);
+        }, 300);
+      });
+
+      // ==================== SORT FUNCTIONALITY ====================
+      const sortSelect = document.getElementById("sortSelect");
+      const productList = document.getElementById("productList");
+      const emptyState = document.getElementById("emptyState");
+      const productCount = document.getElementById("productCount");
+
+      sortSelect.addEventListener("change", function () {
+        const sortValue = this.value;
+        console.log("Sorting by:", sortValue);
+        sortProducts(sortValue);
+      });
+
+      function sortProducts(criteria) {
+        const products = Array.from(document.querySelectorAll(".product-card"));
+
+        products.sort((a, b) => {
+          const nameA = a.dataset.name.toLowerCase();
+          const nameB = b.dataset.name.toLowerCase();
+          const priceA = parseInt(a.dataset.price);
+          const priceB = parseInt(b.dataset.price);
+
+          switch (criteria) {
+            case "price-low":
+              return priceA - priceB;
+            case "price-high":
+              return priceB - priceA;
+            case "name-asc":
+              return nameA.localeCompare(nameB);
+            case "name-desc":
+              return nameB.localeCompare(nameA);
+            case "relevance":
+            default:
+              return 0; // Keep original order
+          }
+        });
+
+        // Re-append sorted products
+        products.forEach((product) => productList.appendChild(product));
+
+        // Visual feedback
+        productList.style.opacity = "0.5";
+        setTimeout(() => {
+          productList.style.opacity = "1";
+        }, 200);
+      }
+
+      function filterProducts(query) {
+        const products = document.querySelectorAll(".product-card");
+        let visibleCount = 0;
+
+        products.forEach((product) => {
+          const name = product.dataset.name.toLowerCase();
+          const isVisible = name.includes(query.toLowerCase());
+
+          product.style.display = isVisible ? "flex" : "none";
+          if (isVisible) visibleCount++;
+        });
+
+        // Update count
+        productCount.textContent = visibleCount;
+
+        // Show/hide empty state
+        emptyState.classList.toggle("hidden", visibleCount > 0);
+      }
+
+      // ==================== COMPARE FUNCTIONALITY ====================
+      let compareList = JSON.parse(localStorage.getItem("compareList") || "[]");
+
+      function addToCompare(productId) {
+        if (!compareList.includes(productId)) {
+          if (compareList.length >= 3) {
+            alert("Maksimal 3 produk untuk dibandingkan");
+            return;
+          }
+          compareList.push(productId);
+          localStorage.setItem("compareList", JSON.stringify(compareList));
+          updateCompareBar();
+
+          // Visual feedback
+          const btn = event.target.closest("button");
+          btn.classList.add("text-mitsubishi-red");
+          setTimeout(() => btn.classList.remove("text-mitsubishi-red"), 300);
+        } else {
+          // Remove if already exists
+          compareList = compareList.filter((id) => id !== productId);
+          localStorage.setItem("compareList", JSON.stringify(compareList));
+          updateCompareBar();
+        }
+      }
+
+      function clearCompare() {
+        compareList = [];
+        localStorage.setItem("compareList", "[]");
+        updateCompareBar();
+      }
+
+      function updateCompareBar() {
+        const bar = document.getElementById("compareBar");
+        const count = document.getElementById("compareCount");
+        count.textContent = compareList.length;
+
+        if (compareList.length === 0) {
+          bar.classList.add("hidden");
+          bar.classList.remove("translate-y-0");
+        } else {
+          bar.classList.remove("hidden");
+          bar.classList.add("translate-y-0");
+        }
+      }
+
+      // Initialize
+      updateCompareBar();
+
+      // Check initial search value
+      if (searchInput.value) {
+        clearSearch.classList.remove("hidden");
+      }
+    </script>
+  </body>
+</html>

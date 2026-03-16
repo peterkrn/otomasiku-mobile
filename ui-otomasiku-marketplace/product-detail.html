@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FR-A820-0.4K - Otomasiku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/dark-mode.css" />
+    <script src="assets/dark-mode.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              mitsubishi: { red: "#E7192D", dark: "#1a1a1a", grey: "#727070" },
+              danfoss: { blue: "#005A8C" },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f9fafb;
+      }
+      .dark body {
+        background-color: #0f0f0f !important;
+      }
+      .tab-active {
+        border-bottom: 2px solid #e7192d;
+        color: #e7192d;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 pb-32">
+    <header
+      class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-100"
+    >
+      <div
+        class="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between"
+      >
+        <a
+          href="home.html"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100"
+        >
+          <i class="fas fa-arrow-left text-gray-600"></i>
+        </a>
+        <h1 class="font-semibold text-gray-900">Detail Produk</h1>
+        <div class="flex gap-2">
+          <button
+            onclick="addToCompare('FR-A820-0.4K')"
+            class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-600"
+          >
+            <i class="fas fa-balance-scale"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto">
+      <div class="bg-white p-6">
+        <div
+          class="aspect-square bg-gray-100 rounded-2xl mb-4 flex items-center justify-center relative overflow-hidden"
+        >
+          <img
+            src="../assets/01-fr-a820-0.4k.jpg"
+            alt="FR-A820-0.4K-1"
+            class="w-full h-full object-contain p-4"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+          />
+          <i class="fas fa-bolt text-6xl text-gray-400" style="display: none"></i>
+          <div class="absolute top-4 left-4 flex gap-2">
+            <span
+              class="bg-mitsubishi-red text-white text-[10px] font-bold px-3 py-1 rounded-full"
+              >New Arrival</span
+            >
+            <span
+              class="bg-green-500 text-white text-[10px] font-bold px-3 py-1 rounded-full"
+              >Ready Stock</span
+            >
+          </div>
+        </div>
+
+        <h1 class="text-2xl font-bold text-gray-900 mb-1">FR-A820-0.4K-1</h1>
+        <p class="text-gray-500 text-sm mb-3">
+          Mitsubishi Electric FR-A800 Series Inverter
+        </p>
+
+        <div
+          class="bg-green-50 border border-green-200 rounded-xl p-3 mb-4 flex items-center gap-3"
+        >
+          <div
+            class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600"
+          >
+            <i class="fas fa-warehouse"></i>
+          </div>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-green-800" id="stockDisplay">
+              24 Unit Tersedia
+            </p>
+            <p class="text-xs text-green-600">
+              Gudang Jakarta • Siap kirim 1-2 hari kerja
+            </p>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-100 pt-4">
+          <p class="text-xs text-gray-500 mb-1">Harga per unit</p>
+          <div class="flex items-baseline gap-2">
+            <span class="text-3xl font-bold text-mitsubishi-red"
+              >Rp 5.200.000</span
+            >
+            <span class="text-sm text-gray-400 line-through">Rp 5.500.000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white mt-3 p-6 border-t border-gray-100">
+        <h3 class="font-bold text-gray-900 mb-3">Harga Bertingkat (B2B)</h3>
+        <div class="space-y-2">
+          <div
+            class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border-2 border-mitsubishi-red"
+          >
+            <div>
+              <p class="font-semibold text-sm">1 - 5 Unit</p>
+              <p class="text-xs text-gray-500">Harga normal</p>
+            </div>
+            <span class="font-bold text-mitsubishi-red">Rp 5.200.000</span>
+          </div>
+          <div
+            class="flex justify-between items-center p-3 bg-green-50 rounded-lg border border-green-200"
+          >
+            <div class="flex items-center gap-2">
+              <div>
+                <p class="font-semibold text-sm text-green-800">6 - 10 Unit</p>
+                <p class="text-xs text-green-600">Hemat Rp 400rb/unit</p>
+              </div>
+              <span
+                class="bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full"
+                >Best Deal</span
+              >
+            </div>
+            <span class="font-bold text-green-700">Rp 4.800.000</span>
+          </div>
+          <div
+            class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
+          >
+            <div>
+              <p class="font-semibold text-sm">11+ Unit</p>
+              <p class="text-xs text-gray-500">Hubungi sales</p>
+            </div>
+            <button
+              onclick="openRFQ()"
+              class="text-mitsubishi-red text-sm font-semibold hover:underline"
+            >
+              RFQ
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white mt-3 sticky top-14 z-30 border-b border-gray-100">
+        <div class="flex">
+          <button
+            onclick="switchTab('specs')"
+            id="tab-specs"
+            class="flex-1 py-3 text-sm font-semibold tab-active"
+          >
+            Spesifikasi
+          </button>
+          <button
+            onclick="switchTab('docs')"
+            id="tab-docs"
+            class="flex-1 py-3 text-sm font-semibold text-gray-500"
+          >
+            Dokumen
+          </button>
+          <button
+            onclick="switchTab('compat')"
+            id="tab-compat"
+            class="flex-1 py-3 text-sm font-semibold text-gray-500"
+          >
+            Kompatibel
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-white p-6">
+        <div id="content-specs">
+          <table class="w-full text-sm">
+            <tr class="border-b border-gray-100">
+              <td class="py-3 text-gray-500">Kapasitas Daya</td>
+              <td class="py-3 font-semibold text-right">0.4 kW</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 text-gray-500">Tegangan Input</td>
+              <td class="py-3 font-semibold text-right">200V - 240V</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 text-gray-500">Arus Output</td>
+              <td class="py-3 font-semibold text-right">3.0 A</td>
+            </tr>
+            <tr>
+              <td class="py-3 text-gray-500">Proteksi IP</td>
+              <td class="py-3 font-semibold text-right">IP20</td>
+            </tr>
+          </table>
+        </div>
+        <div id="content-docs" class="hidden">
+          <div
+            class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg"
+          >
+            <div
+              class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center text-red-600"
+            >
+              <i class="fas fa-file-pdf"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-semibold text-sm">Datasheet FR-A800 Series</p>
+              <p class="text-xs text-gray-500">PDF • 2.4 MB</p>
+            </div>
+            <button
+              class="text-mitsubishi-red text-xs font-semibold hover:underline"
+            >
+              <i class="fas fa-download mr-1"></i>Unduh
+            </button>
+          </div>
+          <div
+            class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg mt-3"
+          >
+            <div
+              class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600"
+            >
+              <i class="fas fa-book"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-semibold text-sm">Manual Instalasi</p>
+              <p class="text-xs text-gray-500">PDF • 5.1 MB</p>
+            </div>
+            <button
+              class="text-mitsubishi-red text-xs font-semibold hover:underline"
+            >
+              <i class="fas fa-download mr-1"></i>Unduh
+            </button>
+          </div>
+        </div>
+        <div id="content-compat" class="hidden">
+          <p class="text-xs text-gray-500 mb-3">
+            Produk yang kompatibel dengan FR-A820-0.4K-1:
+          </p>
+          <div class="space-y-3">
+            <div
+              class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100"
+            >
+              <div
+                class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center"
+              >
+                <i class="fas fa-plug text-gray-500 text-sm"></i>
+              </div>
+              <div class="flex-1">
+                <p class="font-semibold text-sm text-gray-900">FR-BU2-0.4K</p>
+                <p class="text-xs text-gray-500">Brake Unit • Mitsubishi</p>
+              </div>
+              <span
+                class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium"
+                >Cocok</span
+              >
+            </div>
+            <div
+              class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100"
+            >
+              <div
+                class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center"
+              >
+                <i class="fas fa-filter text-gray-500 text-sm"></i>
+              </div>
+              <div class="flex-1">
+                <p class="font-semibold text-sm text-gray-900">FR-BSF-0.4K</p>
+                <p class="text-xs text-gray-500">EMC Filter • Mitsubishi</p>
+              </div>
+              <span
+                class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium"
+                >Cocok</span
+              >
+            </div>
+            <div
+              class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100"
+            >
+              <div
+                class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center"
+              >
+                <i class="fas fa-shield-alt text-gray-500 text-sm"></i>
+              </div>
+              <div class="flex-1">
+                <p class="font-semibold text-sm text-gray-900">FR-HEL-0.4K</p>
+                <p class="text-xs text-gray-500">AC Reactor • Mitsubishi</p>
+              </div>
+              <span
+                class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium"
+                >Cocok</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer
+      class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-40"
+    >
+      <div class="max-w-3xl mx-auto flex gap-3">
+        <div class="flex items-center border border-gray-300 rounded-xl px-3">
+          <button
+            onclick="updateQty(-1)"
+            class="w-8 h-8 flex items-center justify-center text-gray-600"
+          >
+            -
+          </button>
+          <input
+            type="number"
+            id="qty"
+            value="1"
+            class="w-12 text-center font-semibold border-none"
+            readonly
+          />
+          <button
+            onclick="updateQty(1)"
+            class="w-8 h-8 flex items-center justify-center text-gray-600"
+          >
+            +
+          </button>
+        </div>
+        <button
+          onclick="saveToProject('FR-A820-0.4K')"
+          class="w-14 h-12 border-2 border-gray-200 rounded-xl flex items-center justify-center text-gray-600 hover:border-mitsubishi-red hover:text-mitsubishi-red flex-shrink-0"
+        >
+          <i class="far fa-bookmark text-lg"></i>
+        </button>
+        <button
+          id="addCartBtn"
+          onclick="addToCartFromDetail()"
+          class="w-14 h-12 border-2 border-mitsubishi-red text-mitsubishi-red rounded-xl flex items-center justify-center hover:bg-red-50 active:scale-[0.98] transition-all flex-shrink-0"
+        >
+          <i class="fas fa-shopping-cart text-lg"></i>
+        </button>
+        <button
+          onclick="buyNow()"
+          class="flex-1 bg-mitsubishi-red hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
+        >
+          <span>Beli</span>
+          <i class="fas fa-arrow-right text-sm"></i>
+        </button>
+      </div>
+    </footer>
+
+    <div
+      id="rfqModal"
+      class="fixed inset-0 bg-black/50 z-50 hidden flex items-end justify-center p-0"
+    >
+      <div class="bg-white w-full max-w-lg rounded-t-2xl p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold">Request for Quote</h3>
+          <button
+            onclick="closeRFQ()"
+            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <form class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Jumlah yang Diinginkan</label
+            >
+            <input
+              type="number"
+              placeholder="Minimal 11 unit"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Nama Perusahaan</label
+            >
+            <input
+              type="text"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            />
+          </div>
+          <button
+            type="button"
+            onclick="submitRFQ()"
+            class="w-full bg-mitsubishi-red text-white font-bold py-3 rounded-xl"
+          >
+            Kirim RFQ
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      let qty = 1;
+      const currentProductId = "FR-A820-0.4K"; // ID produk halaman ini
+      const initialStock = 24; // Stok default
+
+      function updateQty(change) {
+        qty += change;
+        if (qty < 1) qty = 1;
+        document.getElementById("qty").value = qty;
+      }
+
+      function switchTab(tab) {
+        ["specs", "docs", "compat"].forEach((t) => {
+          document.getElementById(`content-${t}`).classList.add("hidden");
+          document.getElementById(`tab-${t}`).classList.remove("tab-active");
+          document.getElementById(`tab-${t}`).classList.add("text-gray-500");
+        });
+        document.getElementById(`content-${tab}`).classList.remove("hidden");
+        document.getElementById(`tab-${tab}`).classList.add("tab-active");
+        document.getElementById(`tab-${tab}`).classList.remove("text-gray-500");
+      }
+
+      function openRFQ() {
+        document.getElementById("rfqModal").classList.remove("hidden");
+      }
+
+      function closeRFQ() {
+        document.getElementById("rfqModal").classList.add("hidden");
+      }
+
+      function submitRFQ() {
+        alert("RFQ berhasil dikirim!");
+        closeRFQ();
+      }
+
+      function addToCartFromDetail() {
+        const qty = parseInt(document.getElementById("qty").value) || 1;
+        const productId = "FR-A820-0.4K";
+        const productName = "FR-A820-0.4K";
+        const price = 5200000;
+
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const existing = cart.find((i) => i.id === productId);
+        if (existing) {
+          existing.quantity += qty;
+        } else {
+          cart.push({
+            id: productId,
+            name: productName,
+            price: price,
+            quantity: qty,
+            addedAt: new Date().toISOString(),
+          });
+        }
+        localStorage.setItem("cart", JSON.stringify(cart));
+
+        // Visual feedback on button
+        const btn = document.getElementById("addCartBtn");
+        const original = btn.innerHTML;
+        btn.innerHTML =
+          '<i class="fas fa-check text-lg"></i>';
+        btn.classList.add("bg-green-50", "border-green-500", "text-green-600");
+        btn.classList.remove("border-mitsubishi-red", "text-mitsubishi-red");
+        setTimeout(() => {
+          btn.innerHTML = original;
+          btn.classList.remove(
+            "bg-green-50",
+            "border-green-500",
+            "text-green-600",
+          );
+          btn.classList.add("border-mitsubishi-red", "text-mitsubishi-red");
+        }, 1500);
+      }
+
+      function saveToProject(productId) {
+        const project = prompt("Simpan ke proyek:");
+        if (project) alert(`Disimpan ke: ${project}`);
+      }
+
+      function addToCompare(productId) {
+        let list = JSON.parse(localStorage.getItem("compareList") || "[]");
+        if (!list.includes(productId)) {
+          if (list.length >= 3) {
+            alert("Maksimal 3 produk");
+            return;
+          }
+          list.push(productId);
+          localStorage.setItem("compareList", JSON.stringify(list));
+          alert("Ditambahkan ke perbandingan");
+        }
+      }
+
+      // ==================== FUNGSI BELI SEKARANG ====================
+      function buyNow() {
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const existingItem = cart.find((item) => item.id === currentProductId);
+
+        // Cek stok yang ada dulu
+        let productStock = JSON.parse(
+          localStorage.getItem("productStock") || "{}",
+        );
+        let currentStock =
+          productStock[currentProductId] !== undefined
+            ? productStock[currentProductId]
+            : initialStock;
+
+        if (qty > currentStock) {
+          alert(`Maaf, stok tidak mencukupi. Sisa stok: ${currentStock}`);
+          return;
+        }
+
+        if (existingItem) {
+          existingItem.quantity += qty;
+        } else {
+          cart.push({
+            id: currentProductId,
+            name: "FR-A820-0.4K-1", // Nama produk sesuai di checkout
+            price: 5200000,
+            quantity: qty,
+          });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        window.location.href = "checkout.html"; // Pindah ke halaman checkout
+      }
+
+      // ==================== UPDATE STOK DINAMIS ====================
+      function updateStockDisplay() {
+        let productStock = JSON.parse(
+          localStorage.getItem("productStock") || "{}",
+        );
+
+        // Inisialisasi stok awal jika belum ada
+        if (productStock[currentProductId] === undefined) {
+          productStock[currentProductId] = initialStock;
+          localStorage.setItem("productStock", JSON.stringify(productStock));
+        }
+
+        const currentStock = productStock[currentProductId];
+        const stockDisplay = document.getElementById("stockDisplay");
+
+        // Update tampilan teks sesuai stok sisa
+        if (currentStock > 0) {
+          stockDisplay.textContent = currentStock + " Unit Tersedia";
+          stockDisplay.className = "text-sm font-semibold text-green-800";
+        } else {
+          stockDisplay.textContent = "Stok Habis";
+          stockDisplay.className = "text-sm font-bold text-mitsubishi-red"; // Ubah merah jika habis
+        }
+      }
+
+      // Jalankan fungsi saat halaman pertama kali dibuka
+      document.addEventListener("DOMContentLoaded", function () {
+        updateStockDisplay();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Alamat - Otomasiku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/dark-mode.css" />
+    <script src="assets/dark-mode.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              mitsubishi: {
+                red: "#E7192D",
+                dark: "#1a1a1a",
+                grey: "#727070",
+                light: "#F3F4F6",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #fafafa;
+      }
+      .dark body {
+        background-color: #0f0f0f !important;
+      }
+    </style>
+  </head>
+  <body class="bg-mitsubishi-light text-gray-800 pb-32">
+    <header
+      class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm"
+    >
+      <div
+        class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between"
+      >
+        <a
+          href="shipping.html"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+        >
+          <i class="fas fa-arrow-left text-gray-600 text-lg"></i>
+        </a>
+        <h1 class="text-lg font-bold text-gray-900">Edit Alamat</h1>
+        <div class="w-10"></div>
+      </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 pt-6">
+      <section
+        class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100"
+      >
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1.5"
+              >Nama Depan</label
+            >
+            <input
+              id="inputNamaDepan"
+              type="text"
+              placeholder="Contoh: John"
+              class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1.5"
+              >Nama Belakang</label
+            >
+            <input
+              id="inputNamaBelakang"
+              type="text"
+              placeholder="Contoh: Doe"
+              class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+            />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-gray-700 mb-1.5"
+            >Nomor Telepon</label
+          >
+          <div class="flex">
+            <div
+              class="bg-gray-50 border border-r-0 border-gray-300 rounded-l-lg px-3 py-2.5 flex items-center text-sm text-gray-600 font-medium"
+            >
+              +62
+            </div>
+            <input
+              id="inputTelepon"
+              type="tel"
+              placeholder="812 3456 7890"
+              class="flex-1 bg-white border border-gray-300 rounded-r-lg py-2.5 px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+            />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-gray-700 mb-1.5"
+            >Alamat Lengkap</label
+          >
+          <textarea
+            id="inputAlamat"
+            rows="3"
+            placeholder="Jl. Sudirman Kav. 28-30"
+            class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red resize-none"
+          ></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1.5"
+              >Kota</label
+            >
+            <input
+              id="inputKota"
+              type="text"
+              placeholder="Jakarta Selatan"
+              class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1.5"
+              >Kode Pos</label
+            >
+            <input
+              id="inputKodePos"
+              type="text"
+              placeholder="12920"
+              class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+            />
+          </div>
+        </div>
+        <p id="formError" class="hidden text-xs text-red-500 mb-3">
+          <i class="fas fa-exclamation-circle mr-1"></i>Harap isi semua field
+          yang wajib diisi.
+        </p>
+      </section>
+    </main>
+
+    <footer
+      class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 shadow-lg"
+    >
+      <div class="max-w-3xl mx-auto">
+        <button
+          onclick="saveEdit()"
+          class="w-full bg-mitsubishi-red hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+        >
+          <span>Simpan Perubahan</span>
+          <i class="fas fa-check text-sm"></i>
+        </button>
+      </div>
+    </footer>
+
+    <script>
+      // Read data from URL params
+      const params = new URLSearchParams(window.location.search);
+      const namaLengkap = params.get("nama") || "";
+      const namaParts = namaLengkap.split(" ");
+
+      document.getElementById("inputNamaDepan").value = namaParts[0] || "";
+      document.getElementById("inputNamaBelakang").value =
+        namaParts.slice(1).join(" ") || "";
+      document.getElementById("inputTelepon").value =
+        params.get("telepon") || "";
+      document.getElementById("inputAlamat").value = params.get("alamat") || "";
+      document.getElementById("inputKota").value = params.get("kota") || "";
+      document.getElementById("inputKodePos").value =
+        params.get("kodepos") || "";
+
+      function saveEdit() {
+        const namaDepan = document
+          .getElementById("inputNamaDepan")
+          .value.trim();
+        const namaBelakang = document
+          .getElementById("inputNamaBelakang")
+          .value.trim();
+        const telepon = document.getElementById("inputTelepon").value.trim();
+        const alamat = document.getElementById("inputAlamat").value.trim();
+        const kota = document.getElementById("inputKota").value.trim();
+        const kodePos = document.getElementById("inputKodePos").value.trim();
+
+        if (!namaDepan || !telepon || !alamat || !kota) {
+          document.getElementById("formError").classList.remove("hidden");
+          return;
+        }
+
+        // Save updated data to sessionStorage so shipping.html can read it
+        const idx = params.get("idx");
+        const updated = {
+          idx,
+          nama: [namaDepan, namaBelakang].filter(Boolean).join(" "),
+          telepon,
+          alamat,
+          kota,
+          kodepos: kodePos,
+        };
+        sessionStorage.setItem("editedAddress", JSON.stringify(updated));
+
+        window.location.href = "shipping.html";
+      }
+    </script>
+  </body>
+</html>

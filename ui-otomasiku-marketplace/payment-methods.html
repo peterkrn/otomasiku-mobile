@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pembayaran - Otomasiku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/dark-mode.css" />
+    <script src="assets/dark-mode.js"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: { colors: { mitsubishi: { red: "#E7192D" } } } },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f9fafb;
+      }
+      .dark body {
+        background-color: #0f0f0f !important;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 pb-10">
+    <header
+      class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm"
+    >
+      <div
+        class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between"
+      >
+        <a
+          href="profile.html"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+        >
+          <i class="fas fa-arrow-left text-gray-600 text-lg"></i>
+        </a>
+        <h1 class="text-lg font-bold text-gray-900">Pembayaran</h1>
+        <div class="w-10"></div>
+      </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 pt-6 space-y-5">
+      <!-- BCA VA Card -->
+      <div
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+      >
+        <div class="bg-[#0066AE] px-5 py-4 flex items-center gap-3">
+          <div
+            class="w-12 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0"
+          >
+            <span class="text-[#0066AE] font-bold text-sm">BCA</span>
+          </div>
+          <div>
+            <p class="text-white font-bold text-sm">Virtual Account BCA</p>
+            <p class="text-blue-200 text-xs">
+              Transfer dari rekening BCA mana saja
+            </p>
+          </div>
+          <span
+            class="ml-auto text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-full font-medium flex-shrink-0"
+            >Utama</span
+          >
+        </div>
+
+        <div class="px-5 py-4 border-b border-gray-100">
+          <p class="text-xs text-gray-500 mb-2">Nomor Virtual Account</p>
+          <div
+            class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl px-4 py-3"
+          >
+            <span
+              class="text-xl font-bold text-gray-900 font-mono tracking-widest"
+              >1234 5678 9012 3456</span
+            >
+            <button
+              onclick="copyVA()"
+              class="ml-3 bg-[#0066AE] text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-800 transition flex items-center gap-1 flex-shrink-0"
+            >
+              <i class="fas fa-copy"></i> Salin
+            </button>
+          </div>
+        </div>
+
+        <div class="px-5 py-4 space-y-2 border-b border-gray-100">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500">Atas Nama</span>
+            <span class="font-semibold text-gray-900">PT Otomasiku Indonesia</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500">Jenis</span>
+            <span class="font-semibold text-gray-900">Virtual Account</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-500">Bank</span>
+            <span class="font-semibold text-gray-900">BCA</span>
+          </div>
+        </div>
+
+        <div class="px-5 py-4 space-y-2">
+          <p class="text-xs font-bold text-gray-700 mb-3">Cara Pembayaran</p>
+
+          <button
+            onclick="toggleGuide('atm')"
+            class="w-full flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition"
+          >
+            <span
+              class="text-sm font-medium text-gray-800 flex items-center gap-2"
+            >
+              <i class="fas fa-university text-[#0066AE] w-4"></i> via ATM BCA
+            </span>
+            <i
+              id="icon-atm"
+              class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+            ></i>
+          </button>
+          <div id="guide-atm" class="hidden px-2 pb-2">
+            <ol
+              class="list-decimal list-inside text-xs text-gray-600 space-y-1.5 ml-1"
+            >
+              <li>Masukkan kartu ATM dan PIN Anda</li>
+              <li>Pilih menu <strong>Transfer</strong></li>
+              <li>Pilih <strong>Ke Rekening BCA Virtual Account</strong></li>
+              <li>Masukkan nomor VA: <strong>1234567890123456</strong></li>
+              <li>Masukkan nominal sesuai tagihan lalu konfirmasi</li>
+            </ol>
+          </div>
+
+          <button
+            onclick="toggleGuide('mbanking')"
+            class="w-full flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition"
+          >
+            <span
+              class="text-sm font-medium text-gray-800 flex items-center gap-2"
+            >
+              <i class="fas fa-mobile-alt text-[#0066AE] w-4"></i> via BCA
+              Mobile / myBCA
+            </span>
+            <i
+              id="icon-mbanking"
+              class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+            ></i>
+          </button>
+          <div id="guide-mbanking" class="hidden px-2 pb-2">
+            <ol
+              class="list-decimal list-inside text-xs text-gray-600 space-y-1.5 ml-1"
+            >
+              <li>Buka aplikasi BCA Mobile atau myBCA</li>
+              <li>Login dengan PIN / biometrik</li>
+              <li>
+                Pilih <strong>Transfer</strong> →
+                <strong>BCA Virtual Account</strong>
+              </li>
+              <li>Masukkan nomor VA: <strong>1234567890123456</strong></li>
+              <li>Cek detail dan konfirmasi pembayaran</li>
+            </ol>
+          </div>
+
+          <button
+            onclick="toggleGuide('klikbca')"
+            class="w-full flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition"
+          >
+            <span
+              class="text-sm font-medium text-gray-800 flex items-center gap-2"
+            >
+              <i class="fas fa-globe text-[#0066AE] w-4"></i> via KlikBCA
+              Internet Banking
+            </span>
+            <i
+              id="icon-klikbca"
+              class="fas fa-chevron-down text-gray-400 text-xs transition-transform duration-200"
+            ></i>
+          </button>
+          <div id="guide-klikbca" class="hidden px-2 pb-2">
+            <ol
+              class="list-decimal list-inside text-xs text-gray-600 space-y-1.5 ml-1"
+            >
+              <li>Login di klikbca.com</li>
+              <li>
+                Pilih <strong>Transfer Dana</strong> →
+                <strong>Transfer ke BCA Virtual Account</strong>
+              </li>
+              <li>Masukkan nomor VA: <strong>1234567890123456</strong></li>
+              <li>Masukkan nominal dan konfirmasi dengan KeyBCA</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div
+        class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3"
+      >
+        <i class="fas fa-info-circle text-[#0066AE] mt-0.5 flex-shrink-0"></i>
+        <p class="text-xs text-blue-700 leading-relaxed">
+          Pembayaran akan diverifikasi otomatis. Pastikan nominal yang
+          ditransfer sesuai dengan total tagihan agar pesanan dapat diproses.
+        </p>
+      </div>
+
+      <!-- Support -->
+      <div
+        class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3"
+      >
+        <div
+          class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0"
+        >
+          <i class="fas fa-headset"></i>
+        </div>
+        <div class="flex-1">
+          <p class="text-sm font-semibold text-gray-900">Butuh bantuan?</p>
+          <p class="text-xs text-gray-500">
+            Hubungi tim kami di
+            <span class="font-medium text-gray-700">021-1234-5678</span>
+          </p>
+        </div>
+        <a
+          href="https://wa.me/6221234567"
+          target="_blank"
+          class="text-xs bg-green-500 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-green-600 transition"
+        >
+          <i class="fab fa-whatsapp mr-1"></i>Chat
+        </a>
+      </div>
+    </main>
+
+    <script>
+      function copyVA() {
+        navigator.clipboard.writeText("1234567890123456").catch(() => {});
+        showToast("Nomor VA berhasil disalin!");
+      }
+
+      function toggleGuide(type) {
+        const el = document.getElementById("guide-" + type);
+        const icon = document.getElementById("icon-" + type);
+        const isHidden = el.classList.contains("hidden");
+        el.classList.toggle("hidden", !isHidden);
+        icon.style.transform = isHidden ? "rotate(180deg)" : "";
+      }
+
+      function showToast(msg) {
+        const toast = document.createElement("div");
+        toast.className =
+          "fixed top-20 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-5 py-2.5 rounded-xl shadow-lg z-50 flex items-center gap-2";
+        toast.style.opacity = "0";
+        toast.style.transition = "opacity 0.2s ease";
+        toast.innerHTML = `<i class="fas fa-check-circle text-green-400"></i> ${msg}`;
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => {
+          toast.style.opacity = "1";
+        });
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          setTimeout(() => toast.remove(), 200);
+        }, 2500);
+      }
+    </script>
+  </body>
+</html>

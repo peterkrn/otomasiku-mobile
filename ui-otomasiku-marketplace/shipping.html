@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alamat Pengiriman - Otomasiku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/dark-mode.css" />
+    <script src="assets/dark-mode.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              mitsubishi: {
+                red: "#E7192D",
+                dark: "#1a1a1a",
+                grey: "#727070",
+                light: "#F3F4F6",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #fafafa;
+      }
+      .dark body {
+        background-color: #0f0f0f !important;
+      }
+      .address-radio {
+        appearance: none;
+        -webkit-appearance: none;
+      }
+      .address-card {
+        border-color: #374151;
+        background-color: #fff;
+      }
+      .dark .address-card {
+        background-color: #1a1a1a;
+        border-color: #374151;
+      }
+      .address-card.selected {
+        border-color: #e7192d !important;
+        background-color: #fef2f2;
+      }
+      .dark .address-card.selected {
+        background-color: #2d1a1a;
+        border-color: #e7192d !important;
+      }
+      .address-card .radio-circle {
+        border-color: #d1d5db;
+        border-width: 2px;
+      }
+      .address-card.selected .radio-circle {
+        border-color: #e7192d;
+        border-width: 5px;
+      }
+      /* Radio circle - dark mode visibility */
+      html.dark .radio-circle {
+        background-color: #1e1e1e !important;
+        border-color: #888888 !important;
+      }
+      html.dark .address-card.selected .radio-circle {
+        border-color: #e7192d !important;
+      }
+    </style>
+  </head>
+  <body class="bg-mitsubishi-light text-gray-800 pb-32">
+    <header
+      class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm"
+    >
+      <div
+        class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between"
+      >
+        <a
+          href="profile.html"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+        >
+          <i class="fas fa-arrow-left text-gray-600 text-lg"></i>
+        </a>
+        <h1 class="text-lg font-bold text-gray-900">Alamat Pengiriman</h1>
+        <div class="w-10"></div>
+      </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 pt-6 space-y-6">
+      <section>
+        <h2 class="text-sm font-bold text-gray-900 mb-3 px-1">Pilih Alamat</h2>
+        <div class="space-y-3" id="savedAddresses">
+          <label class="block relative cursor-pointer group">
+            <input
+              type="radio"
+              name="address"
+              class="address-radio absolute opacity-0"
+              checked
+              value="stefani"
+            />
+            <div
+              class="address-card selected bg-white p-4 rounded-xl border-2 shadow-sm transition-all duration-200 flex items-start gap-3"
+            >
+              <div class="mt-1">
+                <div
+                  class="radio-circle w-5 h-5 rounded-full border-[5px] border-mitsubishi-red transition-all"
+                ></div>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <h3 class="font-bold text-gray-900">Stefani</h3>
+                    <span
+                      class="inline-block mt-1 bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded font-medium"
+                      >Utama</span
+                    >
+                  </div>
+                  <button
+                    type="button"
+                    onclick="
+                      goToEdit(
+                        0,
+                        'Stefani',
+                        '812 3456 7890',
+                        'PT Otomasi Indonesia\nJl. Sudirman Kav. 28-30',
+                        'Jakarta Selatan',
+                        '12920',
+                      )
+                    "
+                    class="text-xs font-semibold text-mitsubishi-red hover:underline"
+                  >
+                    Edit
+                  </button>
+                </div>
+                <p class="text-xs text-mitsubishi-grey mt-1">
+                  +62 812 3456 7890
+                </p>
+                <p class="text-xs text-gray-600 mt-2 leading-relaxed">
+                  PT Otomasi Indonesia<br />
+                  Jl. Sudirman Kav. 28-30, Jakarta Selatan, 12920
+                </p>
+              </div>
+            </div>
+          </label>
+
+          <label class="block relative cursor-pointer group">
+            <input
+              type="radio"
+              name="address"
+              class="address-radio absolute opacity-0"
+              value="budi"
+            />
+            <div
+              class="address-card bg-white p-4 rounded-xl border-2 shadow-sm transition-all duration-200 flex items-start gap-3"
+            >
+              <div class="mt-1">
+                <div
+                  class="radio-circle w-5 h-5 rounded-full border-2 border-gray-300 transition-all"
+                ></div>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between items-start">
+                  <h3 class="font-bold text-gray-900">Budi Santoso</h3>
+                  <button
+                    type="button"
+                    onclick="
+                      goToEdit(
+                        1,
+                        'Budi Santoso',
+                        '813 9876 5432',
+                        'Pabrik Cibitung\nJl. Gatot Subroto No. 45',
+                        'Bekasi',
+                        '17110',
+                      )
+                    "
+                    class="text-xs font-semibold text-mitsubishi-red hover:underline"
+                  >
+                    Edit
+                  </button>
+                </div>
+                <p class="text-xs text-mitsubishi-grey mt-1">
+                  +62 813 9876 5432
+                </p>
+                <p class="text-xs text-gray-600 mt-2 leading-relaxed">
+                  Pabrik Cibitung<br />
+                  Jl. Gatot Subroto No. 45, Bekasi, 17110
+                </p>
+              </div>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <div class="relative flex py-2 items-center">
+        <div class="flex-grow border-t border-gray-200"></div>
+        <span class="flex-shrink-0 mx-4 text-gray-400 text-xs font-medium"
+          >ATAU TAMBAH BARU</span
+        >
+        <div class="flex-grow border-t border-gray-200"></div>
+      </div>
+
+      <section
+        class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100"
+        id="formSection"
+      >
+        <h2 class="text-sm font-bold text-gray-900 mb-4" id="formTitle">
+          Tambah Alamat Baru
+        </h2>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1.5"
+              >Nama Depan</label
+            >
+            <input
+              id="inputNamaDepan"
+              type="text"
+              placeholder="Contoh: John"
+              class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1.5"
+              >Nama Belakang</label
+            >
+            <input
+              id="inputNamaBelakang"
+              type="text"
+              placeholder="Contoh: Doe"
+              class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+            />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-gray-700 mb-1.5"
+            >Nomor Telepon</label
+          >
+          <div class="flex">
+            <div
+              class="bg-gray-50 border border-r-0 border-gray-300 rounded-l-lg px-3 py-2.5 flex items-center text-sm text-gray-600 font-medium"
+            >
+              +62
+            </div>
+            <input
+              id="inputTelepon"
+              type="tel"
+              placeholder="812 3456 7890"
+              class="flex-1 bg-white border border-gray-300 rounded-r-lg py-2.5 px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+            />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-gray-700 mb-1.5"
+            >Alamat Lengkap</label
+          >
+          <textarea
+            id="inputAlamat"
+            placeholder="Jl. Sudirman Kav. 28-30"
+            rows="3"
+            class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red resize-none"
+          ></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label
+              class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+              >Kota</label
+            >
+            <input
+              id="inputKota"
+              type="text"
+              placeholder="Jakarta Selatan"
+              class="w-full bg-white border border-gray-300 dark:border-gray-700 rounded-lg py-2.5 px-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1.5"
+              >Kode Pos</label
+            >
+            <input
+              id="inputKodePos"
+              type="text"
+              placeholder="12920"
+              class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg py-2.5 px-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+            />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div>
+            <label
+              class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+              >Kecamatan</label
+            >
+            <input
+              id="inputKecamatan"
+              type="text"
+              placeholder="Setiabudi"
+              class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg py-2.5 px-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+              >Desa / Kelurahan</label
+            >
+            <input
+              id="inputKelurahan"
+              type="text"
+              placeholder="Karet"
+              class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg py-2.5 px-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+            />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label
+            class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+            >Catatan untuk Pengirim (Opsional)</label
+          >
+          <input
+            id="inputCatatan"
+            type="text"
+            placeholder="Contoh: Titip di pos satpam"
+            class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg py-2.5 px-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-mitsubishi-red focus:ring-1 focus:ring-mitsubishi-red"
+          />
+        </div>
+        <!-- Error message -->
+        <p id="formError" class="hidden text-xs text-red-500 mb-3">
+          <i class="fas fa-exclamation-circle mr-1"></i>Harap isi semua field
+          yang wajib diisi.
+        </p>
+      </section>
+    </main>
+
+    <footer
+      class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 shadow-lg"
+    >
+      <div class="max-w-3xl mx-auto">
+        <button
+          onclick="saveAddress()"
+          class="w-full bg-mitsubishi-red hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+        >
+          <span>Simpan Alamat</span>
+          <i class="fas fa-check text-sm"></i>
+        </button>
+      </div>
+    </footer>
+    <script>
+      function updateAddressSelection() {
+        document.querySelectorAll('input[name="address"]').forEach((radio) => {
+          const card = radio.closest("label").querySelector(".address-card");
+          if (radio.checked) {
+            card.classList.add("selected");
+          } else {
+            card.classList.remove("selected");
+          }
+        });
+      }
+
+      function goToEdit(idx, nama, telepon, alamat, kota, kodepos) {
+        event.preventDefault();
+        event.stopPropagation();
+        const p = new URLSearchParams({
+          idx,
+          nama,
+          telepon,
+          alamat,
+          kota,
+          kodepos,
+        });
+        window.location.href = "edit-address.html?" + p.toString();
+      }
+
+      // Apply edits coming back from edit-address.html
+      function applyEditFromSession() {
+        const raw = sessionStorage.getItem("editedAddress");
+        if (!raw) return;
+        sessionStorage.removeItem("editedAddress");
+        const d = JSON.parse(raw);
+        const cards = document.querySelectorAll(".address-card");
+        const card = cards[parseInt(d.idx)];
+        if (!card) return;
+        card.querySelector("h3").textContent = d.nama;
+        const ps = card.querySelectorAll("p.text-xs");
+        ps[0].textContent = "+62 " + d.telepon;
+        ps[1].innerHTML =
+          d.alamat.replace(/\n/g, "<br>") +
+          "<br>" +
+          d.kota +
+          (d.kodepos ? ", " + d.kodepos : "");
+        // Update onclick on edit button
+        const btn = card.querySelector("button");
+        btn.setAttribute(
+          "onclick",
+          `goToEdit(${d.idx}, '${d.nama}', '${d.telepon}', '${d.alamat.replace(/\n/g, "\\n")}', '${d.kota}', '${d.kodepos}')`,
+        );
+        showToast("Alamat berhasil diperbarui!");
+      }
+
+      function bindRadioListeners() {
+        document.querySelectorAll('input[name="address"]').forEach((radio) => {
+          radio.addEventListener("change", updateAddressSelection);
+        });
+      }
+
+      function saveAddress() {
+        const namaDepan = document
+          .getElementById("inputNamaDepan")
+          .value.trim();
+        const namaBelakang = document
+          .getElementById("inputNamaBelakang")
+          .value.trim();
+        const telepon = document.getElementById("inputTelepon").value.trim();
+        const alamat = document.getElementById("inputAlamat").value.trim();
+        const kota = document.getElementById("inputKota").value.trim();
+        const kodePos = document.getElementById("inputKodePos").value.trim();
+        const errorEl = document.getElementById("formError");
+
+        const formHasData =
+          namaDepan || namaBelakang || telepon || alamat || kota || kodePos;
+        if (!formHasData) return;
+
+        if (!namaDepan || !telepon || !alamat || !kota) {
+          errorEl.classList.remove("hidden");
+          document
+            .getElementById("formSection")
+            .scrollIntoView({ behavior: "smooth" });
+          return;
+        }
+        errorEl.classList.add("hidden");
+
+        const namaLengkap = [namaDepan, namaBelakang].filter(Boolean).join(" ");
+        const idx = document.querySelectorAll(".address-card").length; // index for new card
+        const slug =
+          namaDepan.toLowerCase().replace(/\s+/g, "-") + "-" + Date.now();
+
+        const label = document.createElement("label");
+        label.className = "block relative cursor-pointer group";
+        label.innerHTML = `
+                <input type="radio" name="address" class="address-radio absolute opacity-0" value="${slug}">
+                <div class="address-card bg-white p-4 rounded-xl border-2 shadow-sm transition-all duration-200 flex items-start gap-3" style="opacity:0;transform:translateY(8px)">
+                    <div class="mt-1">
+                        <div class="radio-circle w-5 h-5 rounded-full border-2 border-gray-300 transition-all"></div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-gray-900">${namaLengkap}</h3>
+                            <button type="button" onclick="goToEdit(${idx}, '${namaLengkap}', '${telepon}', '${alamat.replace(/\n/g, "\\n")}', '${kota}', '${kodePos}')" class="text-xs font-semibold text-mitsubishi-red hover:underline">Edit</button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">+62 ${telepon}</p>
+                        <p class="text-xs text-gray-600 mt-2 leading-relaxed">
+                            ${alamat.replace(/\n/g, "<br>")}<br>${kota}${kodePos ? ", " + kodePos : ""}
+                        </p>
+                    </div>
+                </div>`;
+
+        document.getElementById("savedAddresses").appendChild(label);
+        requestAnimationFrame(() => {
+          const card = label.querySelector(".address-card");
+          card.style.transition = "all 0.3s ease";
+          card.style.opacity = "1";
+          card.style.transform = "translateY(0)";
+        });
+
+        label.querySelector('input[type="radio"]').checked = true;
+        bindRadioListeners();
+        updateAddressSelection();
+        clearForm();
+        label.scrollIntoView({ behavior: "smooth", block: "center" });
+        showToast("Alamat berhasil ditambahkan!");
+      }
+
+      function clearForm() {
+        [
+          "inputNamaDepan",
+          "inputNamaBelakang",
+          "inputTelepon",
+          "inputAlamat",
+          "inputKota",
+          "inputKodePos",
+        ].forEach((id) => (document.getElementById(id).value = ""));
+      }
+
+      function showToast(msg) {
+        const toast = document.createElement("div");
+        toast.className =
+          "fixed top-20 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-5 py-2.5 rounded-xl shadow-lg z-50 flex items-center gap-2 transition-all duration-300";
+        toast.style.opacity = "0";
+        toast.innerHTML = `<i class="fas fa-check-circle text-green-400"></i> ${msg}`;
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => {
+          toast.style.opacity = "1";
+        });
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          setTimeout(() => toast.remove(), 300);
+        }, 2500);
+      }
+
+      // Init
+      bindRadioListeners();
+      updateAddressSelection();
+      applyEditFromSession();
+    </script>
+  </body>
+</html>

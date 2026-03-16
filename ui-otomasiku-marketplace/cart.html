@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Keranjang Belanja - Otomasiku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/dark-mode.css" />
+    <script src="assets/dark-mode.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              mitsubishi: {
+                red: "#E7192D",
+                dark: "#1a1a1a",
+                grey: "#727070",
+                light: "#F3F4F6",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #fafafa;
+      }
+      .dark body {
+        background-color: #0f0f0f !important;
+      }
+      .quantity-btn {
+        transition: all 0.2s ease;
+      }
+      .quantity-btn:active {
+        transform: scale(0.9);
+      }
+      .cart-item {
+        transition: all 0.3s ease;
+      }
+      .cart-item.removing {
+        opacity: 0;
+        transform: translateX(-100%);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 pb-32">
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-white border-b border-gray-100">
+      <div
+        class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between"
+      >
+        <a
+          href="home.html"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+        >
+          <i class="fas fa-arrow-left text-gray-600 text-lg"></i>
+        </a>
+        <h1 class="text-lg font-bold text-gray-900">Keranjang Belanja</h1>
+        <button
+          onclick="clearCart()"
+          class="text-xs text-mitsubishi-red font-medium hover:underline"
+        >
+          Kosongkan
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-3xl mx-auto px-4 pt-4">
+      <!-- Cart Items Container -->
+      <div id="cartContainer" class="space-y-3">
+        <!-- Items will be rendered here by JavaScript -->
+      </div>
+
+      <!-- Empty State -->
+      <div
+        id="emptyState"
+        class="hidden flex flex-col items-center justify-center py-16 text-center"
+      >
+        <div
+          class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4"
+        >
+          <i class="fas fa-shopping-cart text-3xl text-gray-300"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">
+          Keranjang Kosong
+        </h3>
+        <p class="text-sm text-gray-500 mb-6 max-w-xs">
+          Belum ada item di keranjang. Yuk mulai belanja produk Mitsubishi
+          Electric!
+        </p>
+        <a
+          href="home.html"
+          class="inline-flex items-center gap-2 bg-mitsubishi-red text-white px-6 py-3 rounded-xl font-semibold hover:bg-red-700 transition-all"
+        >
+          <i class="fas fa-shopping-bag"></i>
+          Mulai Belanja
+        </a>
+      </div>
+
+      <!-- Cart Summary -->
+      <div
+        id="cartSummary"
+        class="mt-6 bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hidden"
+      >
+        <h3 class="font-bold text-gray-900 mb-4">Ringkasan Belanja</h3>
+
+        <div class="space-y-2 text-sm mb-4">
+          <div class="flex justify-between text-gray-600">
+            <span>Total Item</span>
+            <span id="totalItems">0 item</span>
+          </div>
+          <div class="flex justify-between text-gray-600">
+            <span>Subtotal</span>
+            <span id="subtotalPrice">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-gray-600">
+            <span>Ongkir</span>
+            <span class="text-green-600">Gratis</span>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-100 pt-4">
+          <div class="flex justify-between items-center mb-4">
+            <span class="font-bold text-gray-900">Total</span>
+            <span id="totalPrice" class="font-bold text-xl text-mitsubishi-red"
+              >Rp 0</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommended Products (shown when cart has items) -->
+      <div id="recommendations" class="mt-8 hidden">
+        <h3 class="font-bold text-gray-900 mb-4">Produk Rekomendasi</h3>
+        <div class="flex gap-3 overflow-x-auto pb-4 hide-scrollbar">
+          <div
+            class="min-w-[140px] bg-white rounded-xl p-3 shadow-sm border border-gray-100"
+          >
+            <div
+              class="aspect-square bg-gray-100 rounded-lg mb-2 flex items-center justify-center"
+            >
+              <i class="fas fa-microchip text-2xl text-gray-400"></i>
+            </div>
+            <h4 class="font-semibold text-xs text-gray-900 mb-1">FX5U-64MT</h4>
+            <p class="text-xs text-mitsubishi-red font-bold mb-2">
+              Rp 12.500.000
+            </p>
+            <button
+              onclick="addToCart('FX5U-64MT', 'FX5U-64MT', 12500000)"
+              class="w-full bg-gray-100 hover:bg-mitsubishi-red hover:text-white text-gray-700 py-1.5 rounded-lg text-xs font-medium transition-all"
+            >
+              + Tambah
+            </button>
+          </div>
+          <div
+            class="min-w-[140px] bg-white rounded-xl p-3 shadow-sm border border-gray-100"
+          >
+            <div
+              class="aspect-square bg-gray-100 rounded-lg mb-2 flex items-center justify-center"
+            >
+              <i class="fas fa-bolt text-2xl text-gray-400"></i>
+            </div>
+            <h4 class="font-semibold text-xs text-gray-900 mb-1">
+              FR-A820-1.5K
+            </h4>
+            <p class="text-xs text-mitsubishi-red font-bold mb-2">
+              Rp 7.800.000
+            </p>
+            <button
+              onclick="addToCart('FR-A820-1.5K', 'FR-A820-1.5K', 7800000)"
+              class="w-full bg-gray-100 hover:bg-mitsubishi-red hover:text-white text-gray-700 py-1.5 rounded-lg text-xs font-medium transition-all"
+            >
+              + Tambah
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Action -->
+    <footer
+      id="checkoutFooter"
+      class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 shadow-lg hidden"
+    >
+      <div class="max-w-3xl mx-auto">
+        <a
+          href="shipping.html"
+          class="block w-full bg-mitsubishi-red hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-red-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+        >
+          <span>Lanjut ke Checkout</span>
+          <i class="fas fa-arrow-right text-sm"></i>
+        </a>
+      </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div
+      id="toast"
+      class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-5 py-2.5 rounded-xl shadow-lg z-50 flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none"
+    >
+      <i class="fas fa-check-circle text-green-400"></i>
+      <span id="toastMessage">Produk ditambahkan</span>
+    </div>
+
+    <script>
+      // ==================== CART MANAGEMENT ====================
+      let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+      // Format angka ke Rupiah
+      function formatPrice(price) {
+        return "Rp " + price.toLocaleString("id-ID");
+      }
+
+      // Render atau perbarui tampilan keranjang
+      function renderCart() {
+        const container = document.getElementById("cartContainer");
+        const emptyState = document.getElementById("emptyState");
+        const cartSummary = document.getElementById("cartSummary");
+        const recommendations = document.getElementById("recommendations");
+        const checkoutFooter = document.getElementById("checkoutFooter");
+
+        // Kosongkan container sebelum render ulang
+        container.innerHTML = "";
+
+        if (cart.length === 0) {
+          // Tampilan jika keranjang kosong
+          emptyState.classList.remove("hidden");
+          cartSummary.classList.add("hidden");
+          recommendations.classList.add("hidden");
+          checkoutFooter.classList.add("hidden");
+        } else {
+          // Tampilan jika ada isi
+          emptyState.classList.add("hidden");
+          cartSummary.classList.remove("hidden");
+          recommendations.classList.remove("hidden");
+          checkoutFooter.classList.remove("hidden");
+
+          let totalQty = 0;
+          let totalPrice = 0;
+
+          cart.forEach((item) => {
+            totalQty += item.quantity;
+            totalPrice += item.price * item.quantity;
+
+            const itemElement = document.createElement("div");
+            itemElement.className =
+              "cart-item bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4 items-center";
+
+            // Ganti icon trash menjadi merah jika quantity = 1 (akan dihapus jika dikurangi)
+            const minusIcon =
+              item.quantity <= 1
+                ? "fa-trash text-mitsubishi-red"
+                : "fa-minus text-gray-600";
+
+            itemElement.innerHTML = `
+                        <div class="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-box text-3xl text-gray-300"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-900 leading-tight mb-1">${item.name}</h3>
+                            <p class="text-sm font-semibold text-mitsubishi-red mb-3">${formatPrice(item.price)}</p>
+                            
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center bg-gray-100 rounded-lg p-1">
+                                    <button onclick="updateQuantity('${item.id}', -1)" class="quantity-btn w-8 h-8 flex items-center justify-center hover:bg-white rounded-md shadow-sm transition-colors">
+                                        <i class="fas ${minusIcon} text-sm"></i>
+                                    </button>
+                                    <span class="w-8 text-center font-semibold text-sm text-gray-800">${item.quantity}</span>
+                                    <button onclick="updateQuantity('${item.id}', 1)" class="quantity-btn w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-white rounded-md shadow-sm transition-colors">
+                                        <i class="fas fa-plus text-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+            container.appendChild(itemElement);
+          });
+
+          // Update ringkasan belanja
+          document.getElementById("totalItems").innerText = `${totalQty} item`;
+          document.getElementById("subtotalPrice").innerText =
+            formatPrice(totalPrice);
+          document.getElementById("totalPrice").innerText =
+            formatPrice(totalPrice);
+        }
+      }
+
+      // Update jumlah item (tambah/kurang)
+      function updateQuantity(id, change) {
+        const itemIndex = cart.findIndex((item) => item.id === id);
+
+        if (itemIndex > -1) {
+          cart[itemIndex].quantity += change;
+
+          // Hapus item jika quantity mencapai 0
+          if (cart[itemIndex].quantity <= 0) {
+            cart.splice(itemIndex, 1);
+            showToast("Item dihapus dari keranjang");
+          }
+
+          saveAndRender();
+        }
+      }
+
+      // Tambah ke keranjang (dipakai di produk rekomendasi)
+      function addToCart(id, name, price) {
+        const existingItem = cart.find((item) => item.id === id);
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cart.push({ id, name, price, quantity: 1 });
+        }
+        saveAndRender();
+        showToast("Produk ditambahkan");
+      }
+
+      // Kosongkan semua isi keranjang
+      function clearCart() {
+        if (cart.length > 0 && confirm("Yakin ingin mengosongkan keranjang?")) {
+          cart = [];
+          saveAndRender();
+          showToast("Keranjang berhasil dikosongkan");
+        }
+      }
+
+      // Simpan ke localStorage lalu render ulang
+      function saveAndRender() {
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+      }
+
+      // Tampilkan notifikasi popup (Toast)
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        document.getElementById("toastMessage").innerText = message;
+
+        // Munculkan toast
+        toast.classList.remove(
+          "opacity-0",
+          "translate-y-4",
+          "pointer-events-none",
+        );
+        toast.classList.add("opacity-100", "translate-y-0");
+
+        // Sembunyikan setelah 2.5 detik
+        setTimeout(() => {
+          toast.classList.remove("opacity-100", "translate-y-0");
+          toast.classList.add(
+            "opacity-0",
+            "translate-y-4",
+            "pointer-events-none",
+          );
+        }, 2500);
+      }
+
+      // Inisialisasi keranjang saat halaman pertama kali dimuat
+      document.addEventListener("DOMContentLoaded", renderCart);
+    </script>
+  </body>
+</html>

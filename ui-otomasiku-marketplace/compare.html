@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bandingkan Produk - Otomasiku</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/dark-mode.css" />
+    <script src="assets/dark-mode.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              mitsubishi: { red: "#E7192D", dark: "#1a1a1a", grey: "#727070" },
+              danfoss: { blue: "#005A8C" },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f9fafb;
+      }
+      .dark body {
+        background-color: #0f0f0f !important;
+      }
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 100px repeat(3, 1fr);
+      }
+      @media (max-width: 768px) {
+        .compare-grid {
+          grid-template-columns: 80px repeat(3, 150px);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <header class="sticky top-0 z-40 bg-white border-b border-gray-100">
+      <div
+        class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between"
+      >
+        <a
+          href="home.html"
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100"
+        >
+          <i class="fas fa-arrow-left text-gray-600"></i>
+        </a>
+        <h1 class="font-semibold text-gray-900">Bandingkan Produk</h1>
+        <button
+          onclick="clearAll()"
+          class="text-xs text-mitsubishi-red font-medium"
+        >
+          Hapus Semua
+        </button>
+      </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-4 overflow-x-auto">
+      <div
+        class="min-w-[600px] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+      >
+        <div class="compare-grid border-b border-gray-100">
+          <div class="p-4 bg-gray-50 flex items-end">
+            <span class="text-xs font-semibold text-gray-500">PRODUK</span>
+          </div>
+
+          <div class="p-4 border-l border-gray-100 relative">
+            <button
+              onclick="removeProduct(0)"
+              class="absolute top-2 right-2 w-6 h-6 rounded-full bg-gray-100 hover:bg-red-100 text-gray-400 hover:text-red-500 flex items-center justify-center"
+            >
+              <i class="fas fa-times text-xs"></i>
+            </button>
+            <div
+              class="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center overflow-hidden"
+            >
+              <img
+                src="../assets/01-fr-a820-0.4k.jpg"
+                alt="FR-A820-0.4K"
+                class="w-full h-full object-cover"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+              />
+              <i class="fas fa-bolt text-2xl text-gray-400" style="display: none"></i>
+            </div>
+            <h3 class="font-bold text-sm mb-1">FR-A820-0.4K</h3>
+            <p class="text-xs text-gray-500 mb-2">Mitsubishi</p>
+            <p class="font-bold text-mitsubishi-red text-sm">Rp 5.2jt</p>
+            <span
+              class="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded"
+              >24 unit</span
+            >
+          </div>
+
+          <div class="p-4 border-l border-gray-100 relative">
+            <button
+              onclick="removeProduct(1)"
+              class="absolute top-2 right-2 w-6 h-6 rounded-full bg-gray-100 hover:bg-red-100 text-gray-400 hover:text-red-500 flex items-center justify-center"
+            >
+              <i class="fas fa-times text-xs"></i>
+            </button>
+            <div
+              class="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center overflow-hidden"
+            >
+              <img
+                src="../assets/02-fr-a820-2.2k.jpg"
+                alt="FR-A820-2.2K"
+                class="w-full h-full object-cover"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"
+              />
+              <i class="fas fa-bolt text-2xl text-gray-400" style="display: none"></i>
+            </div>
+            <h3 class="font-bold text-sm mb-1">FR-A820-2.2K</h3>
+            <p class="text-xs text-gray-500 mb-2">Mitsubishi</p>
+            <p class="font-bold text-mitsubishi-red text-sm">Rp 12.5jt</p>
+            <span
+              class="text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded"
+              >Indent</span
+            >
+          </div>
+
+          <div
+            class="p-4 border-l border-gray-100 flex flex-col items-center justify-center min-h-[200px]"
+          >
+            <a
+              href="home.html"
+              class="w-16 h-16 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-mitsubishi-red hover:text-mitsubishi-red transition"
+            >
+              <i class="fas fa-plus text-xl"></i>
+            </a>
+            <p class="text-xs text-gray-500 mt-2">Tambah Produk</p>
+          </div>
+        </div>
+
+        <div class="compare-grid border-b border-gray-100 bg-gray-50/50">
+          <div
+            class="p-3 text-xs font-semibold text-gray-500 flex items-center"
+          >
+            DAYA
+          </div>
+          <div class="p-3 border-l border-gray-100 text-sm font-semibold">
+            0.4 kW
+          </div>
+          <div class="p-3 border-l border-gray-100 text-sm font-semibold">
+            2.2 kW
+          </div>
+          <div class="p-3 border-l border-gray-100 text-xs text-gray-400">
+            -
+          </div>
+        </div>
+
+        <div class="compare-grid border-b border-gray-100">
+          <div
+            class="p-3 text-xs font-semibold text-gray-500 flex items-center"
+          >
+            TEGANGAN
+          </div>
+          <div class="p-3 border-l border-gray-100 text-xs">200V Single</div>
+          <div class="p-3 border-l border-gray-100 text-xs">200V Single</div>
+          <div class="p-3 border-l border-gray-100 text-xs text-gray-400">
+            -
+          </div>
+        </div>
+
+        <div class="compare-grid">
+          <div
+            class="p-3 text-xs font-semibold text-gray-500 flex items-center"
+          >
+            GARANSI
+          </div>
+          <div class="p-3 border-l border-gray-100 text-xs">2 Tahun</div>
+          <div class="p-3 border-l border-gray-100 text-xs">2 Tahun</div>
+          <div class="p-3 border-l border-gray-100 text-xs text-gray-400">
+            -
+          </div>
+        </div>
+
+        <div class="compare-grid border-t border-gray-100 bg-gray-50">
+          <div class="p-4"></div>
+          <div class="p-4 border-l border-gray-100">
+            <a
+              href="checkout.html"
+              class="block w-full bg-mitsubishi-red text-white text-center py-2 rounded-lg text-sm font-semibold"
+              >Beli</a
+            >
+          </div>
+          <div class="p-4 border-l border-gray-100">
+            <a
+              href="checkout.html"
+              class="block w-full bg-mitsubishi-red text-white text-center py-2 rounded-lg text-sm font-semibold"
+              >Beli</a
+            >
+          </div>
+          <div class="p-4 border-l border-gray-100"></div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function removeProduct(index) {
+        if (confirm("Hapus produk dari perbandingan?")) {
+          location.reload();
+        }
+      }
+      function clearAll() {
+        if (confirm("Hapus semua?")) {
+          localStorage.removeItem("compareList");
+          window.location.href = "home.html";
+        }
+      }
+    </script>
+  </body>
+</html>

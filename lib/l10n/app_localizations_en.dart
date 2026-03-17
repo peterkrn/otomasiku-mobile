@@ -113,6 +113,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stockEmpty => 'Out of Stock';
 
   @override
+  String stockUnit(int count) {
+    return '$count Units';
+  }
+
+  @override
+  String get stockIndent => 'Indent';
+
+  @override
   String get available => 'Available';
 
   @override

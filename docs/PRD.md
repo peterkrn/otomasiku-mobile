@@ -10,7 +10,7 @@
 | **Project Name**   | Otomasiku Marketplace Mobile App                               |
 | **Platform**       | Android (Flutter) + Admin Web (Flutter Web)                    |
 | **Target Segment** | B2B — Perusahaan industri, kontraktor, procurement managers    |
-| **Project Owner**  | Stefani (Project Manager)                                      |
+| **Project Owner**  | John Doe (Project Manager)                                      |
 | **CTO**            | -                                                              |
 | **Developer**      | -                                                              |
 | **Start Date**     | 6 Maret 2026                                                   |

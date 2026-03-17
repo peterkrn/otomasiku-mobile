@@ -46,7 +46,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(
       isLoggedIn: true,
       email: email,
-      name: 'Peter', // Dummy user name
+      name: 'John Doe', // Dummy user name
       userId: 'user-001',
     );
   }

@@ -54,7 +54,7 @@ Refer to `DUMMY_PRODUCT_MAPPING_PLAN.md` § 4 for the product details and § 3 f
 
 | File | Contents |
 |------|----------|
-| `dummy_user.dart` | Single hardcoded user: Peter, stefani@ptautomasi.com, PT Otomasi Indonesia, +62 812 3456 7890 |
+| `dummy_user.dart` | Single hardcoded user: John Doe, johndoe@gmail.com, PT Otomasi Indonesia, +62 812 3456 7890 |
 | `dummy_addresses.dart` | 2 addresses: (1) Jl. Sudirman Kav. 28-30 Jakarta Selatan 12920 — Utama, (2) Jl. Raya Bekasi Km.25 Cakung, Jakarta Timur 13910 — Gudang |
 | `dummy_cart.dart` | Pre-filled cart: FR-A820-0.4K-1 × 2, FX5U-32MT/ESS × 1 |
 | `dummy_orders.dart` | 3 orders with different statuses: (1) INV-2024-8XJ2M9 — Sedang Diproses, (2) INV-2024-7KP4L2 — Dikirim, (3) INV-2024-5MN8R1 — Selesai |

@@ -172,7 +172,7 @@ Flutter reads:  error.code → translateErrorCode(code, l10n, details) → local
 | File | Contents |
 |------|---------|
 | `dummy_products.dart` | 10 products (5 Inverter, 2 PLC, 2 Servo, 1 HMI) |
-| `dummy_user.dart` | Peter — PT Otomasi Indonesia |
+| `dummy_user.dart` | John Doe — Otomasi Indonesia |
 | `dummy_addresses.dart` | 2 addresses: Sudirman Jakarta (Utama) + Bekasi (Gudang) |
 | `dummy_cart.dart` | FR-A820-0.4K × 2, FX5U-32MT × 1 |
 | `dummy_orders.dart` | 3 orders: Sedang Diproses, Dikirim, Selesai |

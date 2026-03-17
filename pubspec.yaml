@@ -45,4 +45,9 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - assets/images/profile/
     - assets/images/products/
+    - assets/images/products/inverter/
+    - assets/images/products/plc/
+    - assets/images/products/servo/
+    - assets/images/products/hmi/

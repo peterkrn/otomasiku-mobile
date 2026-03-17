@@ -42,6 +42,13 @@
     }
   },
   "stockEmpty": "Out of Stock",
+"stockUnit": "{count} Units",
+"@stockUnit": {
+  "placeholders": {
+    "count": { "type": "int" }
+  }
+},
+"stockIndent": "Indent",
   "available": "Available",
   "outOfStock": "Out of Stock",
   "success": "Success",

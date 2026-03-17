@@ -297,6 +297,85 @@ ref.read(localeProvider.notifier).setLocale('id');  // switch to Indonesian
 
 ---
 
+## 🎨 UI/Styling Patterns
+
+### Glass-morphism Input Fields (Dark Background Screens)
+
+For auth screens and other dark-themed forms with glass-morphism effect:
+
+```dart
+// ✅ ALWAYS: Use this pattern for glass input fields on dark backgrounds
+Widget _buildGlassInput({
+  required TextEditingController controller,
+  required String hintText,
+  required IconData prefixIcon,
+  bool obscureText = false,
+  TextInputType? keyboardType,
+  String? Function(String?)? validator,
+}) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white.withValues(alpha: 0.15),  // Semi-transparent background
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: Colors.white.withValues(alpha: 0.2),  // Subtle border
+      ),
+    ),
+    child: TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      validator: validator,
+      style: const TextStyle(color: Colors.white),  // White text for dark BG
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: const TextStyle(
+          color: Colors.white70,  // 70% opacity for hints
+          fontSize: 15,
+          fontWeight: FontWeight.w400,
+        ),
+        prefixIcon: Icon(
+          prefixIcon,
+          color: Colors.white70,
+          size: 20,
+        ),
+        border: InputBorder.none,
+        fillColor: Colors.transparent,  // Prevent theme override
+        filled: true,                   // Enable fill color
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+      ),
+    ),
+  );
+}
+
+// ❌ NEVER: Use default Colors.black87 text on dark backgrounds
+// ❌ NEVER: Forget fillColor: Colors.transparent — theme will override with white
+// ❌ NEVER: Use alpha > 0.3 for borders — keeps it subtle
+// ❌ NEVER: Hardcode hint colors — use Colors.white70 or withValues(alpha: 0.7)
+```
+
+### Scaffold Background for Dark Screens
+
+```dart
+// ✅ ALWAYS: Set backgroundColor on Scaffold for dark screens
+return Scaffold(
+  backgroundColor: Colors.black,  // Prevents white background showing through
+  body: Stack(
+    children: [
+      // Background image with dark overlay
+      // ... content
+    ],
+  ),
+);
+
+// ❌ NEVER: Rely on default Scaffold background — it will be white/light
+```
+
+---
+
 ## 📐 API Design Rules
 
 1. **All routes MUST be prefixed with `/api/`.** Example: `GET /api/products`, `POST /api/orders`.

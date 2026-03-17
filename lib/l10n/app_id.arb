@@ -42,6 +42,13 @@
     }
   },
   "stockEmpty": "Habis",
+"stockUnit": "{count} Unit",
+"@stockUnit": {
+  "placeholders": {
+    "count": { "type": "int" }
+  }
+},
+"stockIndent": "Indent",
   "available": "Tersedia",
   "outOfStock": "Stok Habis",
   "success": "Berhasil",

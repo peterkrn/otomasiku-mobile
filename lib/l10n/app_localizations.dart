@@ -302,6 +302,18 @@ abstract class AppLocalizations {
   /// **'Habis'**
   String get stockEmpty;
 
+  /// No description provided for @stockUnit.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} Unit'**
+  String stockUnit(int count);
+
+  /// No description provided for @stockIndent.
+  ///
+  /// In id, this message translates to:
+  /// **'Indent'**
+  String get stockIndent;
+
   /// No description provided for @available.
   ///
   /// In id, this message translates to:

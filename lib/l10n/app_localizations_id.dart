@@ -113,6 +113,14 @@ class AppLocalizationsId extends AppLocalizations {
   String get stockEmpty => 'Habis';
 
   @override
+  String stockUnit(int count) {
+    return '$count Unit';
+  }
+
+  @override
+  String get stockIndent => 'Indent';
+
+  @override
   String get available => 'Tersedia';
 
   @override

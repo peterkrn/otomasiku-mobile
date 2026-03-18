@@ -133,5 +133,10 @@
   "transferBank": "Bank Transfer",
   "invoice": "Invoice",
   "downloadInvoice": "Download Invoice",
-  "language": "Language"
+  "language": "Language",
+  "addToCartShort": "Add",
+  "added": "✓ Added",
+  "compareMaxError": "Maximum 3 products for comparison",
+  "compare": "Compare",
+  "clear": "Clear All"
 }

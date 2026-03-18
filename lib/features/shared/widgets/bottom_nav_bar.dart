@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// Bottom navigation bar with 4 tabs: Beranda, Cari, Proyek, Profil
@@ -7,8 +6,13 @@ import '../../../l10n/app_localizations.dart';
 /// Uses StatefulNavigationShell for proper state preservation
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
+  final Function(int)? onTap;
 
-  const BottomNavBar({super.key, required this.currentIndex});
+  const BottomNavBar({
+    super.key,
+    required this.currentIndex,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +20,7 @@ class BottomNavBar extends StatelessWidget {
 
     return NavigationBar(
       selectedIndex: currentIndex,
-      onDestinationSelected: (index) => _onTabSelected(context, index),
+      onDestinationSelected: onTap ?? (index) {},
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.white,
       elevation: 8,
@@ -49,13 +53,5 @@ class BottomNavBar extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  void _onTabSelected(BuildContext context, int index) {
-    final routes = ['/home', '/search', '/projects', '/profile'];
-    // Use push for within-shell navigation to preserve state
-    if (GoRouterState.of(context).uri.path != routes[index]) {
-      context.go(routes[index]);
-    }
   }
 }

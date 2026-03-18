@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/splash/splash_screen.dart';
 import '../../features/auth/login_screen.dart';
@@ -9,6 +11,8 @@ import '../../features/projects/projects_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/product_detail/product_detail_screen.dart';
 import '../../features/cart/cart_screen.dart';
+import '../../features/shared/widgets/bottom_nav_bar.dart';
+import '../../providers/auth_provider.dart';
 
 /// GoRouter configuration for Otomasiku Marketplace
 /// M2-2: Bottom Navigation Shell with StatefulShellRoute.indexedStack
@@ -35,6 +39,26 @@ abstract class AppRoute {
 // GoRouter instance with StatefulShellRoute for bottom navigation
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
+  // M2 dummy auth redirect — in Milestone 3, integrate with Supabase Auth
+  redirect: (context, state) {
+    // Read auth state from Riverpod
+    final container = ProviderScope.containerOf(context, listen: false);
+    final isLoggedIn = container.read(authProvider).isLoggedIn;
+
+    final isAuthRoute = state.matchedLocation == '/' ||
+        state.matchedLocation == '/login' ||
+        state.matchedLocation == '/register';
+
+    // Not logged in + trying to access protected route → redirect to login
+    if (!isLoggedIn && !isAuthRoute) {
+      return '/login';
+    }
+    // Logged in + trying to access auth route → redirect to home
+    if (isLoggedIn && isAuthRoute) {
+      return '/home';
+    }
+    return null;
+  },
   routes: [
     // Splash
     GoRoute(
@@ -58,7 +82,41 @@ final GoRouter appRouter = GoRouter(
     // Bottom navigation shell with 4 tabs
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
-        return navigationShell;
+        return PopScope(
+          canPop: false, // Always intercept back button
+          onPopInvokedWithResult: (didPop, result) {
+            if (navigationShell.currentIndex != 0) {
+              // On non-home tab → go to home tab
+              navigationShell.goBranch(0);
+            } else {
+              // On home tab → show exit confirmation dialog
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Keluar Aplikasi'),
+                  content: const Text('Yakin ingin keluar?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('Batal'),
+                    ),
+                    TextButton(
+                      onPressed: () => SystemNavigator.pop(),
+                      child: const Text('Keluar'),
+                    ),
+                  ],
+                ),
+              );
+            }
+          },
+          child: Scaffold(
+            body: navigationShell,
+            bottomNavigationBar: BottomNavBar(
+              currentIndex: navigationShell.currentIndex,
+              onTap: (index) => navigationShell.goBranch(index),
+            ),
+          ),
+        );
       },
       branches: [
         // Home tab

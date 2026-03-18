@@ -793,6 +793,36 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Bahasa'**
   String get language;
+
+  /// No description provided for @addToCartShort.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah'**
+  String get addToCartShort;
+
+  /// No description provided for @added.
+  ///
+  /// In id, this message translates to:
+  /// **'✓ Ditambahkan'**
+  String get added;
+
+  /// No description provided for @compareMaxError.
+  ///
+  /// In id, this message translates to:
+  /// **'Maksimal 3 produk untuk dibandingkan'**
+  String get compareMaxError;
+
+  /// No description provided for @compare.
+  ///
+  /// In id, this message translates to:
+  /// **'Bandingkan'**
+  String get compare;
+
+  /// No description provided for @clear.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Semua'**
+  String get clear;
 }
 
 class _AppLocalizationsDelegate

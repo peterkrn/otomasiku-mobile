@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/router/app_router.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/product.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/product_provider.dart';
-import '../../shared/widgets/bottom_nav_bar.dart';
 import '../widgets/hero_banner.dart';
 import '../widgets/product_card.dart';
 
@@ -20,7 +20,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with SingleTickerProviderStateMixin {
   FilterCategory _selectedCategory = FilterCategory.all;
 
   @override
@@ -36,23 +37,126 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final productState = ref.watch(productProvider);
+    final cartCount = ref.watch(
+      cartProvider.select((state) => state.totalItems),
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        titleSpacing: 16,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: AppColors.mitsubishiRed,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [_Diamond(), _Diamond()],
+                    ),
+                    _Diamond(),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'MITSUBISHI',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                Text(
+                  'Electric',
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: AppColors.textTertiary,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          // Cart icon with badge
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.shopping_cart_outlined,
+                  color: AppColors.textPrimary,
+                ),
+                onPressed: () => context.pushNamed(AppRoute.cart),
+              ),
+              if (cartCount > 0)
+                Positioned(
+                  right: 6,
+                  top: 6,
+                  child: Container(
+                    width: 16,
+                    height: 16,
+                    decoration: const BoxDecoration(
+                      color: AppColors.mitsubishiRed,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        cartCount > 99 ? '99+' : '$cartCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          // Profile avatar
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: GestureDetector(
+              onTap: () => context.goNamed(AppRoute.profile),
+              child: CircleAvatar(
+                radius: 16,
+                backgroundColor: AppColors.mitsubishiRed,
+                child: const Text(
+                  'JD',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: CustomScrollView(
         slivers: [
-          // Header
-          SliverToBoxAdapter(
-            child: _buildHeader(context),
-          ),
           // Search bar
-          SliverToBoxAdapter(
-            child: _buildSearchBar(context),
-          ),
+          SliverToBoxAdapter(child: _buildSearchBar(context)),
           // Filter chips
-          SliverToBoxAdapter(
-            child: _buildFilterChips(),
-          ),
+          SliverToBoxAdapter(child: _buildFilterChips()),
           // Hero banner
           SliverToBoxAdapter(
             child: Padding(
@@ -76,119 +180,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
           ),
           // Product grid
           SliverPadding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(24),
             sliver: productState.filteredProducts.isEmpty
                 ? _buildEmptyState(l10n)
                 : _buildProductGrid(productState),
           ),
           // Bottom padding for navigation
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 80),
-          ),
-        ],
-      ),
-      bottomNavigationBar: const BottomNavBar(currentIndex: 0),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    final cartCount = ref.watch(cartProvider.select((state) => state.totalItems));
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: Colors.white,
-      child: Row(
-        children: [
-          // Mitsubishi logo
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: AppColors.mitsubishiRed,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _Diamond(),
-                          _Diamond(),
-                        ],
-                      ),
-                      _Diamond(),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'MITSUBISHI',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  Text(
-                    'Electric',
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: AppColors.textTertiary,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const Spacer(),
-          // Cart icon
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.shopping_cart_outlined, color: AppColors.textPrimary),
-                onPressed: () => context.goNamed('cart'),
-              ),
-              if (cartCount > 0)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    width: 16,
-                    height: 16,
-                    decoration: const BoxDecoration(
-                      color: AppColors.mitsubishiRed,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        cartCount > 99 ? '99+' : '$cartCount',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          // Profile avatar
-          IconButton(
-            icon: const CircleAvatar(
-              radius: 16,
-              backgroundImage: AssetImage('assets/images/profile/avatar.jpg'),
-            ),
-            onPressed: () => context.goNamed('profile'),
-          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 80)),
         ],
       ),
     );
@@ -242,7 +240,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     );
   }
 
-  Widget _FilterChip({required String label, required FilterCategory category}) {
+  Widget _FilterChip({
+    required String label,
+    required FilterCategory category,
+  }) {
     final isSelected = _selectedCategory == category;
     return GestureDetector(
       onTap: () {
@@ -252,7 +253,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.mitsubishiRed : AppColors.surfaceVariant,
+          color: isSelected
+              ? AppColors.mitsubishiRed
+              : AppColors.surfaceVariant,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -273,7 +276,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
         crossAxisCount: 2,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 0.75,
+        childAspectRatio: 0.58,
       ),
       delegate: SliverChildBuilderDelegate(
         (context, index) => _buildAnimatedProductCard(
@@ -289,29 +292,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
     required Product product,
     required int index,
   }) {
-    // Stagger delay: 0ms, 50ms, 100ms, 150ms...
-    final delay = index * 50;
-
-    return FutureBuilder(
-      future: Future.delayed(Duration(milliseconds: delay)),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const SizedBox.shrink();
-        }
-        return TweenAnimationBuilder<double>(
-          duration: const Duration(milliseconds: 300),
-          tween: Tween(begin: 0.0, end: 1.0),
-          curve: Curves.easeOutCubic,
-          child: ProductCard(product: product),
-          builder: (context, value, child) {
-            return Transform.translate(
-              offset: Offset(0, 30 * (1 - value)),
-              child: Opacity(
-                opacity: value,
-                child: child,
-              ),
-            );
-          },
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 300),
+      tween: Tween(begin: 0.0, end: 1.0),
+      curve: Curves.easeOutCubic,
+      child: ProductCard(product: product),
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 30 * (1 - value)),
+          child: Opacity(opacity: value, child: child),
         );
       },
     );
@@ -328,7 +317,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with SingleTickerProvid
               const SizedBox(height: 16),
               Text(
                 l10n.noProducts,
-                style: const TextStyle(fontSize: 16, color: AppColors.textSecondary),
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ),

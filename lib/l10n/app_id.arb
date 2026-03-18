@@ -133,5 +133,10 @@
   "transferBank": "Transfer Bank",
   "invoice": "Faktur",
   "downloadInvoice": "Unduh Faktur",
-  "language": "Bahasa"
+  "language": "Bahasa",
+  "addToCartShort": "Tambah",
+  "added": "✓ Ditambahkan",
+  "compareMaxError": "Maksimal 3 produk untuk dibandingkan",
+  "compare": "Bandingkan",
+  "clear": "Hapus Semua"
 }

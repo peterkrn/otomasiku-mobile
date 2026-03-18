@@ -361,4 +361,19 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get language => 'Bahasa';
+
+  @override
+  String get addToCartShort => 'Tambah';
+
+  @override
+  String get added => '✓ Ditambahkan';
+
+  @override
+  String get compareMaxError => 'Maksimal 3 produk untuk dibandingkan';
+
+  @override
+  String get compare => 'Bandingkan';
+
+  @override
+  String get clear => 'Hapus Semua';
 }

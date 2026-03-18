@@ -25,6 +25,16 @@ class CartState {
   /// Total cart value
   int get totalValue => items.fold(0, (sum, item) => sum + item.totalPrice);
 
+  /// Get quantity of specific product in cart
+  int getQuantityForProduct(String productId) {
+    if (items.isEmpty) return 0;
+    final item = items.firstWhere(
+      (i) => i.product.id == productId,
+      orElse: () => CartItem(id: '', product: items.first.product, quantity: 0),
+    );
+    return item.quantity;
+  }
+
   CartState copyWith({
     List<CartItem>? items,
     bool? isLoading,

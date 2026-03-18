@@ -2,28 +2,68 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../core/widgets/app_toast.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/product.dart';
 import '../../../models/cart_item.dart';
 import '../../../providers/cart_provider.dart';
+import '../../../providers/compare_provider.dart';
 import 'stock_badge.dart';
 
 /// Product card for home screen grid.
 /// Matches HTML mockup: white card, rounded-2xl, border, shadow-sm.
 /// Displays: stock badge, image, name, description, price, add-to-cart button.
-class ProductCard extends ConsumerWidget {
+class ProductCard extends ConsumerStatefulWidget {
   final Product product;
 
   const ProductCard({super.key, required this.product});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends ConsumerState<ProductCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _buttonController;
+  bool _isAdding = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _buttonController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _buttonController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final cartQuantity = ref.watch(
+      cartProvider.select((s) => s.getQuantityForProduct(widget.product.id)),
+    );
+    final isInCompare = ref.watch(
+      compareProvider.select((s) => s.isInCompare(widget.product.id)),
+    );
+
+    // Calculate remaining stock after cart items
+    final displayStock = widget.product.stock != null
+        ? (widget.product.stock! - cartQuantity)
+        : null;
 
     return GestureDetector(
-      onTap: () =>
-          context.goNamed('productDetail', pathParameters: {'id': product.id}),
+      onTap: () => context.pushNamed(
+        AppRoute.productDetail,
+        pathParameters: {'id': widget.product.id},
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -51,13 +91,13 @@ class ProductCard extends ConsumerWidget {
                       top: Radius.circular(16),
                     ),
                     child: Image.asset(
-                      product.primaryImage,
+                      widget.product.primaryImage,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           color: AppColors.surfaceVariant,
                           child: Icon(
-                            _getCategoryIcon(product.category),
+                            _getCategoryIcon(widget.product.category),
                             size: 48,
                             color: AppColors.textTertiary,
                           ),
@@ -66,14 +106,14 @@ class ProductCard extends ConsumerWidget {
                     ),
                   ),
                 ),
-                // Stock badge (top-left)
+                // Stock badge (top-left) - shows remaining after cart
                 Positioned(
                   top: 8,
                   left: 8,
                   child: StockBadge(
-                    status: product.stockStatus,
-                    stockCount: product.stock,
-                    leadTime: product.stockLeadTime,
+                    status: widget.product.stockStatus,
+                    stockCount: displayStock,
+                    leadTime: widget.product.stockLeadTime,
                   ),
                 ),
                 // Compare button (top-right)
@@ -81,20 +121,22 @@ class ProductCard extends ConsumerWidget {
                   top: 8,
                   right: 8,
                   child: GestureDetector(
-                    onTap: () {
-                      // TODO: Navigate to compare screen
-                    },
+                    onTap: () => _handleCompare(),
                     child: Container(
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.9),
+                        color: isInCompare
+                            ? AppColors.mitsubishiRed.withValues(alpha: 0.1)
+                            : Colors.white.withValues(alpha: 0.9),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.balance_outlined,
+                      child: Icon(
+                        Icons.balance,
                         size: 16,
-                        color: AppColors.textTertiary,
+                        color: isInCompare
+                            ? AppColors.mitsubishiRed
+                            : AppColors.textTertiary,
                       ),
                     ),
                   ),
@@ -102,79 +144,108 @@ class ProductCard extends ConsumerWidget {
               ],
             ),
 
-            // Product info
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Product name
+            // Product info - compact layout
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.product.name,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  if (widget.product.description != null)
                     Text(
-                      product.name,
+                      widget.product.description!,
                       style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        fontSize: 10,
+                        color: AppColors.textSecondary,
                       ),
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
-                    // Product description (short)
-                    if (product.description != null)
-                      Text(
-                        product.description!,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textTertiary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    const Spacer(),
-                    // Price
-                    Text(
-                      CurrencyFormatter.format(product.price),
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.mitsubishiRed,
-                      ),
+                  const SizedBox(height: 4),
+                  Text(
+                    CurrencyFormatter.format(widget.product.price),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.mitsubishiRed,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
 
-            // Add to cart button
+            const Spacer(),
+
+            // Add to cart button with animation
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
               child: SizedBox(
                 width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    ref
-                        .read(cartProvider.notifier)
-                        .addItem(
-                          CartItem(
-                            id: DateTime.now().toString(),
-                            product: product,
-                            quantity: 1,
+                child: AnimatedBuilder(
+                  animation: _buttonController,
+                  builder: (context, child) {
+                    final isAdded = _buttonController.isCompleted;
+                    return TextButton(
+                      onPressed: _isAdding ? null : _handleAddToCart,
+                      style: ButtonStyle(
+                        backgroundColor:
+                            WidgetStateProperty.resolveWith<Color?>((states) {
+                              if (isAdded) return Colors.green;
+                              if (states.contains(WidgetState.hovered)) {
+                                return AppColors.mitsubishiRed;
+                              }
+                              return AppColors.surfaceVariant;
+                            }),
+                        foregroundColor:
+                            WidgetStateProperty.resolveWith<Color?>((states) {
+                              if (isAdded) return Colors.white;
+                              if (states.contains(WidgetState.hovered)) {
+                                return Colors.white;
+                              }
+                              return AppColors.textPrimary;
+                            }),
+                        overlayColor: WidgetStateProperty.all(
+                          Colors.white.withValues(alpha: 0.1),
+                        ),
+                        padding: WidgetStateProperty.all(
+                          const EdgeInsets.symmetric(vertical: 6),
+                        ),
+                        minimumSize: WidgetStateProperty.all(const Size(0, 36)),
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        );
-                    _showToast(context, l10n.addToCart);
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (!isAdded) ...[
+                            const Icon(Icons.add, size: 16),
+                            const SizedBox(width: 4),
+                          ],
+                          Text(
+                            isAdded ? l10n.added : l10n.addToCartShort,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   },
-                  icon: const Icon(Icons.add, size: 14),
-                  label: Text(l10n.addToCart),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.textPrimary,
-                    side: const BorderSide(color: AppColors.border),
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
                 ),
               ),
             ),
@@ -182,6 +253,51 @@ class ProductCard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _handleAddToCart() {
+    setState(() {
+      _isAdding = true;
+    });
+
+    ref
+        .read(cartProvider.notifier)
+        .addItem(
+          CartItem(
+            id: DateTime.now().toString(),
+            product: widget.product,
+            quantity: 1,
+          ),
+        );
+
+    // Show toast
+    AppToast.show(
+      context,
+      '${widget.product.name} ditambahkan ke keranjang',
+      isError: false,
+    );
+
+    // Animate button
+    _buttonController.forward().then((_) {
+      Future.delayed(const Duration(milliseconds: 600), () {
+        if (mounted) {
+          _buttonController.reverse();
+          setState(() {
+            _isAdding = false;
+          });
+        }
+      });
+    });
+  }
+
+  void _handleCompare() {
+    final result = ref.read(compareProvider.notifier).toggle(widget.product.id);
+    final l10n = AppLocalizations.of(context);
+
+    if (!result) {
+      // Max 3 products reached
+      AppToast.show(context, l10n.compareMaxError, isError: true);
+    }
   }
 
   IconData _getCategoryIcon(ProductCategory category) {
@@ -191,21 +307,5 @@ class ProductCard extends ConsumerWidget {
       ProductCategory.hmi => Icons.desktop_mac,
       ProductCategory.servo => Icons.settings,
     };
-  }
-
-  void _showToast(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.green),
-            const SizedBox(width: 8),
-            Text(message),
-          ],
-        ),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-      ),
-    );
   }
 }

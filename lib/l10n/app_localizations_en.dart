@@ -361,4 +361,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get language => 'Language';
+
+  @override
+  String get addToCartShort => 'Add';
+
+  @override
+  String get added => '✓ Added';
+
+  @override
+  String get compareMaxError => 'Maximum 3 products for comparison';
+
+  @override
+  String get compare => 'Compare';
+
+  @override
+  String get clear => 'Clear All';
 }

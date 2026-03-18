@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Provider for managing authentication state (M2 dummy auth)
 /// In Milestone 2, auth is faked with a simple boolean
@@ -38,22 +39,48 @@ class AuthState {
 
 /// Authentication notifier
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(const AuthState());
+  AuthNotifier() : super(const AuthState()) {
+    _loadAuthState();
+  }
+
+  /// Load persisted auth state on init
+  Future<void> _loadAuthState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    if (isLoggedIn) {
+      state = state.copyWith(
+        isLoggedIn: true,
+        name: prefs.getString('userName') ?? '',
+        email: prefs.getString('userEmail') ?? '',
+        userId: prefs.getString('userId') ?? '',
+      );
+    }
+  }
 
   /// Login with dummy credentials (M2 only)
-  void login(String email, String password) {
-    // M2 dummy login — always succeeds
+  Future<void> login(String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('userName', 'John Doe');
+    await prefs.setString('userEmail', email);
+    await prefs.setString('userId', 'user-001');
+
     state = state.copyWith(
       isLoggedIn: true,
       email: email,
-      name: 'John Doe', // Dummy user name
+      name: 'John Doe',
       userId: 'user-001',
     );
   }
 
   /// Register with dummy credentials (M2 only)
-  void register(String name, String email, String password) {
-    // M2 dummy register — always succeeds
+  Future<void> register(String name, String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('userName', name);
+    await prefs.setString('userEmail', email);
+    await prefs.setString('userId', 'user-001');
+
     state = state.copyWith(
       isLoggedIn: true,
       email: email,
@@ -63,7 +90,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   /// Logout
-  void logout() {
-    state = const AuthState(isLoggedIn: false);
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    state = const AuthState();
   }
 }

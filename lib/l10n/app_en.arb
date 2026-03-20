@@ -138,5 +138,96 @@
   "added": "✓ Added",
   "compareMaxError": "Maximum 3 products for comparison",
   "compare": "Compare",
-  "clear": "Clear All"
+  "clear": "Clear All",
+  "cartRemoveConfirm": "Remove this item from cart?",
+  "cartRemoveTitle": "Remove Item",
+  "volumeDiscount": "Save {amount}",
+  "@volumeDiscount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "pricePerUnit": "Price per unit",
+  "tieredPricing": "Tiered Pricing (B2B)",
+  "priceNormal": "Normal price",
+  "bestDeal": "Best Deal",
+  "contactSales": "Contact sales",
+  "documents": "Documents",
+  "compatible": "Compatible",
+  "compatibleWith": "Products compatible with {name}:",
+  "@compatibleWith": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "download": "Download",
+  "buy": "Buy",
+  "saveToProject": "Save to Project",
+  "unitsAvailable": "{count} Units Available",
+  "@unitsAvailable": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "readyToShip": "Ready to ship {time}",
+  "@readyToShip": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "rfq": "RFQ",
+  "rfqTitle": "Request for Quote",
+  "rfqQuantity": "Desired Quantity",
+  "rfqMinQuantity": "Minimum {count} units",
+  "@rfqMinQuantity": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "rfqCompanyName": "Company Name",
+  "rfqSubmit": "Submit RFQ",
+  "rfqSent": "RFQ sent successfully!",
+  "addToCompare": "Add to comparison",
+  "addedToCompare": "Added to comparison",
+  "saveProduct": "Save Product",
+  "savedToProject": "Saved to: {project}",
+  "@savedToProject": {
+    "placeholders": {
+      "project": { "type": "Object" }
+    }
+  },
+  "newArrival": "New Arrival",
+  "addedToCart": "{name} added to cart",
+  "@addedToCart": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "insufficientStock": "Sorry, insufficient stock. Remaining: {count}",
+  "@insufficientStock": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "orderSummary": "Order Summary",
+  "shippingAddress": "Shipping Address",
+  "paymentMethod": "Payment Method",
+  "shipping": "Shipping",
+  "paymentSummary": "Payment Summary",
+  "volumeDiscountLabel": "Volume Discount",
+  "taxLabel": "VAT (11%)",
+  "totalPayment": "Total Payment",
+  "termsAgree": "I agree to the Terms and Conditions",
+  "companyPO": "Company PO Number (Optional)",
+  "poPlaceholder": "PO/2024/001",
+  "standardShipping": "Standard Shipping",
+  "shippingEstimate": "Est. 3-5 business days",
+  "freeShipping": "FREE",
+  "bcaVirtualAccount": "BCA Virtual Account",
+  "bankTransfer": "Bank Transfer (Auto-verified)",
+  "paymentHowTo": "How to Pay:",
+  "paymentStep1": "Click \"Create Invoice\" to get VA number",
+  "paymentStep2": "Transfer via BCA Mobile/ATM",
+  "paymentStep3": "Auto-verified within 5 minutes",
+  "pleaseAcceptTerms": "Please check the agreement box"
 }

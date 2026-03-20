@@ -11,6 +11,7 @@ import '../../features/projects/projects_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/product_detail/product_detail_screen.dart';
 import '../../features/cart/cart_screen.dart';
+import '../../features/checkout/checkout_screen.dart';
 import '../../features/shared/widgets/bottom_nav_bar.dart';
 import '../../providers/auth_provider.dart';
 
@@ -79,7 +80,7 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const RegisterScreen(),
     ),
 
-    // Bottom navigation shell with 4 tabs
+    // Bottom navigation shell with 5 tabs
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return PopScope(
@@ -149,7 +150,17 @@ final GoRouter appRouter = GoRouter(
             ),
           ],
         ),
-        // Profile tab
+        // Cart tab (4th position)
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/cart',
+              name: AppRoute.cart,
+              builder: (context, state) => const CartScreen(),
+            ),
+          ],
+        ),
+        // Profile tab (5th position)
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -172,18 +183,11 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
-    // Cart (outside shell - accessed via AppBar icon)
-    GoRoute(
-      path: '/cart',
-      name: AppRoute.cart,
-      builder: (context, state) => const CartScreen(),
-    ),
-
     // Checkout flow (outside shell)
     GoRoute(
       path: '/checkout',
       name: AppRoute.checkout,
-      builder: (context, state) => const Scaffold(body: PlaceholderCheckout()),
+      builder: (context, state) => const CheckoutScreen(),
     ),
     GoRoute(
       path: '/shipping',

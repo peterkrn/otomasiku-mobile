@@ -376,4 +376,164 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get clear => 'Hapus Semua';
+
+  @override
+  String get cartRemoveConfirm => 'Hapus item ini dari keranjang?';
+
+  @override
+  String get cartRemoveTitle => 'Hapus Item';
+
+  @override
+  String volumeDiscount(String amount) {
+    return 'Hemat $amount';
+  }
+
+  @override
+  String get pricePerUnit => 'Harga per unit';
+
+  @override
+  String get tieredPricing => 'Harga Bertingkat (B2B)';
+
+  @override
+  String get priceNormal => 'Harga normal';
+
+  @override
+  String get bestDeal => 'Best Deal';
+
+  @override
+  String get contactSales => 'Hubungi sales';
+
+  @override
+  String get documents => 'Dokumen';
+
+  @override
+  String get compatible => 'Kompatibel';
+
+  @override
+  String compatibleWith(String name) {
+    return 'Produk yang kompatibel dengan $name:';
+  }
+
+  @override
+  String get download => 'Unduh';
+
+  @override
+  String get buy => 'Beli';
+
+  @override
+  String get saveToProject => 'Simpan ke Proyek';
+
+  @override
+  String unitsAvailable(int count) {
+    return '$count Unit Tersedia';
+  }
+
+  @override
+  String readyToShip(String time) {
+    return 'Siap kirim $time';
+  }
+
+  @override
+  String get rfq => 'RFQ';
+
+  @override
+  String get rfqTitle => 'Request for Quote';
+
+  @override
+  String get rfqQuantity => 'Jumlah yang Diinginkan';
+
+  @override
+  String rfqMinQuantity(int count) {
+    return 'Minimal $count unit';
+  }
+
+  @override
+  String get rfqCompanyName => 'Nama Perusahaan';
+
+  @override
+  String get rfqSubmit => 'Kirim RFQ';
+
+  @override
+  String get rfqSent => 'RFQ berhasil dikirim!';
+
+  @override
+  String get addToCompare => 'Tambahkan ke perbandingan';
+
+  @override
+  String get addedToCompare => 'Ditambahkan ke perbandingan';
+
+  @override
+  String get saveProduct => 'Simpan Produk';
+
+  @override
+  String savedToProject(Object project) {
+    return 'Disimpan ke: $project';
+  }
+
+  @override
+  String get newArrival => 'New Arrival';
+
+  @override
+  String addedToCart(String name) {
+    return '$name ditambahkan ke keranjang';
+  }
+
+  @override
+  String insufficientStock(int count) {
+    return 'Maaf, stok tidak mencukupi. Sisa stok: $count';
+  }
+
+  @override
+  String get shipping => 'Pengiriman';
+
+  @override
+  String get paymentSummary => 'Ringkasan Pembayaran';
+
+  @override
+  String get volumeDiscountLabel => 'Diskon Volume';
+
+  @override
+  String get taxLabel => 'PPN (11%)';
+
+  @override
+  String get totalPayment => 'Total Pembayaran';
+
+  @override
+  String get termsAgree => 'Saya menyetujui Syarat dan Ketentuan';
+
+  @override
+  String get companyPO => 'Nomor PO Perusahaan (Opsional)';
+
+  @override
+  String get poPlaceholder => 'PO/2024/001';
+
+  @override
+  String get standardShipping => 'Pengiriman Standar';
+
+  @override
+  String get shippingEstimate => 'Estimasi 3-5 hari kerja';
+
+  @override
+  String get freeShipping => 'GRATIS';
+
+  @override
+  String get bcaVirtualAccount => 'BCA Virtual Account';
+
+  @override
+  String get bankTransfer => 'Transfer Bank (Dicek Otomatis)';
+
+  @override
+  String get paymentHowTo => 'Cara Pembayaran:';
+
+  @override
+  String get paymentStep1 => 'Klik \"Buat Invoice\" untuk mendapat nomor VA';
+
+  @override
+  String get paymentStep2 => 'Transfer melalui BCA Mobile/ATM';
+
+  @override
+  String get paymentStep3 => 'Otomatis terverifikasi dalam 5 menit';
+
+  @override
+  String get pleaseAcceptTerms => 'Silakan centang persetujuan';
 }

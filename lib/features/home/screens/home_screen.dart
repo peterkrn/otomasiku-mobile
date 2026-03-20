@@ -276,7 +276,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         crossAxisCount: 2,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 0.58,
+        childAspectRatio: 0.55,
       ),
       delegate: SliverChildBuilderDelegate(
         (context, index) => _buildAnimatedProductCard(
@@ -293,10 +293,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     required int index,
   }) {
     return TweenAnimationBuilder<double>(
+      key: ValueKey(product.id),
       duration: const Duration(milliseconds: 300),
       tween: Tween(begin: 0.0, end: 1.0),
       curve: Curves.easeOutCubic,
-      child: ProductCard(product: product),
+      child: ProductCard(
+        key: ValueKey('card-${product.id}'),
+        product: product,
+      ),
       builder: (context, value, child) {
         return Transform.translate(
           offset: Offset(0, 30 * (1 - value)),

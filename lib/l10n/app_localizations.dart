@@ -823,6 +823,294 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Hapus Semua'**
   String get clear;
+
+  /// No description provided for @cartRemoveConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus item ini dari keranjang?'**
+  String get cartRemoveConfirm;
+
+  /// No description provided for @cartRemoveTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Item'**
+  String get cartRemoveTitle;
+
+  /// No description provided for @volumeDiscount.
+  ///
+  /// In id, this message translates to:
+  /// **'Hemat {amount}'**
+  String volumeDiscount(String amount);
+
+  /// No description provided for @pricePerUnit.
+  ///
+  /// In id, this message translates to:
+  /// **'Harga per unit'**
+  String get pricePerUnit;
+
+  /// No description provided for @tieredPricing.
+  ///
+  /// In id, this message translates to:
+  /// **'Harga Bertingkat (B2B)'**
+  String get tieredPricing;
+
+  /// No description provided for @priceNormal.
+  ///
+  /// In id, this message translates to:
+  /// **'Harga normal'**
+  String get priceNormal;
+
+  /// No description provided for @bestDeal.
+  ///
+  /// In id, this message translates to:
+  /// **'Best Deal'**
+  String get bestDeal;
+
+  /// No description provided for @contactSales.
+  ///
+  /// In id, this message translates to:
+  /// **'Hubungi sales'**
+  String get contactSales;
+
+  /// No description provided for @documents.
+  ///
+  /// In id, this message translates to:
+  /// **'Dokumen'**
+  String get documents;
+
+  /// No description provided for @compatible.
+  ///
+  /// In id, this message translates to:
+  /// **'Kompatibel'**
+  String get compatible;
+
+  /// No description provided for @compatibleWith.
+  ///
+  /// In id, this message translates to:
+  /// **'Produk yang kompatibel dengan {name}:'**
+  String compatibleWith(String name);
+
+  /// No description provided for @download.
+  ///
+  /// In id, this message translates to:
+  /// **'Unduh'**
+  String get download;
+
+  /// No description provided for @buy.
+  ///
+  /// In id, this message translates to:
+  /// **'Beli'**
+  String get buy;
+
+  /// No description provided for @saveToProject.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan ke Proyek'**
+  String get saveToProject;
+
+  /// No description provided for @unitsAvailable.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} Unit Tersedia'**
+  String unitsAvailable(int count);
+
+  /// No description provided for @readyToShip.
+  ///
+  /// In id, this message translates to:
+  /// **'Siap kirim {time}'**
+  String readyToShip(String time);
+
+  /// No description provided for @rfq.
+  ///
+  /// In id, this message translates to:
+  /// **'RFQ'**
+  String get rfq;
+
+  /// No description provided for @rfqTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Request for Quote'**
+  String get rfqTitle;
+
+  /// No description provided for @rfqQuantity.
+  ///
+  /// In id, this message translates to:
+  /// **'Jumlah yang Diinginkan'**
+  String get rfqQuantity;
+
+  /// No description provided for @rfqMinQuantity.
+  ///
+  /// In id, this message translates to:
+  /// **'Minimal {count} unit'**
+  String rfqMinQuantity(int count);
+
+  /// No description provided for @rfqCompanyName.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Perusahaan'**
+  String get rfqCompanyName;
+
+  /// No description provided for @rfqSubmit.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim RFQ'**
+  String get rfqSubmit;
+
+  /// No description provided for @rfqSent.
+  ///
+  /// In id, this message translates to:
+  /// **'RFQ berhasil dikirim!'**
+  String get rfqSent;
+
+  /// No description provided for @addToCompare.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambahkan ke perbandingan'**
+  String get addToCompare;
+
+  /// No description provided for @addedToCompare.
+  ///
+  /// In id, this message translates to:
+  /// **'Ditambahkan ke perbandingan'**
+  String get addedToCompare;
+
+  /// No description provided for @saveProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Produk'**
+  String get saveProduct;
+
+  /// No description provided for @savedToProject.
+  ///
+  /// In id, this message translates to:
+  /// **'Disimpan ke: {project}'**
+  String savedToProject(Object project);
+
+  /// No description provided for @newArrival.
+  ///
+  /// In id, this message translates to:
+  /// **'New Arrival'**
+  String get newArrival;
+
+  /// No description provided for @addedToCart.
+  ///
+  /// In id, this message translates to:
+  /// **'{name} ditambahkan ke keranjang'**
+  String addedToCart(String name);
+
+  /// No description provided for @insufficientStock.
+  ///
+  /// In id, this message translates to:
+  /// **'Maaf, stok tidak mencukupi. Sisa stok: {count}'**
+  String insufficientStock(int count);
+
+  /// No description provided for @shipping.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengiriman'**
+  String get shipping;
+
+  /// No description provided for @paymentSummary.
+  ///
+  /// In id, this message translates to:
+  /// **'Ringkasan Pembayaran'**
+  String get paymentSummary;
+
+  /// No description provided for @volumeDiscountLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Diskon Volume'**
+  String get volumeDiscountLabel;
+
+  /// No description provided for @taxLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'PPN (11%)'**
+  String get taxLabel;
+
+  /// No description provided for @totalPayment.
+  ///
+  /// In id, this message translates to:
+  /// **'Total Pembayaran'**
+  String get totalPayment;
+
+  /// No description provided for @termsAgree.
+  ///
+  /// In id, this message translates to:
+  /// **'Saya menyetujui Syarat dan Ketentuan'**
+  String get termsAgree;
+
+  /// No description provided for @companyPO.
+  ///
+  /// In id, this message translates to:
+  /// **'Nomor PO Perusahaan (Opsional)'**
+  String get companyPO;
+
+  /// No description provided for @poPlaceholder.
+  ///
+  /// In id, this message translates to:
+  /// **'PO/2024/001'**
+  String get poPlaceholder;
+
+  /// No description provided for @standardShipping.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengiriman Standar'**
+  String get standardShipping;
+
+  /// No description provided for @shippingEstimate.
+  ///
+  /// In id, this message translates to:
+  /// **'Estimasi 3-5 hari kerja'**
+  String get shippingEstimate;
+
+  /// No description provided for @freeShipping.
+  ///
+  /// In id, this message translates to:
+  /// **'GRATIS'**
+  String get freeShipping;
+
+  /// No description provided for @bcaVirtualAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'BCA Virtual Account'**
+  String get bcaVirtualAccount;
+
+  /// No description provided for @bankTransfer.
+  ///
+  /// In id, this message translates to:
+  /// **'Transfer Bank (Dicek Otomatis)'**
+  String get bankTransfer;
+
+  /// No description provided for @paymentHowTo.
+  ///
+  /// In id, this message translates to:
+  /// **'Cara Pembayaran:'**
+  String get paymentHowTo;
+
+  /// No description provided for @paymentStep1.
+  ///
+  /// In id, this message translates to:
+  /// **'Klik \"Buat Invoice\" untuk mendapat nomor VA'**
+  String get paymentStep1;
+
+  /// No description provided for @paymentStep2.
+  ///
+  /// In id, this message translates to:
+  /// **'Transfer melalui BCA Mobile/ATM'**
+  String get paymentStep2;
+
+  /// No description provided for @paymentStep3.
+  ///
+  /// In id, this message translates to:
+  /// **'Otomatis terverifikasi dalam 5 menit'**
+  String get paymentStep3;
+
+  /// No description provided for @pleaseAcceptTerms.
+  ///
+  /// In id, this message translates to:
+  /// **'Silakan centang persetujuan'**
+  String get pleaseAcceptTerms;
 }
 
 class _AppLocalizationsDelegate

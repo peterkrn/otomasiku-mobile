@@ -77,7 +77,9 @@ class _ProductCardState extends ConsumerState<ProductCard>
             ),
           ],
         ),
+        clipBehavior: Clip.hardEdge,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image area with badges
@@ -146,7 +148,7 @@ class _ProductCardState extends ConsumerState<ProductCard>
 
             // Product info - compact layout
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 0),
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -185,11 +187,9 @@ class _ProductCardState extends ConsumerState<ProductCard>
               ),
             ),
 
-            const Spacer(),
-
             // Add to cart button with animation
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+              padding: const EdgeInsets.fromLTRB(10, 4, 10, 10),
               child: SizedBox(
                 width: double.infinity,
                 child: AnimatedBuilder(

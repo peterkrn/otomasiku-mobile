@@ -138,5 +138,96 @@
   "added": "✓ Ditambahkan",
   "compareMaxError": "Maksimal 3 produk untuk dibandingkan",
   "compare": "Bandingkan",
-  "clear": "Hapus Semua"
+  "clear": "Hapus Semua",
+  "cartRemoveConfirm": "Hapus item ini dari keranjang?",
+  "cartRemoveTitle": "Hapus Item",
+  "volumeDiscount": "Hemat {amount}",
+  "@volumeDiscount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "pricePerUnit": "Harga per unit",
+  "tieredPricing": "Harga Bertingkat (B2B)",
+  "priceNormal": "Harga normal",
+  "bestDeal": "Best Deal",
+  "contactSales": "Hubungi sales",
+  "documents": "Dokumen",
+  "compatible": "Kompatibel",
+  "compatibleWith": "Produk yang kompatibel dengan {name}:",
+  "@compatibleWith": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "download": "Unduh",
+  "buy": "Beli",
+  "saveToProject": "Simpan ke Proyek",
+  "unitsAvailable": "{count} Unit Tersedia",
+  "@unitsAvailable": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "readyToShip": "Siap kirim {time}",
+  "@readyToShip": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "rfq": "RFQ",
+  "rfqTitle": "Request for Quote",
+  "rfqQuantity": "Jumlah yang Diinginkan",
+  "rfqMinQuantity": "Minimal {count} unit",
+  "@rfqMinQuantity": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "rfqCompanyName": "Nama Perusahaan",
+  "rfqSubmit": "Kirim RFQ",
+  "rfqSent": "RFQ berhasil dikirim!",
+  "addToCompare": "Tambahkan ke perbandingan",
+  "addedToCompare": "Ditambahkan ke perbandingan",
+  "saveProduct": "Simpan Produk",
+  "savedToProject": "Disimpan ke: {project}",
+  "@savedToProject": {
+    "placeholders": {
+      "project": { "type": "Object" }
+    }
+  },
+  "newArrival": "New Arrival",
+  "addedToCart": "{name} ditambahkan ke keranjang",
+  "@addedToCart": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "insufficientStock": "Maaf, stok tidak mencukupi. Sisa stok: {count}",
+  "@insufficientStock": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "orderSummary": "Ringkasan Pesanan",
+  "shippingAddress": "Alamat Pengiriman",
+  "paymentMethod": "Metode Pembayaran",
+  "shipping": "Pengiriman",
+  "paymentSummary": "Ringkasan Pembayaran",
+  "volumeDiscountLabel": "Diskon Volume",
+  "taxLabel": "PPN (11%)",
+  "totalPayment": "Total Pembayaran",
+  "termsAgree": "Saya menyetujui Syarat dan Ketentuan",
+  "companyPO": "Nomor PO Perusahaan (Opsional)",
+  "poPlaceholder": "PO/2024/001",
+  "standardShipping": "Pengiriman Standar",
+  "shippingEstimate": "Estimasi 3-5 hari kerja",
+  "freeShipping": "GRATIS",
+  "bcaVirtualAccount": "BCA Virtual Account",
+  "bankTransfer": "Transfer Bank (Dicek Otomatis)",
+  "paymentHowTo": "Cara Pembayaran:",
+  "paymentStep1": "Klik \"Buat Invoice\" untuk mendapat nomor VA",
+  "paymentStep2": "Transfer melalui BCA Mobile/ATM",
+  "paymentStep3": "Otomatis terverifikasi dalam 5 menit",
+  "pleaseAcceptTerms": "Silakan centang persetujuan"
 }

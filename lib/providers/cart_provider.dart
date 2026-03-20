@@ -50,11 +50,15 @@ class CartState {
 
 /// Shopping cart notifier
 class CartNotifier extends StateNotifier<CartState> {
-  CartNotifier() : super(const CartState(items: []));
+  CartNotifier() : super(const CartState(items: [])) {
+    // Load dummy cart data on initialization (M2 only)
+    _loadInitialCart();
+  }
 
-  /// Load cart from dummy data (M2 only)
-  void loadCart() {
-    state = state.copyWith(items: dummy_cart.dummyCartItems);
+  void _loadInitialCart() {
+    if (state.items.isEmpty) {
+      state = state.copyWith(items: dummy_cart.dummyCartItems);
+    }
   }
 
   /// Add item to cart

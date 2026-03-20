@@ -376,4 +376,164 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clear => 'Clear All';
+
+  @override
+  String get cartRemoveConfirm => 'Remove this item from cart?';
+
+  @override
+  String get cartRemoveTitle => 'Remove Item';
+
+  @override
+  String volumeDiscount(String amount) {
+    return 'Save $amount';
+  }
+
+  @override
+  String get pricePerUnit => 'Price per unit';
+
+  @override
+  String get tieredPricing => 'Tiered Pricing (B2B)';
+
+  @override
+  String get priceNormal => 'Normal price';
+
+  @override
+  String get bestDeal => 'Best Deal';
+
+  @override
+  String get contactSales => 'Contact sales';
+
+  @override
+  String get documents => 'Documents';
+
+  @override
+  String get compatible => 'Compatible';
+
+  @override
+  String compatibleWith(String name) {
+    return 'Products compatible with $name:';
+  }
+
+  @override
+  String get download => 'Download';
+
+  @override
+  String get buy => 'Buy';
+
+  @override
+  String get saveToProject => 'Save to Project';
+
+  @override
+  String unitsAvailable(int count) {
+    return '$count Units Available';
+  }
+
+  @override
+  String readyToShip(String time) {
+    return 'Ready to ship $time';
+  }
+
+  @override
+  String get rfq => 'RFQ';
+
+  @override
+  String get rfqTitle => 'Request for Quote';
+
+  @override
+  String get rfqQuantity => 'Desired Quantity';
+
+  @override
+  String rfqMinQuantity(int count) {
+    return 'Minimum $count units';
+  }
+
+  @override
+  String get rfqCompanyName => 'Company Name';
+
+  @override
+  String get rfqSubmit => 'Submit RFQ';
+
+  @override
+  String get rfqSent => 'RFQ sent successfully!';
+
+  @override
+  String get addToCompare => 'Add to comparison';
+
+  @override
+  String get addedToCompare => 'Added to comparison';
+
+  @override
+  String get saveProduct => 'Save Product';
+
+  @override
+  String savedToProject(Object project) {
+    return 'Saved to: $project';
+  }
+
+  @override
+  String get newArrival => 'New Arrival';
+
+  @override
+  String addedToCart(String name) {
+    return '$name added to cart';
+  }
+
+  @override
+  String insufficientStock(int count) {
+    return 'Sorry, insufficient stock. Remaining: $count';
+  }
+
+  @override
+  String get shipping => 'Shipping';
+
+  @override
+  String get paymentSummary => 'Payment Summary';
+
+  @override
+  String get volumeDiscountLabel => 'Volume Discount';
+
+  @override
+  String get taxLabel => 'VAT (11%)';
+
+  @override
+  String get totalPayment => 'Total Payment';
+
+  @override
+  String get termsAgree => 'I agree to the Terms and Conditions';
+
+  @override
+  String get companyPO => 'Company PO Number (Optional)';
+
+  @override
+  String get poPlaceholder => 'PO/2024/001';
+
+  @override
+  String get standardShipping => 'Standard Shipping';
+
+  @override
+  String get shippingEstimate => 'Est. 3-5 business days';
+
+  @override
+  String get freeShipping => 'FREE';
+
+  @override
+  String get bcaVirtualAccount => 'BCA Virtual Account';
+
+  @override
+  String get bankTransfer => 'Bank Transfer (Auto-verified)';
+
+  @override
+  String get paymentHowTo => 'How to Pay:';
+
+  @override
+  String get paymentStep1 => 'Click \"Create Invoice\" to get VA number';
+
+  @override
+  String get paymentStep2 => 'Transfer via BCA Mobile/ATM';
+
+  @override
+  String get paymentStep3 => 'Auto-verified within 5 minutes';
+
+  @override
+  String get pleaseAcceptTerms => 'Please check the agreement box';
 }

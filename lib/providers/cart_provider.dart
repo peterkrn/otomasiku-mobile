@@ -7,6 +7,20 @@ final cartProvider = StateNotifierProvider<CartNotifier, CartState>((ref) {
   return CartNotifier();
 });
 
+/// Provider for tracking selected cart item IDs
+final selectedCartItemsProvider = StateProvider<Set<String>>((ref) {
+  // By default, all items are selected
+  final cartItems = ref.watch(cartProvider).items;
+  return cartItems.map((item) => item.product.id).toSet();
+});
+
+/// Provider for getting selected cart items
+final selectedCartItemsListProvider = Provider<List<CartItem>>((ref) {
+  final cartItems = ref.watch(cartProvider).items;
+  final selectedIds = ref.watch(selectedCartItemsProvider);
+  return cartItems.where((item) => selectedIds.contains(item.product.id)).toList();
+});
+
 /// Shopping cart state
 class CartState {
   final List<CartItem> items;

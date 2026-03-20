@@ -22,6 +22,9 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   final _poController = TextEditingController();
   bool _termsAccepted = false;
+  bool _atmExpanded = false;
+  bool _mbankingExpanded = false;
+  bool _klikbcaExpanded = false;
 
   @override
   void dispose() {
@@ -32,10 +35,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final cartState = ref.watch(cartProvider);
-    final cartItems = cartState.items;
-    final subtotal = cartState.totalValue;
-    final totalItems = cartState.totalItems;
+    final cartItems = ref.watch(selectedCartItemsListProvider);
+    final subtotal = cartItems.fold(0, (sum, item) => sum + item.totalPrice);
+    final totalItems = cartItems.fold(0, (sum, item) => sum + item.quantity);
     final defaultAddress = dummyAddresses.firstWhere(
       (a) => a.isDefault,
       orElse: () => dummyAddresses.first,
@@ -514,64 +516,139 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        // Payment instructions
+        const SizedBox(height: 16),
+        // Payment instructions header
         Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.blue.shade50,
-            border: Border.all(color: Colors.blue.shade200),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.info_outline,
-                color: Colors.blue.shade600,
-                size: 16,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.paymentHowTo,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.blue.shade800,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '1. ${l10n.paymentStep1}',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.blue.shade700,
-                      ),
-                    ),
-                    Text(
-                      '2. ${l10n.paymentStep2}',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.blue.shade700,
-                      ),
-                    ),
-                    Text(
-                      '3. ${l10n.paymentStep3}',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.blue.shade700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          width: double.infinity,
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Text(
+            l10n.paymentHowTo,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
+        // Expandable payment methods
+        _buildExpandableInstruction(
+          icon: Icons.account_balance,
+          title: 'via ATM BCA',
+          expanded: _atmExpanded,
+          onTap: () => setState(() => _atmExpanded = !_atmExpanded),
+          steps: [
+            'Masukkan kartu ATM dan PIN Anda',
+            'Pilih menu Transfer',
+            'Pilih Ke Rekening BCA Virtual Account',
+            'Masukkan nomor VA yang diberikan',
+            'Masukkan nominal sesuai tagihan lalu konfirmasi',
+          ],
+        ),
+        const SizedBox(height: 8),
+        _buildExpandableInstruction(
+          icon: Icons.phone_android,
+          title: 'via BCA Mobile / myBCA',
+          expanded: _mbankingExpanded,
+          onTap: () => setState(() => _mbankingExpanded = !_mbankingExpanded),
+          steps: [
+            'Buka aplikasi BCA Mobile atau myBCA',
+            'Login dengan PIN / biometrik',
+            'Pilih Transfer → BCA Virtual Account',
+            'Masukkan nomor VA yang diberikan',
+            'Cek detail dan konfirmasi pembayaran',
+          ],
+        ),
+        const SizedBox(height: 8),
+        _buildExpandableInstruction(
+          icon: Icons.language,
+          title: 'via KlikBCA Internet Banking',
+          expanded: _klikbcaExpanded,
+          onTap: () => setState(() => _klikbcaExpanded = !_klikbcaExpanded),
+          steps: [
+            'Login di klikbca.com',
+            'Pilih Transfer Dana → Transfer ke BCA Virtual Account',
+            'Masukkan nomor VA yang diberikan',
+            'Masukkan nominal dan konfirmasi dengan KeyBCA',
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExpandableInstruction({
+    required IconData icon,
+    required String title,
+    required bool expanded,
+    required VoidCallback onTap,
+    required List<String> steps,
+  }) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceVariant,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(icon, color: AppColors.bcaBlue, size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Icon(
+                  expanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  color: AppColors.textTertiary,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (expanded)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: steps.asMap().entries.map((entry) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${entry.key + 1}. ',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          entry.value,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
       ],
     );
   }
@@ -816,6 +893,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   void _removeItem(String productId) {
     ref.read(cartProvider.notifier).removeItem(productId);
+    // Also remove from selection
+    final selectedIds = ref.read(selectedCartItemsProvider);
+    final newSelected = Set<String>.from(selectedIds)..remove(productId);
+    ref.read(selectedCartItemsProvider.notifier).state = newSelected;
   }
 
   int _calculateDiscount(List<CartItem> items) {

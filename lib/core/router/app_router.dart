@@ -12,7 +12,15 @@ import '../../features/profile/profile_screen.dart';
 import '../../features/product_detail/product_detail_screen.dart';
 import '../../features/cart/cart_screen.dart';
 import '../../features/checkout/checkout_screen.dart';
+import '../../features/payment/payment_screen.dart';
+import '../../features/payment/payment_success_screen.dart';
+import '../../features/order/order_detail_screen.dart';
+import '../../features/order/orders_screen.dart';
 import '../../features/shared/widgets/bottom_nav_bar.dart';
+import '../../features/compare/compare_screen.dart';
+import '../../features/address/edit_address_screen.dart';
+import '../../features/shipping/shipping_screen.dart';
+import '../../features/payment_methods/payment_methods_screen.dart';
 import '../../providers/auth_provider.dart';
 
 /// GoRouter configuration for Otomasiku Marketplace
@@ -35,6 +43,9 @@ abstract class AppRoute {
   static const String paymentSuccess = 'paymentSuccess';
   static const String orderDetail = 'orderDetail';
   static const String compare = 'compare';
+  static const String editAddress = 'editAddress';
+  static const String paymentMethods = 'paymentMethods';
+  static const String orders = 'orders';
 }
 
 // GoRouter instance with StatefulShellRoute for bottom navigation
@@ -192,7 +203,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/shipping',
       name: AppRoute.shipping,
-      builder: (context, state) => const Scaffold(body: PlaceholderShipping()),
+      builder: (context, state) => const ShippingScreen(),
     ),
 
     // Payment
@@ -201,7 +212,7 @@ final GoRouter appRouter = GoRouter(
       name: AppRoute.payment,
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
-        return Scaffold(body: PlaceholderPayment(orderId: orderId));
+        return PaymentScreen(orderId: orderId);
       },
     ),
     GoRoute(
@@ -209,8 +220,15 @@ final GoRouter appRouter = GoRouter(
       name: AppRoute.paymentSuccess,
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
-        return Scaffold(body: PlaceholderPaymentSuccess(orderId: orderId));
+        return PaymentSuccessScreen(orderId: orderId);
       },
+    ),
+
+    // Orders list
+    GoRoute(
+      path: '/orders',
+      name: AppRoute.orders,
+      builder: (context, state) => const OrdersScreen(),
     ),
 
     // Order detail
@@ -219,7 +237,7 @@ final GoRouter appRouter = GoRouter(
       name: AppRoute.orderDetail,
       builder: (context, state) {
         final orderId = state.pathParameters['id']!;
-        return Scaffold(body: PlaceholderOrderDetail(orderId: orderId));
+        return OrderDetailScreen(orderId: orderId);
       },
     ),
 
@@ -227,7 +245,24 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/compare',
       name: AppRoute.compare,
-      builder: (context, state) => const Scaffold(body: PlaceholderCompare()),
+      builder: (context, state) => const CompareScreen(),
+    ),
+
+    // Edit Address
+    GoRoute(
+      path: '/edit-address',
+      name: AppRoute.editAddress,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return EditAddressScreen(extra: extra);
+      },
+    ),
+
+    // Payment Methods
+    GoRoute(
+      path: '/payment-methods',
+      name: AppRoute.paymentMethods,
+      builder: (context, state) => const PaymentMethodsScreen(),
     ),
   ],
 );

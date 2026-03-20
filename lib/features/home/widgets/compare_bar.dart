@@ -24,7 +24,7 @@ class CompareBar extends ConsumerWidget {
       curve: Curves.easeOut,
       offset: const Offset(0, 0),
       child: Container(
-        height: 56,
+        height: 72,
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border(
@@ -32,7 +32,7 @@ class CompareBar extends ConsumerWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, -2),
             ),
@@ -40,67 +40,59 @@ class CompareBar extends ConsumerWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                // Product count badge
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: const BoxDecoration(
-                    color: AppColors.mitsubishiRed,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      '${compareState.count}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Compare button
+                // Product count text
                 Expanded(
-                  child: TextButton(
-                    onPressed: () => context.pushNamed('compare'),
-                    style: TextButton.styleFrom(
-                      backgroundColor: AppColors.mitsubishiRed,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      l10n.compare,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
+                  child: Text(
+                    l10n.productSelected(compareState.count),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                // Clear all button
-                TextButton(
+                // Hapus button
+                OutlinedButton(
                   onPressed: () {
                     ref.read(compareProvider.notifier).clear();
                   },
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.textTertiary,
-                    padding: EdgeInsets.zero,
-                    minimumSize: const Size(0, 0),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.textSecondary,
+                    side: const BorderSide(color: AppColors.border),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   child: Text(
-                    l10n.clear,
+                    l10n.removeSelection,
                     style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Bandingkan button
+                ElevatedButton(
+                  onPressed: () => context.pushNamed('compare'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.mitsubishiRed,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    l10n.compareProduct,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
                     ),
                   ),
                 ),

@@ -273,7 +273,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get grandTotal => 'Total Keseluruhan';
 
   @override
-  String get processing => 'Memproses';
+  String get processing => 'Diproses';
 
   @override
   String get loading => 'Memuat';
@@ -536,4 +536,306 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get pleaseAcceptTerms => 'Silakan centang persetujuan';
+
+  @override
+  String get paymentCountdown => 'Batas waktu pembayaran';
+
+  @override
+  String get vaNumberLabel => 'Nomor Virtual Account BCA';
+
+  @override
+  String get vaCopied => 'Nomor VA berhasil disalin';
+
+  @override
+  String get payBefore => 'Bayar sebelum';
+
+  @override
+  String get transferAmount => 'Jumlah yang harus ditransfer';
+
+  @override
+  String get paymentViaMBanking => 'Via m-Banking';
+
+  @override
+  String get paymentViaAtm => 'Via ATM';
+
+  @override
+  String get paymentViaInternetBanking => 'Via Internet Banking';
+
+  @override
+  String get mbankingStep1 => 'Buka aplikasi m-Banking BCA';
+
+  @override
+  String get mbankingStep2 => 'Pilih menu Transfer > Virtual Account';
+
+  @override
+  String get mbankingStep3 => 'Masukkan nomor VA dan konfirmasi';
+
+  @override
+  String get mbankingStep4 => 'Masukkan PIN dan konfirmasi pembayaran';
+
+  @override
+  String get atmStep1 => 'Masukkan kartu ATM dan PIN';
+
+  @override
+  String get atmStep2 =>
+      'Pilih Transaksi Lainnya > Transfer > BCA Virtual Account';
+
+  @override
+  String get atmStep3 => 'Masukkan nomor VA dan tekan Benar';
+
+  @override
+  String get atmStep4 => 'Konfirmasi dan pilih Ya untuk menyelesaikan';
+
+  @override
+  String get ibankingStep1 => 'Login ke KlikBCA (internetbanking.klikbca.com)';
+
+  @override
+  String get ibankingStep2 =>
+      'Pilih Transfer Dana > Transfer ke BCA Virtual Account';
+
+  @override
+  String get ibankingStep3 => 'Masukkan nomor VA dan klik Lanjutkan';
+
+  @override
+  String get ibankingStep4 => 'Masukkan respon KeyBCA APPLI dan konfirmasi';
+
+  @override
+  String get paymentSuccessTitle => 'Pembayaran Berhasil!';
+
+  @override
+  String get paymentSuccessSubtitle => 'Pesanan Anda sedang diproses';
+
+  @override
+  String get viewOrder => 'Lihat Pesanan';
+
+  @override
+  String get backToHome => 'Kembali ke Beranda';
+
+  @override
+  String get orderNotFound => 'Pesanan tidak ditemukan';
+
+  @override
+  String get orderDetail => 'Detail Pesanan';
+
+  @override
+  String estimatedDelivery(String date) {
+    return 'Estimasi pengiriman: $date';
+  }
+
+  @override
+  String get statusHistory => 'Riwayat Status';
+
+  @override
+  String get paymentReceived => 'Pembayaran Diterima';
+
+  @override
+  String get processingSubtitle => 'Verifikasi stok dan packaging';
+
+  @override
+  String get shipped => 'Dikirim';
+
+  @override
+  String get shippedSubtitle => 'Dalam perjalanan ke alamat tujuan';
+
+  @override
+  String get delivered => 'Selesai';
+
+  @override
+  String get orderedItems => 'Item Dipesan';
+
+  @override
+  String get shippingInfo => 'Info Pengiriman';
+
+  @override
+  String get trackingNote => 'Nomor resi akan muncul setelah barang dikirim';
+
+  @override
+  String get comingSoon => 'Segera tersedia';
+
+  @override
+  String get shareOrder => 'Bagikan Pesanan';
+
+  @override
+  String get contactSupport => 'Hubungi Support';
+
+  @override
+  String get grandTotalLabel => 'Total Pembayaran';
+
+  @override
+  String get profileTitle => 'Profil';
+
+  @override
+  String get myOrders => 'Pesanan Saya';
+
+  @override
+  String get addressBook => 'Alamat Pengiriman';
+
+  @override
+  String get paymentMethods => 'Pembayaran';
+
+  @override
+  String get helpCenter => 'Bantuan';
+
+  @override
+  String get logoutConfirm => 'Yakin ingin keluar?';
+
+  @override
+  String get logoutSuccess => 'Berhasil logout';
+
+  @override
+  String get myProjects => 'Proyek Saya';
+
+  @override
+  String get activeProjects => 'Proyek Aktif';
+
+  @override
+  String get totalItems => 'Total Item';
+
+  @override
+  String get totalEstimate => 'Total Estimasi';
+
+  @override
+  String get checkoutProject => 'Checkout Proyek';
+
+  @override
+  String get requestRFQ => 'Ajukan RFQ';
+
+  @override
+  String get createProject => 'Buat Proyek';
+
+  @override
+  String get projectName => 'Nama Proyek';
+
+  @override
+  String get compareProducts => 'Bandingkan Produk';
+
+  @override
+  String get addProduct => 'Tambah Produk';
+
+  @override
+  String get power => 'Daya';
+
+  @override
+  String get voltage => 'Tegangan';
+
+  @override
+  String get warranty => 'Garansi';
+
+  @override
+  String get sortRelevance => 'Relevansi';
+
+  @override
+  String get sortPriceLow => 'Harga Terendah';
+
+  @override
+  String get sortPriceHigh => 'Harga Tertinggi';
+
+  @override
+  String get sortNameAsc => 'Nama A-Z';
+
+  @override
+  String get sortNameDesc => 'Nama Z-A';
+
+  @override
+  String get productsSelected => 'Produk dipilih';
+
+  @override
+  String get applyFilter => 'Terapkan Filter';
+
+  @override
+  String get addFilter => 'Tambah Filter';
+
+  @override
+  String get filterCategory => 'Kategori Produk';
+
+  @override
+  String get filterAvailability => 'Ketersediaan Stok';
+
+  @override
+  String get filterPower => 'Rentang Daya';
+
+  @override
+  String get noProductsFound => 'Tidak ada produk ditemukan';
+
+  @override
+  String get tryDifferentFilters => 'Coba ubah kata kunci atau filter';
+
+  @override
+  String unitsInStock(int count) {
+    return '$count Unit Tersedia';
+  }
+
+  @override
+  String unitsRemaining(int count) {
+    return 'Sisa $count Unit';
+  }
+
+  @override
+  String indentLeadTime(String time) {
+    return 'Indent $time';
+  }
+
+  @override
+  String get addNewAddress => 'Tambah Alamat Baru';
+
+  @override
+  String get firstName => 'Nama Depan';
+
+  @override
+  String get lastName => 'Nama Belakang';
+
+  @override
+  String get kecamatan => 'Kecamatan';
+
+  @override
+  String get kelurahan => 'Kelurahan';
+
+  @override
+  String get deliveryNotes => 'Catatan Pengiriman';
+
+  @override
+  String get fillRequiredFields => 'Lengkapi semua field yang wajib diisi';
+
+  @override
+  String get primary => 'Utama';
+
+  @override
+  String get useAddress => 'Gunakan Alamat Ini';
+
+  @override
+  String get saveAddress => 'Simpan Alamat';
+
+  @override
+  String get optional => 'opsional';
+
+  @override
+  String minQuantityTier(int count) {
+    return 'Minimal pembelian $count unit untuk tier harga ini';
+  }
+
+  @override
+  String get viewProduct => 'Lihat Produk';
+
+  @override
+  String get addToCartQuestion => 'Tambahkan ke Keranjang?';
+
+  @override
+  String get selectAll => 'Pilih Semua';
+
+  @override
+  String get selectItem => 'Pilih item';
+
+  @override
+  String get noItemSelected => 'Pilih minimal 1 item untuk checkout';
+
+  @override
+  String productSelected(int count) {
+    return '$count produk dipilih';
+  }
+
+  @override
+  String get removeSelection => 'Hapus';
+
+  @override
+  String get compareProduct => 'Bandingkan';
 }

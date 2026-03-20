@@ -229,5 +229,132 @@
   "paymentStep1": "Klik \"Buat Invoice\" untuk mendapat nomor VA",
   "paymentStep2": "Transfer melalui BCA Mobile/ATM",
   "paymentStep3": "Otomatis terverifikasi dalam 5 menit",
-  "pleaseAcceptTerms": "Silakan centang persetujuan"
+  "pleaseAcceptTerms": "Silakan centang persetujuan",
+  "paymentCountdown": "Batas waktu pembayaran",
+  "vaNumberLabel": "Nomor Virtual Account BCA",
+  "vaCopied": "Nomor VA berhasil disalin",
+  "payBefore": "Bayar sebelum",
+  "transferAmount": "Jumlah yang harus ditransfer",
+  "paymentViaMBanking": "Via m-Banking",
+  "paymentViaAtm": "Via ATM",
+  "paymentViaInternetBanking": "Via Internet Banking",
+  "mbankingStep1": "Buka aplikasi m-Banking BCA",
+  "mbankingStep2": "Pilih menu Transfer > Virtual Account",
+  "mbankingStep3": "Masukkan nomor VA dan konfirmasi",
+  "mbankingStep4": "Masukkan PIN dan konfirmasi pembayaran",
+  "atmStep1": "Masukkan kartu ATM dan PIN",
+  "atmStep2": "Pilih Transaksi Lainnya > Transfer > BCA Virtual Account",
+  "atmStep3": "Masukkan nomor VA dan tekan Benar",
+  "atmStep4": "Konfirmasi dan pilih Ya untuk menyelesaikan",
+  "ibankingStep1": "Login ke KlikBCA (internetbanking.klikbca.com)",
+  "ibankingStep2": "Pilih Transfer Dana > Transfer ke BCA Virtual Account",
+  "ibankingStep3": "Masukkan nomor VA dan klik Lanjutkan",
+  "ibankingStep4": "Masukkan respon KeyBCA APPLI dan konfirmasi",
+  "paymentSuccessTitle": "Pembayaran Berhasil!",
+  "paymentSuccessSubtitle": "Pesanan Anda sedang diproses",
+  "viewOrder": "Lihat Pesanan",
+  "backToHome": "Kembali ke Beranda",
+  "orderNotFound": "Pesanan tidak ditemukan",
+  "orderDetail": "Detail Pesanan",
+  "estimatedDelivery": "Estimasi pengiriman: {date}",
+  "@estimatedDelivery": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "statusHistory": "Riwayat Status",
+  "paymentReceived": "Pembayaran Diterima",
+  "processing": "Diproses",
+  "processingSubtitle": "Verifikasi stok dan packaging",
+  "shipped": "Dikirim",
+  "shippedSubtitle": "Dalam perjalanan ke alamat tujuan",
+  "delivered": "Selesai",
+  "orderedItems": "Item Dipesan",
+  "shippingInfo": "Info Pengiriman",
+  "trackingNote": "Nomor resi akan muncul setelah barang dikirim",
+  "comingSoon": "Segera tersedia",
+  "shareOrder": "Bagikan Pesanan",
+  "contactSupport": "Hubungi Support",
+  "grandTotalLabel": "Total Pembayaran",
+  "profileTitle": "Profil",
+  "myOrders": "Pesanan Saya",
+  "addressBook": "Alamat Pengiriman",
+  "paymentMethods": "Pembayaran",
+  "helpCenter": "Bantuan",
+  "logoutConfirm": "Yakin ingin keluar?",
+  "logoutSuccess": "Berhasil logout",
+  "myProjects": "Proyek Saya",
+  "activeProjects": "Proyek Aktif",
+  "totalItems": "Total Item",
+  "totalEstimate": "Total Estimasi",
+  "checkoutProject": "Checkout Proyek",
+  "requestRFQ": "Ajukan RFQ",
+  "createProject": "Buat Proyek",
+  "projectName": "Nama Proyek",
+  "compareProducts": "Bandingkan Produk",
+  "addProduct": "Tambah Produk",
+  "power": "Daya",
+  "voltage": "Tegangan",
+  "warranty": "Garansi",
+  "sortRelevance": "Relevansi",
+  "sortPriceLow": "Harga Terendah",
+  "sortPriceHigh": "Harga Tertinggi",
+  "sortNameAsc": "Nama A-Z",
+  "sortNameDesc": "Nama Z-A",
+  "productsSelected": "Produk dipilih",
+  "applyFilter": "Terapkan Filter",
+  "addFilter": "Tambah Filter",
+  "filterCategory": "Kategori Produk",
+  "filterAvailability": "Ketersediaan Stok",
+  "filterPower": "Rentang Daya",
+  "noProductsFound": "Tidak ada produk ditemukan",
+  "tryDifferentFilters": "Coba ubah kata kunci atau filter",
+  "unitsInStock": "{count} Unit Tersedia",
+  "@unitsInStock": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "unitsRemaining": "Sisa {count} Unit",
+  "@unitsRemaining": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "indentLeadTime": "Indent {time}",
+  "@indentLeadTime": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "addNewAddress": "Tambah Alamat Baru",
+  "firstName": "Nama Depan",
+  "lastName": "Nama Belakang",
+  "kecamatan": "Kecamatan",
+  "kelurahan": "Kelurahan",
+  "deliveryNotes": "Catatan Pengiriman",
+  "fillRequiredFields": "Lengkapi semua field yang wajib diisi",
+  "primary": "Utama",
+  "useAddress": "Gunakan Alamat Ini",
+  "saveAddress": "Simpan Alamat",
+  "optional": "opsional",
+  "minQuantityTier": "Minimal pembelian {count} unit untuk tier harga ini",
+  "@minQuantityTier": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "viewProduct": "Lihat Produk",
+  "addToCartQuestion": "Tambahkan ke Keranjang?",
+  "selectAll": "Pilih Semua",
+  "selectItem": "Pilih item",
+  "noItemSelected": "Pilih minimal 1 item untuk checkout",
+  "productSelected": "{count} produk dipilih",
+  "@productSelected": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "removeSelection": "Hapus",
+  "compareProduct": "Bandingkan"
 }

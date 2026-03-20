@@ -5,6 +5,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../../core/widgets/app_toast.dart';
 import '../../../providers/cart_provider.dart';
 import 'widgets/cart_item_card.dart';
 
@@ -23,8 +24,13 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     final l10n = AppLocalizations.of(context);
     final cartState = ref.watch(cartProvider);
     final cartItems = cartState.items;
-    final subtotal = cartState.totalValue;
-    final totalItems = cartState.totalItems;
+    final selectedIds = ref.watch(selectedCartItemsProvider);
+    final allSelected = cartItems.isNotEmpty && selectedIds.length == cartItems.length;
+
+    // Calculate totals for selected items only
+    final selectedItems = cartItems.where((item) => selectedIds.contains(item.product.id)).toList();
+    final subtotal = selectedItems.fold(0, (sum, item) => sum + item.totalPrice);
+    final totalItems = selectedItems.fold(0, (sum, item) => sum + item.quantity);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -37,7 +43,15 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       ),
       body: cartItems.isEmpty
           ? _buildEmptyState(context, l10n)
-          : _buildCartList(context, l10n, cartItems, subtotal, totalItems),
+          : _buildCartList(
+              context,
+              l10n,
+              cartItems,
+              selectedIds,
+              allSelected,
+              subtotal,
+              totalItems,
+            ),
     );
   }
 
@@ -93,11 +107,61 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     BuildContext context,
     AppLocalizations l10n,
     List cartItems,
+    Set<String> selectedIds,
+    bool allSelected,
     int subtotal,
     int totalItems,
   ) {
     return Column(
       children: [
+        // Select all header
+        Container(
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: () => _toggleSelectAll(cartItems, allSelected),
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: allSelected ? AppColors.mitsubishiRed : AppColors.border,
+                      width: 2,
+                    ),
+                    color: allSelected ? AppColors.mitsubishiRed : Colors.transparent,
+                  ),
+                  child: allSelected
+                      ? const Icon(Icons.check, size: 14, color: Colors.white)
+                      : null,
+                ),
+              ),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: () => _toggleSelectAll(cartItems, allSelected),
+                child: Text(
+                  l10n.selectAll,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${selectedIds.length}/${cartItems.length} item',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 1),
         // Cart items list
         Expanded(
           child: ListView.separated(
@@ -112,8 +176,11 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             ),
             itemBuilder: (context, index) {
               final item = cartItems[index];
+              final isSelected = selectedIds.contains(item.product.id);
               return CartItemCard(
                 item: item,
+                isSelected: isSelected,
+                onSelectionChanged: (selected) => _toggleItemSelection(item.product.id, selected),
                 onQuantityChanged: (newQty) {
                   ref.read(cartProvider.notifier).updateQuantity(
                         item.product.id,
@@ -169,7 +236,9 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () => context.pushNamed(AppRoute.checkout),
+                    onPressed: selectedIds.isEmpty
+                        ? () => AppToast.show(context, l10n.noItemSelected, isError: true)
+                        : () => context.pushNamed(AppRoute.checkout),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.mitsubishiRed,
                       foregroundColor: Colors.white,
@@ -197,6 +266,28 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
+  void _toggleSelectAll(List cartItems, bool allSelected) {
+    final notifier = ref.read(selectedCartItemsProvider.notifier);
+    if (allSelected) {
+      // Deselect all
+      notifier.state = {};
+    } else {
+      // Select all
+      notifier.state = cartItems.map((item) => item.product.id as String).toSet();
+    }
+  }
+
+  void _toggleItemSelection(String productId, bool selected) {
+    final notifier = ref.read(selectedCartItemsProvider.notifier);
+    final current = Set<String>.from(notifier.state);
+    if (selected) {
+      current.add(productId);
+    } else {
+      current.remove(productId);
+    }
+    notifier.state = current;
+  }
+
   void _showRemoveConfirmation(
     BuildContext context,
     AppLocalizations l10n,
@@ -215,6 +306,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           TextButton(
             onPressed: () {
               ref.read(cartProvider.notifier).removeItem(productId);
+              // Also remove from selection
+              _toggleItemSelection(productId, false);
               Navigator.pop(ctx);
             },
             style: TextButton.styleFrom(

@@ -229,5 +229,132 @@
   "paymentStep1": "Click \"Create Invoice\" to get VA number",
   "paymentStep2": "Transfer via BCA Mobile/ATM",
   "paymentStep3": "Auto-verified within 5 minutes",
-  "pleaseAcceptTerms": "Please check the agreement box"
+  "pleaseAcceptTerms": "Please check the agreement box",
+  "paymentCountdown": "Payment deadline",
+  "vaNumberLabel": "BCA Virtual Account Number",
+  "vaCopied": "VA number copied successfully",
+  "payBefore": "Pay before",
+  "transferAmount": "Amount to transfer",
+  "paymentViaMBanking": "Via m-Banking",
+  "paymentViaAtm": "Via ATM",
+  "paymentViaInternetBanking": "Via Internet Banking",
+  "mbankingStep1": "Open BCA m-Banking app",
+  "mbankingStep2": "Select Transfer > Virtual Account",
+  "mbankingStep3": "Enter VA number and confirm",
+  "mbankingStep4": "Enter PIN and confirm payment",
+  "atmStep1": "Insert ATM card and PIN",
+  "atmStep2": "Select Other Transactions > Transfer > BCA Virtual Account",
+  "atmStep3": "Enter VA number and press Correct",
+  "atmStep4": "Confirm and select Yes to complete",
+  "ibankingStep1": "Login to KlikBCA (internetbanking.klikbca.com)",
+  "ibankingStep2": "Select Fund Transfer > Transfer to BCA Virtual Account",
+  "ibankingStep3": "Enter VA number and click Continue",
+  "ibankingStep4": "Enter KeyBCA APPLI response and confirm",
+  "paymentSuccessTitle": "Payment Successful!",
+  "paymentSuccessSubtitle": "Your order is being processed",
+  "viewOrder": "View Order",
+  "backToHome": "Back to Home",
+  "orderNotFound": "Order not found",
+  "orderDetail": "Order Details",
+  "estimatedDelivery": "Estimated delivery: {date}",
+  "@estimatedDelivery": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "statusHistory": "Status History",
+  "paymentReceived": "Payment Received",
+  "processing": "Processing",
+  "processingSubtitle": "Stock verification and packaging",
+  "shipped": "Shipped",
+  "shippedSubtitle": "On the way to destination",
+  "delivered": "Delivered",
+  "orderedItems": "Ordered Items",
+  "shippingInfo": "Shipping Info",
+  "trackingNote": "Tracking number will appear after shipment",
+  "comingSoon": "Coming soon",
+  "shareOrder": "Share Order",
+  "contactSupport": "Contact Support",
+  "grandTotalLabel": "Total Payment",
+  "profileTitle": "Profile",
+  "myOrders": "My Orders",
+  "addressBook": "Shipping Address",
+  "paymentMethods": "Payment Methods",
+  "helpCenter": "Help Center",
+  "logoutConfirm": "Are you sure you want to logout?",
+  "logoutSuccess": "Logged out successfully",
+  "myProjects": "My Projects",
+  "activeProjects": "Active Projects",
+  "totalItems": "Total Items",
+  "totalEstimate": "Total Estimate",
+  "checkoutProject": "Checkout Project",
+  "requestRFQ": "Request RFQ",
+  "createProject": "Create Project",
+  "projectName": "Project Name",
+  "compareProducts": "Compare Products",
+  "addProduct": "Add Product",
+  "power": "Power",
+  "voltage": "Voltage",
+  "warranty": "Warranty",
+  "sortRelevance": "Relevance",
+  "sortPriceLow": "Lowest Price",
+  "sortPriceHigh": "Highest Price",
+  "sortNameAsc": "Name A-Z",
+  "sortNameDesc": "Name Z-A",
+  "productsSelected": "Products selected",
+  "applyFilter": "Apply Filter",
+  "addFilter": "Add Filter",
+  "filterCategory": "Product Category",
+  "filterAvailability": "Stock Availability",
+  "filterPower": "Power Range",
+  "noProductsFound": "No products found",
+  "tryDifferentFilters": "Try different keywords or filters",
+  "unitsInStock": "{count} Units Available",
+  "@unitsInStock": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "unitsRemaining": "{count} Units Left",
+  "@unitsRemaining": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "indentLeadTime": "Indent {time}",
+  "@indentLeadTime": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "addNewAddress": "Add New Address",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "kecamatan": "District",
+  "kelurahan": "Village",
+  "deliveryNotes": "Delivery Notes",
+  "fillRequiredFields": "Please fill all required fields",
+  "primary": "Primary",
+  "useAddress": "Use This Address",
+  "saveAddress": "Save Address",
+  "optional": "optional",
+  "minQuantityTier": "Minimum purchase of {count} units for this price tier",
+  "@minQuantityTier": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "viewProduct": "View Product",
+  "addToCartQuestion": "Add to Cart?",
+  "selectAll": "Select All",
+  "selectItem": "Select item",
+  "noItemSelected": "Select at least 1 item to checkout",
+  "productSelected": "{count} product selected",
+  "@productSelected": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "removeSelection": "Remove",
+  "compareProduct": "Compare"
 }

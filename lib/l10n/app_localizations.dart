@@ -617,7 +617,7 @@ abstract class AppLocalizations {
   /// No description provided for @processing.
   ///
   /// In id, this message translates to:
-  /// **'Memproses'**
+  /// **'Diproses'**
   String get processing;
 
   /// No description provided for @loading.
@@ -1111,6 +1111,582 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Silakan centang persetujuan'**
   String get pleaseAcceptTerms;
+
+  /// No description provided for @paymentCountdown.
+  ///
+  /// In id, this message translates to:
+  /// **'Batas waktu pembayaran'**
+  String get paymentCountdown;
+
+  /// No description provided for @vaNumberLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Nomor Virtual Account BCA'**
+  String get vaNumberLabel;
+
+  /// No description provided for @vaCopied.
+  ///
+  /// In id, this message translates to:
+  /// **'Nomor VA berhasil disalin'**
+  String get vaCopied;
+
+  /// No description provided for @payBefore.
+  ///
+  /// In id, this message translates to:
+  /// **'Bayar sebelum'**
+  String get payBefore;
+
+  /// No description provided for @transferAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Jumlah yang harus ditransfer'**
+  String get transferAmount;
+
+  /// No description provided for @paymentViaMBanking.
+  ///
+  /// In id, this message translates to:
+  /// **'Via m-Banking'**
+  String get paymentViaMBanking;
+
+  /// No description provided for @paymentViaAtm.
+  ///
+  /// In id, this message translates to:
+  /// **'Via ATM'**
+  String get paymentViaAtm;
+
+  /// No description provided for @paymentViaInternetBanking.
+  ///
+  /// In id, this message translates to:
+  /// **'Via Internet Banking'**
+  String get paymentViaInternetBanking;
+
+  /// No description provided for @mbankingStep1.
+  ///
+  /// In id, this message translates to:
+  /// **'Buka aplikasi m-Banking BCA'**
+  String get mbankingStep1;
+
+  /// No description provided for @mbankingStep2.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih menu Transfer > Virtual Account'**
+  String get mbankingStep2;
+
+  /// No description provided for @mbankingStep3.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan nomor VA dan konfirmasi'**
+  String get mbankingStep3;
+
+  /// No description provided for @mbankingStep4.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan PIN dan konfirmasi pembayaran'**
+  String get mbankingStep4;
+
+  /// No description provided for @atmStep1.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan kartu ATM dan PIN'**
+  String get atmStep1;
+
+  /// No description provided for @atmStep2.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Transaksi Lainnya > Transfer > BCA Virtual Account'**
+  String get atmStep2;
+
+  /// No description provided for @atmStep3.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan nomor VA dan tekan Benar'**
+  String get atmStep3;
+
+  /// No description provided for @atmStep4.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi dan pilih Ya untuk menyelesaikan'**
+  String get atmStep4;
+
+  /// No description provided for @ibankingStep1.
+  ///
+  /// In id, this message translates to:
+  /// **'Login ke KlikBCA (internetbanking.klikbca.com)'**
+  String get ibankingStep1;
+
+  /// No description provided for @ibankingStep2.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Transfer Dana > Transfer ke BCA Virtual Account'**
+  String get ibankingStep2;
+
+  /// No description provided for @ibankingStep3.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan nomor VA dan klik Lanjutkan'**
+  String get ibankingStep3;
+
+  /// No description provided for @ibankingStep4.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan respon KeyBCA APPLI dan konfirmasi'**
+  String get ibankingStep4;
+
+  /// No description provided for @paymentSuccessTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran Berhasil!'**
+  String get paymentSuccessTitle;
+
+  /// No description provided for @paymentSuccessSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pesanan Anda sedang diproses'**
+  String get paymentSuccessSubtitle;
+
+  /// No description provided for @viewOrder.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Pesanan'**
+  String get viewOrder;
+
+  /// No description provided for @backToHome.
+  ///
+  /// In id, this message translates to:
+  /// **'Kembali ke Beranda'**
+  String get backToHome;
+
+  /// No description provided for @orderNotFound.
+  ///
+  /// In id, this message translates to:
+  /// **'Pesanan tidak ditemukan'**
+  String get orderNotFound;
+
+  /// No description provided for @orderDetail.
+  ///
+  /// In id, this message translates to:
+  /// **'Detail Pesanan'**
+  String get orderDetail;
+
+  /// No description provided for @estimatedDelivery.
+  ///
+  /// In id, this message translates to:
+  /// **'Estimasi pengiriman: {date}'**
+  String estimatedDelivery(String date);
+
+  /// No description provided for @statusHistory.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat Status'**
+  String get statusHistory;
+
+  /// No description provided for @paymentReceived.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran Diterima'**
+  String get paymentReceived;
+
+  /// No description provided for @processingSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Verifikasi stok dan packaging'**
+  String get processingSubtitle;
+
+  /// No description provided for @shipped.
+  ///
+  /// In id, this message translates to:
+  /// **'Dikirim'**
+  String get shipped;
+
+  /// No description provided for @shippedSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Dalam perjalanan ke alamat tujuan'**
+  String get shippedSubtitle;
+
+  /// No description provided for @delivered.
+  ///
+  /// In id, this message translates to:
+  /// **'Selesai'**
+  String get delivered;
+
+  /// No description provided for @orderedItems.
+  ///
+  /// In id, this message translates to:
+  /// **'Item Dipesan'**
+  String get orderedItems;
+
+  /// No description provided for @shippingInfo.
+  ///
+  /// In id, this message translates to:
+  /// **'Info Pengiriman'**
+  String get shippingInfo;
+
+  /// No description provided for @trackingNote.
+  ///
+  /// In id, this message translates to:
+  /// **'Nomor resi akan muncul setelah barang dikirim'**
+  String get trackingNote;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In id, this message translates to:
+  /// **'Segera tersedia'**
+  String get comingSoon;
+
+  /// No description provided for @shareOrder.
+  ///
+  /// In id, this message translates to:
+  /// **'Bagikan Pesanan'**
+  String get shareOrder;
+
+  /// No description provided for @contactSupport.
+  ///
+  /// In id, this message translates to:
+  /// **'Hubungi Support'**
+  String get contactSupport;
+
+  /// No description provided for @grandTotalLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Total Pembayaran'**
+  String get grandTotalLabel;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Profil'**
+  String get profileTitle;
+
+  /// No description provided for @myOrders.
+  ///
+  /// In id, this message translates to:
+  /// **'Pesanan Saya'**
+  String get myOrders;
+
+  /// No description provided for @addressBook.
+  ///
+  /// In id, this message translates to:
+  /// **'Alamat Pengiriman'**
+  String get addressBook;
+
+  /// No description provided for @paymentMethods.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran'**
+  String get paymentMethods;
+
+  /// No description provided for @helpCenter.
+  ///
+  /// In id, this message translates to:
+  /// **'Bantuan'**
+  String get helpCenter;
+
+  /// No description provided for @logoutConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'Yakin ingin keluar?'**
+  String get logoutConfirm;
+
+  /// No description provided for @logoutSuccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Berhasil logout'**
+  String get logoutSuccess;
+
+  /// No description provided for @myProjects.
+  ///
+  /// In id, this message translates to:
+  /// **'Proyek Saya'**
+  String get myProjects;
+
+  /// No description provided for @activeProjects.
+  ///
+  /// In id, this message translates to:
+  /// **'Proyek Aktif'**
+  String get activeProjects;
+
+  /// No description provided for @totalItems.
+  ///
+  /// In id, this message translates to:
+  /// **'Total Item'**
+  String get totalItems;
+
+  /// No description provided for @totalEstimate.
+  ///
+  /// In id, this message translates to:
+  /// **'Total Estimasi'**
+  String get totalEstimate;
+
+  /// No description provided for @checkoutProject.
+  ///
+  /// In id, this message translates to:
+  /// **'Checkout Proyek'**
+  String get checkoutProject;
+
+  /// No description provided for @requestRFQ.
+  ///
+  /// In id, this message translates to:
+  /// **'Ajukan RFQ'**
+  String get requestRFQ;
+
+  /// No description provided for @createProject.
+  ///
+  /// In id, this message translates to:
+  /// **'Buat Proyek'**
+  String get createProject;
+
+  /// No description provided for @projectName.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Proyek'**
+  String get projectName;
+
+  /// No description provided for @compareProducts.
+  ///
+  /// In id, this message translates to:
+  /// **'Bandingkan Produk'**
+  String get compareProducts;
+
+  /// No description provided for @addProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Produk'**
+  String get addProduct;
+
+  /// No description provided for @power.
+  ///
+  /// In id, this message translates to:
+  /// **'Daya'**
+  String get power;
+
+  /// No description provided for @voltage.
+  ///
+  /// In id, this message translates to:
+  /// **'Tegangan'**
+  String get voltage;
+
+  /// No description provided for @warranty.
+  ///
+  /// In id, this message translates to:
+  /// **'Garansi'**
+  String get warranty;
+
+  /// No description provided for @sortRelevance.
+  ///
+  /// In id, this message translates to:
+  /// **'Relevansi'**
+  String get sortRelevance;
+
+  /// No description provided for @sortPriceLow.
+  ///
+  /// In id, this message translates to:
+  /// **'Harga Terendah'**
+  String get sortPriceLow;
+
+  /// No description provided for @sortPriceHigh.
+  ///
+  /// In id, this message translates to:
+  /// **'Harga Tertinggi'**
+  String get sortPriceHigh;
+
+  /// No description provided for @sortNameAsc.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama A-Z'**
+  String get sortNameAsc;
+
+  /// No description provided for @sortNameDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Z-A'**
+  String get sortNameDesc;
+
+  /// No description provided for @productsSelected.
+  ///
+  /// In id, this message translates to:
+  /// **'Produk dipilih'**
+  String get productsSelected;
+
+  /// No description provided for @applyFilter.
+  ///
+  /// In id, this message translates to:
+  /// **'Terapkan Filter'**
+  String get applyFilter;
+
+  /// No description provided for @addFilter.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Filter'**
+  String get addFilter;
+
+  /// No description provided for @filterCategory.
+  ///
+  /// In id, this message translates to:
+  /// **'Kategori Produk'**
+  String get filterCategory;
+
+  /// No description provided for @filterAvailability.
+  ///
+  /// In id, this message translates to:
+  /// **'Ketersediaan Stok'**
+  String get filterAvailability;
+
+  /// No description provided for @filterPower.
+  ///
+  /// In id, this message translates to:
+  /// **'Rentang Daya'**
+  String get filterPower;
+
+  /// No description provided for @noProductsFound.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada produk ditemukan'**
+  String get noProductsFound;
+
+  /// No description provided for @tryDifferentFilters.
+  ///
+  /// In id, this message translates to:
+  /// **'Coba ubah kata kunci atau filter'**
+  String get tryDifferentFilters;
+
+  /// No description provided for @unitsInStock.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} Unit Tersedia'**
+  String unitsInStock(int count);
+
+  /// No description provided for @unitsRemaining.
+  ///
+  /// In id, this message translates to:
+  /// **'Sisa {count} Unit'**
+  String unitsRemaining(int count);
+
+  /// No description provided for @indentLeadTime.
+  ///
+  /// In id, this message translates to:
+  /// **'Indent {time}'**
+  String indentLeadTime(String time);
+
+  /// No description provided for @addNewAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Alamat Baru'**
+  String get addNewAddress;
+
+  /// No description provided for @firstName.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Depan'**
+  String get firstName;
+
+  /// No description provided for @lastName.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Belakang'**
+  String get lastName;
+
+  /// No description provided for @kecamatan.
+  ///
+  /// In id, this message translates to:
+  /// **'Kecamatan'**
+  String get kecamatan;
+
+  /// No description provided for @kelurahan.
+  ///
+  /// In id, this message translates to:
+  /// **'Kelurahan'**
+  String get kelurahan;
+
+  /// No description provided for @deliveryNotes.
+  ///
+  /// In id, this message translates to:
+  /// **'Catatan Pengiriman'**
+  String get deliveryNotes;
+
+  /// No description provided for @fillRequiredFields.
+  ///
+  /// In id, this message translates to:
+  /// **'Lengkapi semua field yang wajib diisi'**
+  String get fillRequiredFields;
+
+  /// No description provided for @primary.
+  ///
+  /// In id, this message translates to:
+  /// **'Utama'**
+  String get primary;
+
+  /// No description provided for @useAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Gunakan Alamat Ini'**
+  String get useAddress;
+
+  /// No description provided for @saveAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Alamat'**
+  String get saveAddress;
+
+  /// No description provided for @optional.
+  ///
+  /// In id, this message translates to:
+  /// **'opsional'**
+  String get optional;
+
+  /// No description provided for @minQuantityTier.
+  ///
+  /// In id, this message translates to:
+  /// **'Minimal pembelian {count} unit untuk tier harga ini'**
+  String minQuantityTier(int count);
+
+  /// No description provided for @viewProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Produk'**
+  String get viewProduct;
+
+  /// No description provided for @addToCartQuestion.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambahkan ke Keranjang?'**
+  String get addToCartQuestion;
+
+  /// No description provided for @selectAll.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Semua'**
+  String get selectAll;
+
+  /// No description provided for @selectItem.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih item'**
+  String get selectItem;
+
+  /// No description provided for @noItemSelected.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih minimal 1 item untuk checkout'**
+  String get noItemSelected;
+
+  /// No description provided for @productSelected.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} produk dipilih'**
+  String productSelected(int count);
+
+  /// No description provided for @removeSelection.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus'**
+  String get removeSelection;
+
+  /// No description provided for @compareProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Bandingkan'**
+  String get compareProduct;
 }
 
 class _AppLocalizationsDelegate

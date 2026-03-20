@@ -536,4 +536,306 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseAcceptTerms => 'Please check the agreement box';
+
+  @override
+  String get paymentCountdown => 'Payment deadline';
+
+  @override
+  String get vaNumberLabel => 'BCA Virtual Account Number';
+
+  @override
+  String get vaCopied => 'VA number copied successfully';
+
+  @override
+  String get payBefore => 'Pay before';
+
+  @override
+  String get transferAmount => 'Amount to transfer';
+
+  @override
+  String get paymentViaMBanking => 'Via m-Banking';
+
+  @override
+  String get paymentViaAtm => 'Via ATM';
+
+  @override
+  String get paymentViaInternetBanking => 'Via Internet Banking';
+
+  @override
+  String get mbankingStep1 => 'Open BCA m-Banking app';
+
+  @override
+  String get mbankingStep2 => 'Select Transfer > Virtual Account';
+
+  @override
+  String get mbankingStep3 => 'Enter VA number and confirm';
+
+  @override
+  String get mbankingStep4 => 'Enter PIN and confirm payment';
+
+  @override
+  String get atmStep1 => 'Insert ATM card and PIN';
+
+  @override
+  String get atmStep2 =>
+      'Select Other Transactions > Transfer > BCA Virtual Account';
+
+  @override
+  String get atmStep3 => 'Enter VA number and press Correct';
+
+  @override
+  String get atmStep4 => 'Confirm and select Yes to complete';
+
+  @override
+  String get ibankingStep1 => 'Login to KlikBCA (internetbanking.klikbca.com)';
+
+  @override
+  String get ibankingStep2 =>
+      'Select Fund Transfer > Transfer to BCA Virtual Account';
+
+  @override
+  String get ibankingStep3 => 'Enter VA number and click Continue';
+
+  @override
+  String get ibankingStep4 => 'Enter KeyBCA APPLI response and confirm';
+
+  @override
+  String get paymentSuccessTitle => 'Payment Successful!';
+
+  @override
+  String get paymentSuccessSubtitle => 'Your order is being processed';
+
+  @override
+  String get viewOrder => 'View Order';
+
+  @override
+  String get backToHome => 'Back to Home';
+
+  @override
+  String get orderNotFound => 'Order not found';
+
+  @override
+  String get orderDetail => 'Order Details';
+
+  @override
+  String estimatedDelivery(String date) {
+    return 'Estimated delivery: $date';
+  }
+
+  @override
+  String get statusHistory => 'Status History';
+
+  @override
+  String get paymentReceived => 'Payment Received';
+
+  @override
+  String get processingSubtitle => 'Stock verification and packaging';
+
+  @override
+  String get shipped => 'Shipped';
+
+  @override
+  String get shippedSubtitle => 'On the way to destination';
+
+  @override
+  String get delivered => 'Delivered';
+
+  @override
+  String get orderedItems => 'Ordered Items';
+
+  @override
+  String get shippingInfo => 'Shipping Info';
+
+  @override
+  String get trackingNote => 'Tracking number will appear after shipment';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get shareOrder => 'Share Order';
+
+  @override
+  String get contactSupport => 'Contact Support';
+
+  @override
+  String get grandTotalLabel => 'Total Payment';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get myOrders => 'My Orders';
+
+  @override
+  String get addressBook => 'Shipping Address';
+
+  @override
+  String get paymentMethods => 'Payment Methods';
+
+  @override
+  String get helpCenter => 'Help Center';
+
+  @override
+  String get logoutConfirm => 'Are you sure you want to logout?';
+
+  @override
+  String get logoutSuccess => 'Logged out successfully';
+
+  @override
+  String get myProjects => 'My Projects';
+
+  @override
+  String get activeProjects => 'Active Projects';
+
+  @override
+  String get totalItems => 'Total Items';
+
+  @override
+  String get totalEstimate => 'Total Estimate';
+
+  @override
+  String get checkoutProject => 'Checkout Project';
+
+  @override
+  String get requestRFQ => 'Request RFQ';
+
+  @override
+  String get createProject => 'Create Project';
+
+  @override
+  String get projectName => 'Project Name';
+
+  @override
+  String get compareProducts => 'Compare Products';
+
+  @override
+  String get addProduct => 'Add Product';
+
+  @override
+  String get power => 'Power';
+
+  @override
+  String get voltage => 'Voltage';
+
+  @override
+  String get warranty => 'Warranty';
+
+  @override
+  String get sortRelevance => 'Relevance';
+
+  @override
+  String get sortPriceLow => 'Lowest Price';
+
+  @override
+  String get sortPriceHigh => 'Highest Price';
+
+  @override
+  String get sortNameAsc => 'Name A-Z';
+
+  @override
+  String get sortNameDesc => 'Name Z-A';
+
+  @override
+  String get productsSelected => 'Products selected';
+
+  @override
+  String get applyFilter => 'Apply Filter';
+
+  @override
+  String get addFilter => 'Add Filter';
+
+  @override
+  String get filterCategory => 'Product Category';
+
+  @override
+  String get filterAvailability => 'Stock Availability';
+
+  @override
+  String get filterPower => 'Power Range';
+
+  @override
+  String get noProductsFound => 'No products found';
+
+  @override
+  String get tryDifferentFilters => 'Try different keywords or filters';
+
+  @override
+  String unitsInStock(int count) {
+    return '$count Units Available';
+  }
+
+  @override
+  String unitsRemaining(int count) {
+    return '$count Units Left';
+  }
+
+  @override
+  String indentLeadTime(String time) {
+    return 'Indent $time';
+  }
+
+  @override
+  String get addNewAddress => 'Add New Address';
+
+  @override
+  String get firstName => 'First Name';
+
+  @override
+  String get lastName => 'Last Name';
+
+  @override
+  String get kecamatan => 'District';
+
+  @override
+  String get kelurahan => 'Village';
+
+  @override
+  String get deliveryNotes => 'Delivery Notes';
+
+  @override
+  String get fillRequiredFields => 'Please fill all required fields';
+
+  @override
+  String get primary => 'Primary';
+
+  @override
+  String get useAddress => 'Use This Address';
+
+  @override
+  String get saveAddress => 'Save Address';
+
+  @override
+  String get optional => 'optional';
+
+  @override
+  String minQuantityTier(int count) {
+    return 'Minimum purchase of $count units for this price tier';
+  }
+
+  @override
+  String get viewProduct => 'View Product';
+
+  @override
+  String get addToCartQuestion => 'Add to Cart?';
+
+  @override
+  String get selectAll => 'Select All';
+
+  @override
+  String get selectItem => 'Select item';
+
+  @override
+  String get noItemSelected => 'Select at least 1 item to checkout';
+
+  @override
+  String productSelected(int count) {
+    return '$count product selected';
+  }
+
+  @override
+  String get removeSelection => 'Remove';
+
+  @override
+  String get compareProduct => 'Compare';
 }

@@ -4,15 +4,19 @@ import '../../../models/cart_item.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
 
-/// Cart item card with product image, name, quantity controls, and remove button
+/// Cart item card with checkbox, product image, name, quantity controls, and remove button
 class CartItemCard extends StatelessWidget {
   final CartItem item;
+  final bool isSelected;
+  final Function(bool) onSelectionChanged;
   final Function(int) onQuantityChanged;
   final VoidCallback onRemove;
 
   const CartItemCard({
     super.key,
     required this.item,
+    required this.isSelected,
+    required this.onSelectionChanged,
     required this.onQuantityChanged,
     required this.onRemove,
   });
@@ -31,6 +35,26 @@ class CartItemCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Checkbox
+          GestureDetector(
+            onTap: () => onSelectionChanged(!isSelected),
+            child: Container(
+              width: 20,
+              height: 20,
+              margin: const EdgeInsets.only(right: 12, top: 30),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected ? AppColors.mitsubishiRed : AppColors.border,
+                  width: 2,
+                ),
+                color: isSelected ? AppColors.mitsubishiRed : Colors.transparent,
+              ),
+              child: isSelected
+                  ? const Icon(Icons.check, size: 14, color: Colors.white)
+                  : null,
+            ),
+          ),
           // Product image
           ClipRRect(
             borderRadius: BorderRadius.circular(12),

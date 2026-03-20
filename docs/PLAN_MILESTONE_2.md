@@ -1,4 +1,5 @@
 # 📋 Milestone 2 Execution Plan — Flutter Complete UI (Dummy Data)
+
 # Otomasiku Marketplace Mobile App
 
 > **Scope:** Build ALL Flutter screens with **hardcoded dummy data and mockup images**. No Supabase. No production backend. The goal is a fully navigable app on a real Android device that the client can tap through end-to-end.
@@ -36,12 +37,12 @@ All dummy data lives in `lib/data/dummy/`. These files are the single source of 
 
 Create `lib/data/dummy/dummy_products.dart` with **10 products** selected from the real OTOMASIKU catalog:
 
-| Category | Count | Products |
-|----------|-------|----------|
-| Inverter | 5 | FR-A820-0.4K, FR-A820-2.2K, FR-D720-0.75K, FC 302, FC 051 |
-| PLC | 2 | FX5U-32MT, FX3G-24MR |
-| Servo | 2 | MR-J4-10B, MR-J4-10A |
-| HMI | 1 | GT2103-PMBDS |
+| Category | Count | Products                                                  |
+| -------- | ----- | --------------------------------------------------------- |
+| Inverter | 5     | FR-A820-0.4K, FR-A820-2.2K, FR-D720-0.75K, FC 302, FC 051 |
+| PLC      | 2     | FX5U-32MT, FX3G-24MR                                      |
+| Servo    | 2     | MR-J4-10B, MR-J4-10A                                      |
+| HMI      | 1     | GT2103-PMBDS                                              |
 
 Each product includes: `id`, `sku`, `name`, `brand`, `category`, `series`, `subSeries`, `variant`, `price`, `originalPrice`, `stock`, `stockStatus`, `primaryImage` (asset path), `galleryImages` (asset paths), and `description`.
 
@@ -52,19 +53,20 @@ Refer to `DUMMY_PRODUCT_MAPPING_PLAN.md` § 4 for the product details and § 3 f
 
 ### Other Dummy Data Files
 
-| File | Contents |
-|------|----------|
-| `dummy_user.dart` | Single hardcoded user: John Doe, johndoe@gmail.com, PT Otomasi Indonesia, +62 812 3456 7890 |
+| File                   | Contents                                                                                                                               |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `dummy_user.dart`      | Single hardcoded user: John Doe, johndoe@gmail.com, PT Otomasi Indonesia, +62 812 3456 7890                                            |
 | `dummy_addresses.dart` | 2 addresses: (1) Jl. Sudirman Kav. 28-30 Jakarta Selatan 12920 — Utama, (2) Jl. Raya Bekasi Km.25 Cakung, Jakarta Timur 13910 — Gudang |
-| `dummy_cart.dart` | Pre-filled cart: FR-A820-0.4K-1 × 2, FX5U-32MT/ESS × 1 |
-| `dummy_orders.dart` | 3 orders with different statuses: (1) INV-2024-8XJ2M9 — Sedang Diproses, (2) INV-2024-7KP4L2 — Dikirim, (3) INV-2024-5MN8R1 — Selesai |
-| `dummy_projects.dart` | 2 projects: "Maintenance Line Conveyor 3" (4 items, Rp 58.5jt), "Upgrade Panel CNC-01" (3 items, Rp 42jt) |
+| `dummy_cart.dart`      | Pre-filled cart: FR-A820-0.4K-1 × 2, FX5U-32MT/ESS × 1                                                                                 |
+| `dummy_orders.dart`    | 3 orders with different statuses: (1) INV-2024-8XJ2M9 — Sedang Diproses, (2) INV-2024-7KP4L2 — Dikirim, (3) INV-2024-5MN8R1 — Selesai  |
+| `dummy_projects.dart`  | 2 projects: "Maintenance Line Conveyor 3" (4 items, Rp 58.5jt), "Upgrade Panel CNC-01" (3 items, Rp 42jt)                              |
 
 ---
 
 ## How to Use This Plan
 
 Each phase has:
+
 - **Depends On:** — which phase(s) must be complete before starting
 - **Entry Criteria:** — what must be true before you start
 - **Tasks:** — what to build, in order
@@ -76,34 +78,39 @@ Each phase has:
 ---
 
 ## Phase M2-0: Project Setup & Dummy Data
+
 **Depends On:** Nothing
 **Estimated Effort:** 1 day
 
 ### Entry Criteria
+
 - [ ] Flutter SDK installed and `flutter doctor` passes
 - [ ] Android emulator or physical device connected
 
 ### Tasks
+
 1. **Initialize Flutter project**
    ```
    flutter create --org com.otomasiku otomasiku_mobile_app
    ```
 2. **Add approved dependencies to `pubspec.yaml`**
+
    ```yaml
    dependencies:
      flutter:
        sdk: flutter
-     flutter_localizations:   # i18n — official Flutter SDK package
+     flutter_localizations: # i18n — official Flutter SDK package
        sdk: flutter
-     intl: ^0.19.0            # date/number formatting + ARB codegen support
+     intl: ^0.19.0 # date/number formatting + ARB codegen support
      flutter_riverpod: ^2.5.1
      go_router: ^13.2.0
      flutter_form_builder: ^9.3.0
      google_fonts: ^6.2.1
-     dio: ^5.4.3              # HTTP client — needed for BCA mini backend calls ONLY
+     dio: ^5.4.3 # HTTP client — needed for BCA mini backend calls ONLY
    flutter:
-     generate: true           # REQUIRED for ARB codegen
+     generate: true # REQUIRED for ARB codegen
    ```
+
    > ⚠️ Do NOT add: `retrofit`, `supabase_flutter`, `flutter_secure_storage` — not needed for M2.
    > `dio` is added here because the payment phase will call the M2 mini Express backend.
 
@@ -190,6 +197,7 @@ Each phase has:
      ```
    - Run `flutter gen-l10n` to verify no missing keys → must produce zero errors
    - Create `lib/providers/locale_provider.dart`:
+
      ```dart
      import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -206,6 +214,7 @@ Each phase has:
      ```
 
 5. **Create folder structure:**
+
    ```
    lib/
    ├── main.dart
@@ -257,6 +266,7 @@ Each phase has:
    ```
 
 6. **Create `bca_config.dart`** — the ONLY place BCA mini backend URL is configured:
+
    ```dart
    // lib/core/constants/bca_config.dart
    class BcaConfig {
@@ -275,6 +285,7 @@ Each phase has:
 8. **Create all dummy data files** — `dummy_products.dart` must contain all **10 products** from `DUMMY_PRODUCT_MAPPING_PLAN.md` § 4.
 
 9. **Register image assets in `pubspec.yaml`:**
+
    ```yaml
    flutter:
      assets:
@@ -282,6 +293,7 @@ Each phase has:
    ```
 
 10. **Create `CurrencyFormatter`** utility:
+
     ```dart
     // Output: "Rp 5.200.000" for input 5200000
     // Uses int only — NEVER double
@@ -298,6 +310,7 @@ Each phase has:
 13. **Set up GoRouter** with all routes (stubbed to empty Scaffold for now) — same routes as original plan
 
 ### Exit Criteria
+
 - [ ] `flutter run` launches without errors
 - [ ] `flutter gen-l10n` produces zero errors — all ARB keys valid
 - [ ] Language switch: tap ID→EN in Profile → all labels on screen update without restart
@@ -312,14 +325,17 @@ Each phase has:
 ---
 
 ## Phase M2-1: Splash, Login & Register Screens
+
 **Depends On:** Phase M2-0 ✅
 **Estimated Effort:** 0.5 day
 
 ### Entry Criteria
+
 - [ ] Phase M2-0 Exit Criteria ALL met
 - [ ] GoRouter has auth guard: if `isLoggedIn = false` → redirect to `/login`
 
 ### Tasks
+
 1. **Splash Screen** (`splash_screen.dart`)
    - Full-screen dark background with gradient overlay
    - Mitsubishi logo icon (centered)
@@ -354,6 +370,7 @@ Each phase has:
    - GoRouter redirect: if not logged in → `/login`, if logged in and on `/login` → `/home`
 
 ### Exit Criteria
+
 - [ ] App launches to Splash → tap → Login screen
 - [ ] Login form submits → navigates to Home
 - [ ] Register form validates and submits → navigates to Home
@@ -361,20 +378,24 @@ Each phase has:
 - [ ] Auth guard prevents accessing Home without login
 
 ### Reference
+
 - `ui-otomasiku-marketplace/index.html` (Splash)
 - `ui-otomasiku-marketplace/login.html` (Login)
 
 ---
 
 ## Phase M2-2: Bottom Navigation Shell & Home Screen
+
 **Depends On:** Phase M2-1 ✅
 **Estimated Effort:** 1 day
 
 ### Entry Criteria
+
 - [ ] Phase M2-1 Exit Criteria ALL met
 - [ ] Login redirects to Home successfully
 
 ### Tasks
+
 1. **Bottom Navigation Bar** (`bottom_nav_bar.dart`)
    - 5 tabs: Beranda (🏠), Cari (🔍), Proyek (📁), Keranjang (🛒), Profil (👤)
    - Active state: Mitsubishi Red icon + text
@@ -410,6 +431,7 @@ Each phase has:
    - `StockBadge` — takes stock count, renders correct color/text
 
 ### Exit Criteria
+
 - [ ] Bottom nav shows 5 tabs, switching works, active states correct
 - [ ] Cart badge shows item count and updates dynamically
 - [ ] Home screen shows header, search bar, filter chips, hero banner, product grid
@@ -420,19 +442,23 @@ Each phase has:
 - [ ] All prices formatted as "Rp X.XXX.XXX"
 
 ### Reference
+
 - `ui-otomasiku-marketplace/home.html`
 
 ---
 
 ## Phase M2-3: Search Results & Product Detail Screens
+
 **Depends On:** Phase M2-2 ✅
 **Estimated Effort:** 1 day
 
 ### Entry Criteria
+
 - [ ] Phase M2-2 Exit Criteria ALL met
 - [ ] Home screen product grid and navigation working
 
 ### Tasks
+
 1. **Search Results Screen** (`search_results_screen.dart`)
    - Header: Back button + search input (pre-filled with query)
    - Active filter chips (removable): e.g. "Inverter ×", "Ready Stock ×"
@@ -464,6 +490,7 @@ Each phase has:
    - Reference: `ui-otomasiku-marketplace/product-detail.html`
 
 ### Exit Criteria
+
 - [ ] Search results screen filters and sorts correctly from dummy data
 - [ ] Product detail shows all sections: real product image, gallery carousel, info, price, tiered pricing, tabs, specs
 - [ ] Tab switching works (Spesifikasi / Dokumen / Kompatibel)
@@ -473,20 +500,24 @@ Each phase has:
 - [ ] Tiered pricing cards render with correct styles
 
 ### Reference
+
 - `ui-otomasiku-marketplace/search-results.html`
 - `ui-otomasiku-marketplace/product-detail.html`
 
 ---
 
 ## Phase M2-4: Cart Screen (Keranjang Tab)
+
 **Depends On:** Phase M2-3 ✅
 **Estimated Effort:** 0.5 day
 
 ### Entry Criteria
+
 - [ ] Phase M2-3 Exit Criteria ALL met
 - [ ] Cart provider works (add/remove/update from home and product detail)
 
 ### Tasks
+
 1. **Cart Screen** (`cart_screen.dart`)
    - Accessible from the **Keranjang tab** in bottom navigation (4th tab)
    - **If cart is empty:** Empty state illustration + "Keranjang Kosong" text + "Mulai Belanja" button → Home
@@ -506,6 +537,7 @@ Each phase has:
    - Reference: Items section of `ui-otomasiku-marketplace/checkout.html`
 
 ### Exit Criteria
+
 - [ ] Keranjang tab in bottom nav opens Cart screen
 - [ ] Cart badge on tab icon shows correct count
 - [ ] Cart items display with image, name, qty controls, price
@@ -515,19 +547,23 @@ Each phase has:
 - [ ] "Lanjut ke Checkout" navigates to checkout screen
 
 ### Reference
+
 - Items section of `ui-otomasiku-marketplace/checkout.html`
 
 ---
 
 ## Phase M2-5: Checkout & Shipping Screens
+
 **Depends On:** Phase M2-4 ✅
 **Estimated Effort:** 1 day
 
 ### Entry Criteria
+
 - [ ] Phase M2-4 Exit Criteria ALL met
 - [ ] Cart has items, subtotal computed correctly
 
 ### Tasks
+
 1. **Checkout Screen** (`checkout_screen.dart`)
    - Header: Back button + "Checkout" title
    - **Ringkasan Pesanan:** Cart items summary (image, name, qty, price per item) — item count badge
@@ -560,6 +596,7 @@ Each phase has:
    - Reference: `ui-otomasiku-marketplace/shipping.html`
 
 ### Exit Criteria
+
 - [ ] Checkout screen shows all sections matching the HTML mockup
 - [ ] Cart items render correctly with prices
 - [ ] Shipping address displays selected address
@@ -572,12 +609,14 @@ Each phase has:
 - [ ] Add new address form opens in bottom sheet
 
 ### Reference
+
 - `ui-otomasiku-marketplace/checkout.html`
 - `ui-otomasiku-marketplace/shipping.html`
 
 ---
 
 ## Phase M2-BCA: Mini Express Backend — BCA Sandbox Only
+
 **Depends On:** Phase M2-5 ✅ (Checkout screen must exist before payment can be wired up)
 **Estimated Effort:** 1 day
 **Directory:** `C:\dev\projects\otomasiku-api` — completely separate from the Flutter project at `C:\dev\projects\otomasiku-mobile`
@@ -586,15 +625,16 @@ Each phase has:
 
 ### ⚠️ What this backend IS and IS NOT
 
-| ✅ IS | ❌ IS NOT |
-|---|---|
-| A mini Express app with 3 endpoints | A full backend |
-| BCA Sandbox VA creation | Real BCA production API |
-| In-memory VA storage (Map, no DB) | Supabase / Prisma / any DB |
-| Deployed to Railway (separate service) | Inside the Flutter project folder |
-| BCA callback receiver + signature check | Auth, products, orders, profile |
+| ✅ IS                                   | ❌ IS NOT                         |
+| --------------------------------------- | --------------------------------- |
+| A mini Express app with 3 endpoints     | A full backend                    |
+| BCA Sandbox VA creation                 | Real BCA production API           |
+| In-memory VA storage (Map, no DB)       | Supabase / Prisma / any DB        |
+| Deployed to Railway (separate service)  | Inside the Flutter project folder |
+| BCA callback receiver + signature check | Auth, products, orders, profile   |
 
 ### Entry Criteria
+
 - [ ] BCA Developer API Sandbox account registered at `developer.bca.co.id`
 - [ ] Sandbox credentials obtained: `BCA_CLIENT_ID`, `BCA_CLIENT_SECRET`, `BCA_API_KEY`, `BCA_API_SECRET`
 - [ ] BCA Sandbox VA prefix assigned
@@ -713,12 +753,12 @@ otomasiku-api\
 ```typescript
 // src/store/va_store.ts
 interface VaRecord {
-  orderId: string;       // generated locally — "ORD-" + timestamp
-  amount: bigint;        // payment amount in Rupiah
-  vaNumber: string;      // VA number returned by BCA Sandbox
-  status: 'pending' | 'paid' | 'expired';
+  orderId: string; // generated locally — "ORD-" + timestamp
+  amount: bigint; // payment amount in Rupiah
+  vaNumber: string; // VA number returned by BCA Sandbox
+  status: "pending" | "paid" | "expired";
   createdAt: Date;
-  expiresAt: Date;       // createdAt + 24 hours
+  expiresAt: Date; // createdAt + 24 hours
 }
 
 // Simple in-memory store — resets on server restart
@@ -730,7 +770,7 @@ export const vaStore = {
   get: (vaNumber: string) => store.get(vaNumber),
   markPaid: (vaNumber: string) => {
     const record = store.get(vaNumber);
-    if (record) store.set(vaNumber, { ...record, status: 'paid' });
+    if (record) store.set(vaNumber, { ...record, status: "paid" });
   },
   all: () => Array.from(store.values()),
 };
@@ -745,10 +785,10 @@ export const vaStore = {
 // Called by Flutter after user taps "Buat Invoice & Bayar" in checkout
 // Body: { amount: number }
 // Returns: { vaNumber, amount, expiresAt, orderId }
-router.post('/payment/create-va', async (req, res) => {
+router.post("/payment/create-va", async (req, res) => {
   const { amount } = req.body;
-  if (!amount || typeof amount !== 'number' || amount <= 0) {
-    return res.status(400).json({ error: { code: 'INVALID_AMOUNT' } });
+  if (!amount || typeof amount !== "number" || amount <= 0) {
+    return res.status(400).json({ error: { code: "INVALID_AMOUNT" } });
   }
 
   // 1. Get BCA OAuth token (cached in bca_auth.ts)
@@ -760,7 +800,14 @@ router.post('/payment/create-va', async (req, res) => {
   // 3. Store in memory
   const orderId = `ORD-${Date.now()}`;
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  vaStore.set(vaResult.vaNumber, { orderId, amount: BigInt(amount), vaNumber: vaResult.vaNumber, status: 'pending', createdAt: new Date(), expiresAt });
+  vaStore.set(vaResult.vaNumber, {
+    orderId,
+    amount: BigInt(amount),
+    vaNumber: vaResult.vaNumber,
+    status: "pending",
+    createdAt: new Date(),
+    expiresAt,
+  });
 
   return res.json({ vaNumber: vaResult.vaNumber, amount, expiresAt, orderId });
 });
@@ -768,31 +815,41 @@ router.post('/payment/create-va', async (req, res) => {
 // POST /payment/callback
 // Called by BCA Sandbox when payment is received
 // Validates BCA HMAC signature before processing
-router.post('/payment/callback', validateBcaSignature, async (req, res) => {
+router.post("/payment/callback", validateBcaSignature, async (req, res) => {
   const { virtual_account, paid_amount } = req.body;
 
   const record = vaStore.get(virtual_account);
-  if (!record) return res.status(404).json({ error: { code: 'VA_NOT_FOUND' } });
-  if (record.status === 'paid') return res.status(200).json({ status: 'already_processed' });
+  if (!record) return res.status(404).json({ error: { code: "VA_NOT_FOUND" } });
+  if (record.status === "paid")
+    return res.status(200).json({ status: "already_processed" });
 
   vaStore.markPaid(virtual_account);
 
-  logger.info({ vaNumber: virtual_account, orderId: record.orderId }, 'Payment confirmed via BCA callback');
+  logger.info(
+    { vaNumber: virtual_account, orderId: record.orderId },
+    "Payment confirmed via BCA callback",
+  );
 
   // For M2: no email, no DB update — just log and return 200
-  return res.json({ status: 'ok' });
+  return res.json({ status: "ok" });
 });
 
 // GET /payment/status/:vaNumber
 // Called by Flutter to poll payment status
-router.get('/payment/status/:vaNumber', (req, res) => {
+router.get("/payment/status/:vaNumber", (req, res) => {
   const record = vaStore.get(req.params.vaNumber);
-  if (!record) return res.status(404).json({ error: { code: 'VA_NOT_FOUND' } });
+  if (!record) return res.status(404).json({ error: { code: "VA_NOT_FOUND" } });
 
   const isExpired = new Date() > record.expiresAt;
-  const status = isExpired && record.status === 'pending' ? 'expired' : record.status;
+  const status =
+    isExpired && record.status === "pending" ? "expired" : record.status;
 
-  return res.json({ vaNumber: record.vaNumber, status, orderId: record.orderId, expiresAt: record.expiresAt });
+  return res.json({
+    vaNumber: record.vaNumber,
+    status,
+    orderId: record.orderId,
+    expiresAt: record.expiresAt,
+  });
 });
 ```
 
@@ -904,6 +961,7 @@ class BcaVaResponse {
 ```
 
 ### Exit Criteria
+
 - [ ] Mini backend deployed to Railway and accessible via HTTPS URL
 - [ ] `GET /health` returns `200 { "status": "ok" }`
 - [ ] `POST /payment/create-va` with `{ "amount": 5200000 }` returns a real BCA Sandbox VA number
@@ -917,16 +975,19 @@ class BcaVaResponse {
 ---
 
 ## Phase M2-6: Payment & Payment Success Screens
+
 **Depends On:** Phase M2-BCA ✅ + Phase M2-5 ✅
 **Estimated Effort:** 1 day
 
 ### Entry Criteria
+
 - [ ] Phase M2-BCA Exit Criteria ALL met (mini backend deployed, VA creation working)
 - [ ] Phase M2-5 Exit Criteria ALL met
 - [ ] `BcaConfig.miniBackendBaseUrl` updated with live Railway URL
 - [ ] `BcaPaymentService.createVa()` tested manually and returns real VA number
 
 ### Tasks
+
 1. **Payment Provider** (`payment_provider.dart`)
    - State: `vaNumber`, `amount`, `expiresAt`, `orderId`, `status` (`idle | loading | pending | paid | expired | error`), `errorCode`
    - `createVa(int amount)` → calls `BcaPaymentService.createVa()`, updates state
@@ -954,6 +1015,7 @@ class BcaVaResponse {
    - Reference: `ui-otomasiku-marketplace/payment-success.html`
 
 ### Exit Criteria
+
 - [ ] Payment screen calls mini backend on load — real BCA Sandbox VA number displayed (NOT hardcoded)
 - [ ] Countdown runs from `expiresAt` from API (NOT a fixed 24:00:00 start)
 - [ ] Copy button copies real VA number → clipboard → snackbar `l10n.paymentCopied`
@@ -963,19 +1025,23 @@ class BcaVaResponse {
 - [ ] All strings use `AppLocalizations` — zero hardcoded user-facing text
 
 ### Reference
+
 - `ui-otomasiku-marketplace/payment.html`
 - `ui-otomasiku-marketplace/payment-success.html`
 
 ---
 
 ## Phase M2-7: Order Detail Screen
+
 **Depends On:** Phase M2-6 ✅
 **Estimated Effort:** 0.5 day
 
 ### Entry Criteria
+
 - [ ] Phase M2-6 Exit Criteria ALL met
 
 ### Tasks
+
 1. **Order Detail Screen** (`order_detail_screen.dart`)
    - Header: Back button + "Detail Pesanan" title + invoice number subtitle + Share button
    - **Status banner:** Gradient blue card (matching order status)
@@ -994,6 +1060,7 @@ class BcaVaResponse {
    - Reference: `ui-otomasiku-marketplace/order-detail.html`
 
 ### Exit Criteria
+
 - [ ] Order detail loads from `dummy_orders.dart`
 - [ ] Status banner shows correct status with icon
 - [ ] Timeline renders with correct active/completed/future states
@@ -1002,18 +1069,22 @@ class BcaVaResponse {
 - [ ] Both action buttons are functional (even if just showing toast)
 
 ### Reference
+
 - `ui-otomasiku-marketplace/order-detail.html`
 
 ---
 
 ## Phase M2-8: Profile, Projects & Compare Screens
+
 **Depends On:** Phase M2-7 ✅
 **Estimated Effort:** 1 day
 
 ### Entry Criteria
+
 - [ ] Phase M2-7 Exit Criteria ALL met
 
 ### Tasks
+
 1. **Profile Screen** (`profile_screen.dart`)
    - Header: Back button + "Profil" title + Settings gear icon
    - **User card:** Dark gradient, avatar image, name, email
@@ -1052,6 +1123,7 @@ class BcaVaResponse {
    - Reference: `ui-otomasiku-marketplace/compare.html`
 
 ### Exit Criteria
+
 - [ ] Profile screen shows user info, stats, menu items, logout
 - [ ] Logout works → returns to splash
 - [ ] Projects screen shows project list with items and totals
@@ -1061,6 +1133,7 @@ class BcaVaResponse {
 - [ ] All bottom nav tabs navigate correctly and show active state
 
 ### Reference
+
 - `ui-otomasiku-marketplace/profile.html`
 - `ui-otomasiku-marketplace/projects.html`
 - `ui-otomasiku-marketplace/compare.html`
@@ -1068,14 +1141,17 @@ class BcaVaResponse {
 ---
 
 ## Phase M2-9: Full Flow Polish & Device Testing
+
 **Depends On:** Phase M2-8 ✅
 **Estimated Effort:** 1 day
 
 ### Entry Criteria
+
 - [ ] ALL previous phases complete
 - [ ] All 15 screens built and navigable
 
 ### Tasks
+
 1. **Full flow walkthrough #1 — Customer journey:**
    - Splash → Login → Home → Search → Product Detail → Add to Cart → Cart → Checkout → Shipping (change address) → back to Checkout → "Buat Invoice" → Payment (countdown running) → "Cek Status" → Payment Success → Order Detail → back to Home
    - Fix any navigation bugs, broken layouts, missing data
@@ -1111,6 +1187,7 @@ class BcaVaResponse {
    - Check: touch targets ≥ 44dp, bottom nav doesn't overlap content, keyboard doesn't cover inputs
 
 ### Exit Criteria
+
 - [ ] Complete customer flow works end-to-end without crashes
 - [ ] Payment flow: real BCA Sandbox VA generated → countdown live → status polling works → payment success on callback
 - [ ] All 5 bottom nav tabs work correctly
@@ -1127,40 +1204,40 @@ class BcaVaResponse {
 
 ### Phase Summary
 
-| Phase | Scope | Effort |
-|-------|-------|--------|
-| M2-0 | Project setup, dummy data, i18n, folder structure | 1 day |
-| M2-1 | Splash, Login, Register | 0.5 day |
-| M2-2 | Bottom nav shell, Home screen | 1 day |
-| M2-3 | Search Results, Product Detail | 1 day |
-| M2-4 | Cart screen | 0.5 day |
-| M2-5 | Checkout, Shipping Address | 1 day |
-| **M2-BCA** | **Express backend in `otomasiku-api\` — BCA Sandbox only (Railway deploy)** | **1 day** |
-| M2-6 | Payment screen (real VA), Payment Success | 1 day |
-| M2-7 | Order Detail | 0.5 day |
-| M2-8 | Profile, Projects, Compare | 1 day |
-| M2-9 | Full flow polish, device testing | 1 day |
-| **Total** | | **~9.5 days** |
+| Phase      | Scope                                                                       | Effort        |
+| ---------- | --------------------------------------------------------------------------- | ------------- |
+| M2-0       | Project setup, dummy data, i18n, folder structure                           | 1 day         |
+| M2-1       | Splash, Login, Register                                                     | 0.5 day       |
+| M2-2       | Bottom nav shell, Home screen                                               | 1 day         |
+| M2-3       | Search Results, Product Detail                                              | 1 day         |
+| M2-4       | Cart screen                                                                 | 0.5 day       |
+| M2-5       | Checkout, Shipping Address                                                  | 1 day         |
+| **M2-BCA** | **Express backend in `otomasiku-api\` — BCA Sandbox only (Railway deploy)** | **1 day**     |
+| M2-6       | Payment screen (real VA), Payment Success                                   | 1 day         |
+| M2-7       | Order Detail                                                                | 0.5 day       |
+| M2-8       | Profile, Projects, Compare                                                  | 1 day         |
+| M2-9       | Full flow polish, device testing                                            | 1 day         |
+| **Total**  |                                                                             | **~9.5 days** |
 
 ### Screen Inventory
 
-| # | Screen | Route | HTML Reference | Phase |
-|---|--------|-------|----------------|-------|
-| 1 | Splash | `/` | `index.html` | M2-1 |
-| 2 | Login | `/login` | `login.html` | M2-1 |
-| 3 | Register | `/register` | — (follows login style) | M2-1 |
-| 4 | Home (Beranda) | `/home` | `home.html` | M2-2 |
-| 5 | Search Results (Cari) | `/search` | `search-results.html` | M2-3 |
-| 6 | Product Detail | `/product/:id` | `product-detail.html` | M2-3 |
-| 7 | Cart (Keranjang) | `/cart` | `checkout.html` (items section) | M2-4 |
-| 8 | Checkout | `/checkout` | `checkout.html` | M2-5 |
-| 9 | Shipping Address | `/shipping` | `shipping.html` | M2-5 |
-| 10 | Payment (BCA VA) | `/payment/:orderId` | `payment.html` | M2-6 |
-| 11 | Payment Success | `/payment-success/:orderId` | `payment-success.html` | M2-6 |
-| 12 | Order Detail | `/order/:id` | `order-detail.html` | M2-7 |
-| 13 | Profile (Profil) | `/profile` | `profile.html` | M2-8 |
-| 14 | Projects (Proyek) | `/projects` | `projects.html` | M2-8 |
-| 15 | Compare | `/compare` | `compare.html` | M2-8 |
+| #   | Screen                | Route                       | HTML Reference                  | Phase |
+| --- | --------------------- | --------------------------- | ------------------------------- | ----- |
+| 1   | Splash                | `/`                         | `index.html`                    | M2-1  |
+| 2   | Login                 | `/login`                    | `login.html`                    | M2-1  |
+| 3   | Register              | `/register`                 | — (follows login style)         | M2-1  |
+| 4   | Home (Beranda)        | `/home`                     | `home.html`                     | M2-2  |
+| 5   | Search Results (Cari) | `/search`                   | `search-results.html`           | M2-3  |
+| 6   | Product Detail        | `/product/:id`              | `product-detail.html`           | M2-3  |
+| 7   | Cart (Keranjang)      | `/cart`                     | `checkout.html` (items section) | M2-4  |
+| 8   | Checkout              | `/checkout`                 | `checkout.html`                 | M2-5  |
+| 9   | Shipping Address      | `/shipping`                 | `shipping.html`                 | M2-5  |
+| 10  | Payment (BCA VA)      | `/payment/:orderId`         | `payment.html`                  | M2-6  |
+| 11  | Payment Success       | `/payment-success/:orderId` | `payment-success.html`          | M2-6  |
+| 12  | Order Detail          | `/order/:id`                | `order-detail.html`             | M2-7  |
+| 13  | Profile (Profil)      | `/profile`                  | `profile.html`                  | M2-8  |
+| 14  | Projects (Proyek)     | `/projects`                 | `projects.html`                 | M2-8  |
+| 15  | Compare               | `/compare`                  | `compare.html`                  | M2-8  |
 
 ---
 
@@ -1170,489 +1247,491 @@ Complete feature breakdown of all 17 HTML mockups in `ui-otomasiku-marketplace/`
 
 ### 1. Splash Screen (`index.html`)
 
-| Feature | Description |
-|---------|-------------|
-| Full-screen dark background | `#1a1a1a` with gradient overlay |
-| Mitsubishi logo | Centered, prominent |
-| "Oseï" branding | Main brand text |
-| "Automation Spareparts Marketplace" | Subtitle text |
-| "Mulai Sekarang!" CTA button | Navigates to Login |
+| Feature                             | Description                     |
+| ----------------------------------- | ------------------------------- |
+| Full-screen dark background         | `#1a1a1a` with gradient overlay |
+| Mitsubishi logo                     | Centered, prominent             |
+| "Oseï" branding                     | Main brand text                 |
+| "Automation Spareparts Marketplace" | Subtitle text                   |
+| "Mulai Sekarang!" CTA button        | Navigates to Login              |
 
 ---
 
 ### 2. Login Screen (`login.html`)
 
-| Feature | Description |
-|---------|-------------|
-| Dark background with factory image overlay | Glass morphism effect |
-| "Selamat Datang!" heading | Welcome text |
-| "Masuk untuk melanjutkan" subtitle | Red accent text |
-| Email/username input | Glass style: `bg-white/10`, white text |
-| Password input | Same glass style |
-| "Ingat saya" checkbox | Remember me |
-| "Lupa password?" link | Password recovery |
-| "Masuk" button | Mitsubishi Red, full width, shadow |
-| "Belum punya akun? **Daftar**" link | Navigates to Register |
-| Form validation | Email/password required |
-| Auto-redirect to Home on success | Sets `isLoggedIn = true` |
+| Feature                                    | Description                            |
+| ------------------------------------------ | -------------------------------------- |
+| Dark background with factory image overlay | Glass morphism effect                  |
+| "Selamat Datang!" heading                  | Welcome text                           |
+| "Masuk untuk melanjutkan" subtitle         | Red accent text                        |
+| Email/username input                       | Glass style: `bg-white/10`, white text |
+| Password input                             | Same glass style                       |
+| "Ingat saya" checkbox                      | Remember me                            |
+| "Lupa password?" link                      | Password recovery                      |
+| "Masuk" button                             | Mitsubishi Red, full width, shadow     |
+| "Belum punya akun? **Daftar**" link        | Navigates to Register                  |
+| Form validation                            | Email/password required                |
+| Auto-redirect to Home on success           | Sets `isLoggedIn = true`               |
 
 ---
 
 ### 3. Home Screen (`home.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Mitsubishi logo | Left aligned |
-| Cart icon with badge | Shows item count, right side |
-| Profile avatar | Circular, right side |
-| **Search Bar** | |
-| Search input | Placeholder: "Cari FR-A820, FX5U, MR-J4..." |
-| Barcode scanner button | Icon button, right |
-| **Category Filter Chips** | |
+| Feature                     | Description                                           |
+| --------------------------- | ----------------------------------------------------- |
+| **Header**                  |                                                       |
+| Mitsubishi logo             | Left aligned                                          |
+| Cart icon with badge        | Shows item count, right side                          |
+| Profile avatar              | Circular, right side                                  |
+| **Search Bar**              |                                                       |
+| Search input                | Placeholder: "Cari FR-A820, FX5U, MR-J4..."           |
+| Barcode scanner button      | Icon button, right                                    |
+| **Category Filter Chips**   |                                                       |
 | Horizontal scrollable chips | Semua, Mitsubishi, Danfoss, Inverter, PLC, Servo, HMI |
-| Active chip | Mitsubishi Red bg, white text |
-| Inactive chip | Gray-200 bg, gray-700 text |
-| Filter functionality | Filters product grid |
-| **Hero Banner** | |
-| Dark gradient card | "Melsec iQ-R Series" |
-| "New Arrival" badge | Red badge |
-| "Lihat Detail" CTA | Navigates to product detail |
-| **Product Grid** | |
-| 2-column grid | Responsive |
-| Product cards (10 products) | Image, name, specs, price, stock badge |
-| Stock badges | Green (Ready), Orange (Limited), Red (Out) |
-| Hover effects | Scale, shadow |
-| "Tambah" button | Add to cart |
-| Compare icon | Add to compare list |
-| **Compare Bar** | |
-| Fixed above bottom nav | Shows when ≥1 product selected |
-| "Bandingkan (X)" button | Navigates to compare screen |
-| **Bottom Navigation** | 5 tabs active |
-| **Toast Notifications** | Slide-in confirmation |
+| Active chip                 | Mitsubishi Red bg, white text                         |
+| Inactive chip               | Gray-200 bg, gray-700 text                            |
+| Filter functionality        | Filters product grid                                  |
+| **Hero Banner**             |                                                       |
+| Dark gradient card          | "Melsec iQ-R Series"                                  |
+| "New Arrival" badge         | Red badge                                             |
+| "Lihat Detail" CTA          | Navigates to product detail                           |
+| **Product Grid**            |                                                       |
+| 2-column grid               | Responsive                                            |
+| Product cards (10 products) | Image, name, specs, price, stock badge                |
+| Stock badges                | Green (Ready), Orange (Limited), Red (Out)            |
+| Hover effects               | Scale, shadow                                         |
+| "Tambah" button             | Add to cart                                           |
+| Compare icon                | Add to compare list                                   |
+| **Compare Bar**             |                                                       |
+| Fixed above bottom nav      | Shows when ≥1 product selected                        |
+| "Bandingkan (X)" button     | Navigates to compare screen                           |
+| **Bottom Navigation**       | 5 tabs active                                         |
+| **Toast Notifications**     | Slide-in confirmation                                 |
 
 ---
 
 ### 4. Product Detail Screen (`product-detail.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left aligned |
-| "Detail Produk" title | Centered |
-| Compare button | Right aligned |
-| **Product Image Area** | |
-| Main product image | Large, centered |
-| Gallery carousel | Multiple images |
-| "New Arrival" badge | Red badge overlay |
-| "Ready Stock" badge | Green badge overlay |
-| **Product Information** | |
-| Product name | Bold, large |
-| Subtitle/description | Gray text |
-| Stock availability card | Green bg if ready |
-| **Pricing** | |
-| Large red price | Prominent display |
-| Strikethrough original price | If discount exists |
-| **Tiered Pricing (B2B)** | |
-| 1-5 unit tier | Normal price, red border |
-| 6-10 unit tier | Discounted price, green bg, "Best Deal" |
-| 11+ unit tier | "Hubungi sales" → RFQ modal |
-| **Tab Bar (Sticky)** | |
-| Spesifikasi tab | Specs table |
-| Dokumen tab | PDF datasheet download |
-| Kompatibel tab | Compatible products list |
-| **Bottom Action Bar (Fixed)** | |
-| Quantity selector | − [1] + buttons |
-| Save to project button | Bookmark icon |
-| "Beli Sekarang" CTA | Mitsubishi Red, navigates to checkout |
-| **RFQ Modal** | |
-| Bottom sheet | Quantity input, company name |
-| "Kirim RFQ" button | Submit |
+| Feature                       | Description                             |
+| ----------------------------- | --------------------------------------- |
+| **Header**                    |                                         |
+| Back button                   | Left aligned                            |
+| "Detail Produk" title         | Centered                                |
+| Compare button                | Right aligned                           |
+| **Product Image Area**        |                                         |
+| Main product image            | Large, centered                         |
+| Gallery carousel              | Multiple images                         |
+| "New Arrival" badge           | Red badge overlay                       |
+| "Ready Stock" badge           | Green badge overlay                     |
+| **Product Information**       |                                         |
+| Product name                  | Bold, large                             |
+| Subtitle/description          | Gray text                               |
+| Stock availability card       | Green bg if ready                       |
+| **Pricing**                   |                                         |
+| Large red price               | Prominent display                       |
+| Strikethrough original price  | If discount exists                      |
+| **Tiered Pricing (B2B)**      |                                         |
+| 1-5 unit tier                 | Normal price, red border                |
+| 6-10 unit tier                | Discounted price, green bg, "Best Deal" |
+| 11+ unit tier                 | "Hubungi sales" → RFQ modal             |
+| **Tab Bar (Sticky)**          |                                         |
+| Spesifikasi tab               | Specs table                             |
+| Dokumen tab                   | PDF datasheet download                  |
+| Kompatibel tab                | Compatible products list                |
+| **Bottom Action Bar (Fixed)** |                                         |
+| Quantity selector             | − [1] + buttons                         |
+| Save to project button        | Bookmark icon                           |
+| "Beli Sekarang" CTA           | Mitsubishi Red, navigates to checkout   |
+| **RFQ Modal**                 |                                         |
+| Bottom sheet                  | Quantity input, company name            |
+| "Kirim RFQ" button            | Submit                                  |
 
 ---
 
 ### 5. Search Results Screen (`search-results.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left aligned |
-| Search input | Pre-filled with query |
-| Clear button | X icon |
-| **Active Filters** | |
-| Removable filter chips | "Inverter ×", "Ready Stock ×" |
-| **Sort Dropdown** | |
-| Relevansi | Default |
-| Harga Terendah | Low to high |
-| Harga Tertinggi | High to low |
-| **Result Count** | "Ditemukan X produk" |
-| **Product List (Vertical)** | |
-| 10 products | Vertical list layout |
-| Product image | Left thumbnail |
-| Stock badge | Green/Orange/Red |
-| Product name | Bold |
-| Specs tags | Small gray chips |
-| Price | Red, bold |
-| "Detail" button | Navigates to detail |
-| **Filter Bottom Sheet** | |
-| Category filter | Checkboxes |
-| Brand filter | Checkboxes |
-| Stock filter | Ready/Indent/Out |
-| Power range slider | Min-max kW |
-| **Empty State** | When no results found |
+| Feature                     | Description                   |
+| --------------------------- | ----------------------------- |
+| **Header**                  |                               |
+| Back button                 | Left aligned                  |
+| Search input                | Pre-filled with query         |
+| Clear button                | X icon                        |
+| **Active Filters**          |                               |
+| Removable filter chips      | "Inverter ×", "Ready Stock ×" |
+| **Sort Dropdown**           |                               |
+| Relevansi                   | Default                       |
+| Harga Terendah              | Low to high                   |
+| Harga Tertinggi             | High to low                   |
+| **Result Count**            | "Ditemukan X produk"          |
+| **Product List (Vertical)** |                               |
+| 10 products                 | Vertical list layout          |
+| Product image               | Left thumbnail                |
+| Stock badge                 | Green/Orange/Red              |
+| Product name                | Bold                          |
+| Specs tags                  | Small gray chips              |
+| Price                       | Red, bold                     |
+| "Detail" button             | Navigates to detail           |
+| **Filter Bottom Sheet**     |                               |
+| Category filter             | Checkboxes                    |
+| Brand filter                | Checkboxes                    |
+| Stock filter                | Ready/Indent/Out              |
+| Power range slider          | Min-max kW                    |
+| **Empty State**             | When no results found         |
 
 ---
 
 ### 6. Cart Screen (`cart.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left aligned |
-| "Keranjang Belanja" title | Centered |
-| "Hapus Semua" button | Right aligned, red text |
-| **Empty State** | |
-| Illustration | Cart icon |
-| "Keranjang Kosong" text | Gray |
-| "Mulai Belanja" button | Returns to home |
-| **Cart Items List** | |
-| Product image | Left thumbnail |
-| Product name + description | Bold + small gray |
-| Quantity controls | − [qty] + inline |
-| Price per item | Red |
-| Remove button | × icon |
-| **Cart Summary** | |
-| Subtotal | Bold, right aligned |
-| **Checkout Button** | |
-| "Lanjut ke Checkout" | Full width, Mitsubishi Red |
+| Feature                    | Description                |
+| -------------------------- | -------------------------- |
+| **Header**                 |                            |
+| Back button                | Left aligned               |
+| "Keranjang Belanja" title  | Centered                   |
+| "Hapus Semua" button       | Right aligned, red text    |
+| **Empty State**            |                            |
+| Illustration               | Cart icon                  |
+| "Keranjang Kosong" text    | Gray                       |
+| "Mulai Belanja" button     | Returns to home            |
+| **Cart Items List**        |                            |
+| Product image              | Left thumbnail             |
+| Product name + description | Bold + small gray          |
+| Quantity controls          | − [qty] + inline           |
+| Price per item             | Red                        |
+| Remove button              | × icon                     |
+| **Cart Summary**           |                            |
+| Subtotal                   | Bold, right aligned        |
+| **Checkout Button**        |                            |
+| "Lanjut ke Checkout"       | Full width, Mitsubishi Red |
 
 ---
 
 ### 7. Checkout Screen (`checkout.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left |
-| "Checkout" title | Center |
-| **Order Summary** | |
-| Item count badge | "X Item" |
-| Item images | Thumbnails |
-| Quantity display | "X unit" |
-| Price per item | Gray |
-| **Address Section** | |
-| Selected address card | Name, company, full address, phone |
-| "Utama" badge | Primary address |
-| "Ubah" link | Navigates to shipping |
-| Map icon | Visual decoration |
-| **PO Number** | |
-| Optional input | "Nomor PO Perusahaan" |
-| **Payment Method** | |
-| BCA Virtual Account card | Selected, blue border |
-| Payment instructions | Info box |
-| **Shipping Method** | |
-| "Pengiriman Standar" | Free shipping |
-| "Estimasi 3-5 hari" | Green text |
-| **Payment Summary** | |
-| Subtotal | X item |
-| Discount (volume) | Green, negative |
-| Shipping | GRATIS (green) |
-| PPN (11%) | Hardcoded for demo |
-| **Total** | Large, red, bold |
-| **Terms Checkbox** | |
-| Checkbox + link | "Syarat dan Ketentuan" |
-| **Fixed Bottom Bar** | |
-| Total amount display | Left |
-| "Buat Invoice & Bayar" button | Right, validates terms |
+| Feature                       | Description                        |
+| ----------------------------- | ---------------------------------- |
+| **Header**                    |                                    |
+| Back button                   | Left                               |
+| "Checkout" title              | Center                             |
+| **Order Summary**             |                                    |
+| Item count badge              | "X Item"                           |
+| Item images                   | Thumbnails                         |
+| Quantity display              | "X unit"                           |
+| Price per item                | Gray                               |
+| **Address Section**           |                                    |
+| Selected address card         | Name, company, full address, phone |
+| "Utama" badge                 | Primary address                    |
+| "Ubah" link                   | Navigates to shipping              |
+| Map icon                      | Visual decoration                  |
+| **PO Number**                 |                                    |
+| Optional input                | "Nomor PO Perusahaan"              |
+| **Payment Method**            |                                    |
+| BCA Virtual Account card      | Selected, blue border              |
+| Payment instructions          | Info box                           |
+| **Shipping Method**           |                                    |
+| "Pengiriman Standar"          | Free shipping                      |
+| "Estimasi 3-5 hari"           | Green text                         |
+| **Payment Summary**           |                                    |
+| Subtotal                      | X item                             |
+| Discount (volume)             | Green, negative                    |
+| Shipping                      | GRATIS (green)                     |
+| PPN (11%)                     | Hardcoded for demo                 |
+| **Total**                     | Large, red, bold                   |
+| **Terms Checkbox**            |                                    |
+| Checkbox + link               | "Syarat dan Ketentuan"             |
+| **Fixed Bottom Bar**          |                                    |
+| Total amount display          | Left                               |
+| "Buat Invoice & Bayar" button | Right, validates terms             |
 
 ---
 
 ### 8. Shipping Address Screen (`shipping.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left |
-| "Alamat Pengiriman" title | Center |
-| **Saved Addresses List** | |
-| Radio selection | Selected = red border + tint |
-| Address cards | Name, "Utama" badge, company, address, phone |
-| Edit button | Pencil icon |
-| Delete button | Trash icon |
-| **"Tambah Alamat Baru"** | |
-| Bottom sheet form | Nama, Perusahaan, Alamat, Kota, Pos, Telepon |
-| "Jadikan utama" checkbox | |
-| "Simpan" button | |
-| **Fixed Bottom Bar** | |
-| "Gunakan Alamat Ini" | Full width, navigates back |
+| Feature                   | Description                                  |
+| ------------------------- | -------------------------------------------- |
+| **Header**                |                                              |
+| Back button               | Left                                         |
+| "Alamat Pengiriman" title | Center                                       |
+| **Saved Addresses List**  |                                              |
+| Radio selection           | Selected = red border + tint                 |
+| Address cards             | Name, "Utama" badge, company, address, phone |
+| Edit button               | Pencil icon                                  |
+| Delete button             | Trash icon                                   |
+| **"Tambah Alamat Baru"**  |                                              |
+| Bottom sheet form         | Nama, Perusahaan, Alamat, Kota, Pos, Telepon |
+| "Jadikan utama" checkbox  |                                              |
+| "Simpan" button           |                                              |
+| **Fixed Bottom Bar**      |                                              |
+| "Gunakan Alamat Ini"      | Full width, navigates back                   |
 
 ---
 
 ### 9. Payment Screen (`payment.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left |
-| "Pembayaran" title | Center |
-| **Invoice Card** | |
-| Invoice number | Mono font, bold |
-| "Menunggu Pembayaran" badge | Yellow, pulsing dot |
-| Total amount | Large red + "Salin" button |
-| **Countdown Timer** | |
-| BCA blue gradient card | |
-| "Batas Waktu Pembayaran" | |
-| Live countdown | 24:00:00 ticking down (Jam | Menit | Detik) |
-| **BCA Virtual Account Card** | |
-| BCA logo badge | Blue box |
-| VA number | "1234 5678 9012 3456" mono + "Salin" |
-| Dashed blue border | |
-| **Payment Instructions** | |
-| Accordion: "via ATM BCA" | Numbered steps |
-| Accordion: "via BCA Mobile" | Numbered steps |
-| **Help Card** | |
-| "Butuh bantuan?" | Phone number |
-| **Fixed Bottom Bar** | |
-| "Lihat Produk Lain" | Outline |
-| "Cek Status" | Red → payment success |
+| Feature                      | Description                          |
+| ---------------------------- | ------------------------------------ | ----- | ------ |
+| **Header**                   |                                      |
+| Back button                  | Left                                 |
+| "Pembayaran" title           | Center                               |
+| **Invoice Card**             |                                      |
+| Invoice number               | Mono font, bold                      |
+| "Menunggu Pembayaran" badge  | Yellow, pulsing dot                  |
+| Total amount                 | Large red + "Salin" button           |
+| **Countdown Timer**          |                                      |
+| BCA blue gradient card       |                                      |
+| "Batas Waktu Pembayaran"     |                                      |
+| Live countdown               | 24:00:00 ticking down (Jam           | Menit | Detik) |
+| **BCA Virtual Account Card** |                                      |
+| BCA logo badge               | Blue box                             |
+| VA number                    | "1234 5678 9012 3456" mono + "Salin" |
+| Dashed blue border           |                                      |
+| **Payment Instructions**     |                                      |
+| Accordion: "via ATM BCA"     | Numbered steps                       |
+| Accordion: "via BCA Mobile"  | Numbered steps                       |
+| **Help Card**                |                                      |
+| "Butuh bantuan?"             | Phone number                         |
+| **Fixed Bottom Bar**         |                                      |
+| "Lihat Produk Lain"          | Outline                              |
+| "Cek Status"                 | Red → payment success                |
 
 ---
 
 ### 10. Payment Success Screen (`payment-success.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Success Animation** | |
-| Green circle with checkmark | Scale-in animation |
-| Confetti (optional) | On load |
-| **Success Message** | |
-| "Pembayaran Berhasil!" | Large heading |
-| Subtitle | "Terima kasih, pembayaran Anda telah terverifikasi" |
-| **Summary Card** | |
-| Invoice number | |
-| Payment date | Formatted |
-| Total paid | Red, bold |
-| **Status Timeline** | |
-| ✅ Pembayaran Diterima | With datetime |
-| 🔴 Sedang Diproses | Pulsing, current |
-| **Info Box** | |
-| "Apa selanjutnya?" | Bullet points |
-| **Action Buttons** | |
-| "Lihat Detail Pesanan" | Red → order detail |
-| "Kembali ke Beranda" | Outline → home |
+| Feature                     | Description                                         |
+| --------------------------- | --------------------------------------------------- |
+| **Success Animation**       |                                                     |
+| Green circle with checkmark | Scale-in animation                                  |
+| Confetti (optional)         | On load                                             |
+| **Success Message**         |                                                     |
+| "Pembayaran Berhasil!"      | Large heading                                       |
+| Subtitle                    | "Terima kasih, pembayaran Anda telah terverifikasi" |
+| **Summary Card**            |                                                     |
+| Invoice number              |                                                     |
+| Payment date                | Formatted                                           |
+| Total paid                  | Red, bold                                           |
+| **Status Timeline**         |                                                     |
+| ✅ Pembayaran Diterima      | With datetime                                       |
+| 🔴 Sedang Diproses          | Pulsing, current                                    |
+| **Info Box**                |                                                     |
+| "Apa selanjutnya?"          | Bullet points                                       |
+| **Action Buttons**          |                                                     |
+| "Lihat Detail Pesanan"      | Red → order detail                                  |
+| "Kembali ke Beranda"        | Outline → home                                      |
 
 ---
 
 ### 11. Order Detail Screen (`order-detail.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left |
-| "Detail Pesanan" title | Center |
-| Invoice number subtitle | Small gray |
-| Share button | Right |
-| **Status Banner** | |
-| Gradient blue card | |
-| Status icon + text | "Sedang Diproses" |
-| "Estimasi pengiriman" | Date range |
-| **Status Timeline** | |
-| Vertical line with dots | |
-| ✅ Green: Pembayaran Diterima | Completed |
-| 🔴 Red pulsing: Sedang Diproses | Current |
-| ⚪ Gray: Dikirim, Selesai | Future |
-| **Ordered Items** | |
-| Item image | Thumbnail |
-| Name, qty × price | |
-| Line total | |
-| Grand total | Red, bold |
-| **Shipping Info** | |
-| Address card | Full address |
-| "Nomor resi akan muncul" | Info text |
-| **Action Buttons** | |
-| "Unduh Invoice" | Outline |
-| "Hubungi Support" | Red → WhatsApp |
+| Feature                         | Description       |
+| ------------------------------- | ----------------- |
+| **Header**                      |                   |
+| Back button                     | Left              |
+| "Detail Pesanan" title          | Center            |
+| Invoice number subtitle         | Small gray        |
+| Share button                    | Right             |
+| **Status Banner**               |                   |
+| Gradient blue card              |                   |
+| Status icon + text              | "Sedang Diproses" |
+| "Estimasi pengiriman"           | Date range        |
+| **Status Timeline**             |                   |
+| Vertical line with dots         |                   |
+| ✅ Green: Pembayaran Diterima   | Completed         |
+| 🔴 Red pulsing: Sedang Diproses | Current           |
+| ⚪ Gray: Dikirim, Selesai       | Future            |
+| **Ordered Items**               |                   |
+| Item image                      | Thumbnail         |
+| Name, qty × price               |                   |
+| Line total                      |                   |
+| Grand total                     | Red, bold         |
+| **Shipping Info**               |                   |
+| Address card                    | Full address      |
+| "Nomor resi akan muncul"        | Info text         |
+| **Action Buttons**              |                   |
+| "Unduh Invoice"                 | Outline           |
+| "Hubungi Support"               | Red → WhatsApp    |
 
 ---
 
 ### 12. Orders Screen (`orders.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left |
-| "Pesanan Saya" title | Center |
-| **Status Tabs** | |
-| Semua | All orders |
-| Sedang Diproses | Processing only |
-| Selesai | Completed only |
-| **Order List** | |
-| Order cards | Invoice number, date, status badge, total |
-| Status badges | Color-coded per status |
-| **Empty State** | When no orders match filter |
+| Feature              | Description                               |
+| -------------------- | ----------------------------------------- |
+| **Header**           |                                           |
+| Back button          | Left                                      |
+| "Pesanan Saya" title | Center                                    |
+| **Status Tabs**      |                                           |
+| Semua                | All orders                                |
+| Sedang Diproses      | Processing only                           |
+| Selesai              | Completed only                            |
+| **Order List**       |                                           |
+| Order cards          | Invoice number, date, status badge, total |
+| Status badges        | Color-coded per status                    |
+| **Empty State**      | When no orders match filter               |
 
 ---
 
 ### 13. Profile Screen (`profile.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left |
-| "Profil" title | Center |
-| Settings gear icon | Right |
-| **User Card** | |
-| Dark gradient background | |
-| Avatar image | Circular, large |
-| Name + email | |
-| **Stats Grid (3 cols)** | |
-| Pesanan | Count from orders |
-| Selesai | Completed count |
-| Process | Processing count |
-| **Menu List** | |
-| Pesanan Saya | Clipboard icon, blue → orders |
-| Alamat Pengiriman | Pin icon, red → shipping |
-| Pembayaran | Card icon, green → payment methods |
-| Bantuan | Headset icon, purple → help |
-| **Logout Button** | |
-| Red outline | Full width |
-| Confirmation dialog | Before logout |
+| Feature                  | Description                        |
+| ------------------------ | ---------------------------------- |
+| **Header**               |                                    |
+| Back button              | Left                               |
+| "Profil" title           | Center                             |
+| Settings gear icon       | Right                              |
+| **User Card**            |                                    |
+| Dark gradient background |                                    |
+| Avatar image             | Circular, large                    |
+| Name + email             |                                    |
+| **Stats Grid (3 cols)**  |                                    |
+| Pesanan                  | Count from orders                  |
+| Selesai                  | Completed count                    |
+| Process                  | Processing count                   |
+| **Menu List**            |                                    |
+| Pesanan Saya             | Clipboard icon, blue → orders      |
+| Alamat Pengiriman        | Pin icon, red → shipping           |
+| Pembayaran               | Card icon, green → payment methods |
+| Bantuan                  | Headset icon, purple → help        |
+| **Logout Button**        |                                    |
+| Red outline              | Full width                         |
+| Confirmation dialog      | Before logout                      |
 
 ---
 
 ### 14. Projects Screen (`projects.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left |
-| "Proyek Saya" title | Center |
-| "+" button | Right, add project |
-| **Stats Grid (3 cols)** | |
-| Proyek Aktif | Count |
-| Total Item | Sum of items |
-| Total Estimasi | Sum of prices |
-| **Project Cards** | |
-| Project name + date | |
-| Share button | |
-| Item list (compact) | Image + name + qty × price |
-| Footer | Item count + total |
-| "Checkout Proyek" | Red → checkout |
-| "Ajukan RFQ" | Outline |
-| **Create Project Modal** | |
-| Bottom sheet | Project name input |
-| "Buat Proyek" button | |
+| Feature                  | Description                |
+| ------------------------ | -------------------------- |
+| **Header**               |                            |
+| Back button              | Left                       |
+| "Proyek Saya" title      | Center                     |
+| "+" button               | Right, add project         |
+| **Stats Grid (3 cols)**  |                            |
+| Proyek Aktif             | Count                      |
+| Total Item               | Sum of items               |
+| Total Estimasi           | Sum of prices              |
+| **Project Cards**        |                            |
+| Project name + date      |                            |
+| Share button             |                            |
+| Item list (compact)      | Image + name + qty × price |
+| Footer                   | Item count + total         |
+| "Checkout Proyek"        | Red → checkout             |
+| "Ajukan RFQ"             | Outline                    |
+| **Create Project Modal** |                            |
+| Bottom sheet             | Project name input         |
+| "Buat Proyek" button     |                            |
 
 ---
 
 ### 15. Compare Screen (`compare.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left |
-| "Bandingkan Produk" title | Center |
-| "Hapus Semua" button | Right, red text |
-| **Comparison Grid** | |
-| Horizontal scrollable | On small screens |
-| Column 1: Spec labels | PRODUK, DAYA, TEGANGAN, GARANSI |
-| Columns 2-3: Products | Image, name, brand, price, specs |
-| Column 4: Add slot | "+ Tambah Produk" dashed circle |
-| Remove buttons | × per product |
-| **Bottom Row** | |
-| "Beli" buttons | Per product → checkout |
+| Feature                   | Description                      |
+| ------------------------- | -------------------------------- |
+| **Header**                |                                  |
+| Back button               | Left                             |
+| "Bandingkan Produk" title | Center                           |
+| "Hapus Semua" button      | Right, red text                  |
+| **Comparison Grid**       |                                  |
+| Horizontal scrollable     | On small screens                 |
+| Column 1: Spec labels     | PRODUK, DAYA, TEGANGAN, GARANSI  |
+| Columns 2-3: Products     | Image, name, brand, price, specs |
+| Column 4: Add slot        | "+ Tambah Produk" dashed circle  |
+| Remove buttons            | × per product                    |
+| **Bottom Row**            |                                  |
+| "Beli" buttons            | Per product → checkout           |
 
 ---
 
 ### 16. Edit Address Screen (`edit-address.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left |
-| "Edit Alamat" title | Center |
-| **Form Fields** | |
-| Nama Depan | Input field |
-| Nama Belakang | Input field |
-| Nomor Telepon | Input with +62 prefix |
-| Alamat Lengkap | Textarea (3 rows) |
-| Kota | Input field |
-| Kode Pos | Input field |
-| **Form Validation** | |
-| Required field check | Error message in red |
-| **Fixed Bottom Bar** | |
+| Feature                   | Description                         |
+| ------------------------- | ----------------------------------- |
+| **Header**                |                                     |
+| Back button               | Left                                |
+| "Edit Alamat" title       | Center                              |
+| **Form Fields**           |                                     |
+| Nama Depan                | Input field                         |
+| Nama Belakang             | Input field                         |
+| Nomor Telepon             | Input with +62 prefix               |
+| Alamat Lengkap            | Textarea (3 rows)                   |
+| Kota                      | Input field                         |
+| Kode Pos                  | Input field                         |
+| **Form Validation**       |                                     |
+| Required field check      | Error message in red                |
+| **Fixed Bottom Bar**      |                                     |
 | "Simpan Perubahan" button | Full width, saves to sessionStorage |
 
 ---
 
 ### 17. Payment Methods Screen (`payment-methods.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left |
-| "Metode Pembayaran" title | Center |
-| **Saved Payment Methods** | |
-| BCA Virtual Account card | Selected, blue border, "Utama" badge |
-| **Add New Method** | |
-| "+ Tambah Metode Pembayaran" | Bottom sheet option |
-| **Info Box** | |
-| Payment instructions | Transfer guide |
+| Feature                      | Description                          |
+| ---------------------------- | ------------------------------------ |
+| **Header**                   |                                      |
+| Back button                  | Left                                 |
+| "Metode Pembayaran" title    | Center                               |
+| **Saved Payment Methods**    |                                      |
+| BCA Virtual Account card     | Selected, blue border, "Utama" badge |
+| **Add New Method**           |                                      |
+| "+ Tambah Metode Pembayaran" | Bottom sheet option                  |
+| **Info Box**                 |                                      |
+| Payment instructions         | Transfer guide                       |
 
 ---
 
 ### 18. Cart Screen (`cart.html`)
 
-| Feature | Description |
-|---------|-------------|
-| **Header** | |
-| Back button | Left |
-| "Keranjang Belanja" title | Center |
-| "Kosongkan" button | Right, red text |
-| **Empty State** | |
-| Cart icon illustration | Gray circle |
-| "Keranjang Kosong" text | |
-| "Mulai Belanja" button | Returns to home |
-| **Cart Items List** | |
-| Product placeholder icon | Box icon (no images in this mockup) |
-| Product name | Bold |
-| Price | Red |
-| Quantity controls | − [qty] + with animated buttons |
-| Trash icon on minus | When qty = 1 |
-| **Cart Summary** | |
-| Total Item count | |
-| Subtotal | |
-| "Gratis" ongkir | Green text |
-| Total price | Large, red |
-| **Recommendations** | |
-| Horizontal scroll | Product suggestions |
-| "Tambah" buttons | Add to cart |
-| **Fixed Bottom Bar** | |
-| "Lanjut ke Checkout" | Full width |
-| **Toast Notifications** | |
-| Slide-in confirmation | "Produk ditambahkan", "Item dihapus" |
+| Feature                   | Description                          |
+| ------------------------- | ------------------------------------ |
+| **Header**                |                                      |
+| Back button               | Left                                 |
+| "Keranjang Belanja" title | Center                               |
+| "Kosongkan" button        | Right, red text                      |
+| **Empty State**           |                                      |
+| Cart icon illustration    | Gray circle                          |
+| "Keranjang Kosong" text   |                                      |
+| "Mulai Belanja" button    | Returns to home                      |
+| **Cart Items List**       |                                      |
+| Product placeholder icon  | Box icon (no images in this mockup)  |
+| Product name              | Bold                                 |
+| Price                     | Red                                  |
+| Quantity controls         | − [qty] + with animated buttons      |
+| Trash icon on minus       | When qty = 1                         |
+| **Cart Summary**          |                                      |
+| Total Item count          |                                      |
+| Subtotal                  |                                      |
+| "Gratis" ongkir           | Green text                           |
+| Total price               | Large, red                           |
+| **Recommendations**       |                                      |
+| Horizontal scroll         | Product suggestions                  |
+| "Tambah" buttons          | Add to cart                          |
+| **Fixed Bottom Bar**      |                                      |
+| "Lanjut ke Checkout"      | Full width                           |
+| **Toast Notifications**   |                                      |
+| Slide-in confirmation     | "Produk ditambahkan", "Item dihapus" |
 
 ---
 
 ### 19. Additional Screens (Reference Only)
 
-| Screen | Features |
-|--------|----------|
-| `register.html` | Dark background, form fields (Name, Email, Company, Password, Confirm), validation, "Daftar" button |
-| `forgot-password.html` | Email input, "Kirim Link Reset" button |
-| `verification.html` | OTP input fields, countdown timer, "Verifikasi" button |
+| Screen                 | Features                                                                                            |
+| ---------------------- | --------------------------------------------------------------------------------------------------- |
+| `register.html`        | Dark background, form fields (Name, Email, Company, Password, Confirm), validation, "Daftar" button |
+| `forgot-password.html` | Email input, "Kirim Link Reset" button                                                              |
+| `verification.html`    | OTP input fields, countdown timer, "Verifikasi" button                                              |
 
 ---
 
 ## Feature Summary by Category
 
 ### Navigation Patterns
+
 - **Bottom Navigation Bar**: 5 tabs (Beranda, Cari, Proyek, Keranjang, Profil)
 - **Header Pattern**: Back button + Title + Action button
 - **Tab Bar**: Sticky tabs for content sections (Spesifikasi/Dokumen/Kompatibel)
 - **Modal/Bottom Sheet**: RFQ, Add Address, Create Project
 
 ### Interactive Elements
+
 - **Filter Chips**: Active/inactive states, removable
 - **Quantity Selectors**: − [n] + pattern
 - **Toast Notifications**: Slide-in confirmations
@@ -1661,6 +1740,7 @@ Complete feature breakdown of all 17 HTML mockups in `ui-otomasiku-marketplace/`
 - **Checkboxes**: Terms, "Ingat saya", "Jadikan utama"
 
 ### Data Display Patterns
+
 - **Stock Badges**: Color-coded (Green/Orange/Red)
 - **Price Display**: Mitsubishi Red, bold, formatted with `CurrencyFormatter`
 - **Timeline**: Vertical dot-and-line for order status
@@ -1668,6 +1748,7 @@ Complete feature breakdown of all 17 HTML mockups in `ui-otomasiku-marketplace/`
 - **Tiered Pricing**: B2B volume discount cards
 
 ### E-commerce Features
+
 - **Add to Cart**: From home, product detail
 - **Add to Compare**: From home, compare screen
 - **Cart Management**: Quantity controls, remove items
@@ -1678,18 +1759,18 @@ Complete feature breakdown of all 17 HTML mockups in `ui-otomasiku-marketplace/`
 
 ## ⏱️ Estimated Timeline
 
-| Phase | Description | Effort | Running Total |
-|-------|-------------|--------|---------------|
-| M2-0 | Project Setup & Dummy Data | 0.5 day | 0.5 day |
-| M2-1 | Splash, Login & Register | 0.5 day | 1 day |
-| M2-2 | Bottom Nav & Home Screen | 1 day | 2 days |
-| M2-3 | Search Results & Product Detail | 1 day | 3 days |
-| M2-4 | Cart Screen | 0.5 day | 3.5 days |
-| M2-5 | Checkout & Shipping | 1 day | 4.5 days |
-| M2-6 | Payment & Payment Success | 0.5 day | 5 days |
-| M2-7 | Order Detail | 0.5 day | 5.5 days |
-| M2-8 | Profile, Projects & Compare | 1 day | 6.5 days |
-| M2-9 | Polish & Device Testing | 1 day | **7.5 days** |
+| Phase | Description                     | Effort  | Running Total |
+| ----- | ------------------------------- | ------- | ------------- |
+| M2-0  | Project Setup & Dummy Data      | 0.5 day | 0.5 day       |
+| M2-1  | Splash, Login & Register        | 0.5 day | 1 day         |
+| M2-2  | Bottom Nav & Home Screen        | 1 day   | 2 days        |
+| M2-3  | Search Results & Product Detail | 1 day   | 3 days        |
+| M2-4  | Cart Screen                     | 0.5 day | 3.5 days      |
+| M2-5  | Checkout & Shipping             | 1 day   | 4.5 days      |
+| M2-6  | Payment & Payment Success       | 0.5 day | 5 days        |
+| M2-7  | Order Detail                    | 0.5 day | 5.5 days      |
+| M2-8  | Profile, Projects & Compare     | 1 day   | 6.5 days      |
+| M2-9  | Polish & Device Testing         | 1 day   | **7.5 days**  |
 
 **Total: ~7.5 working days** (1.5 weeks)
 
@@ -1698,6 +1779,7 @@ Complete feature breakdown of all 17 HTML mockups in `ui-otomasiku-marketplace/`
 ## 🎯 MILESTONE 2 DEMO CHECKPOINT
 
 > **Present to client (Tahap 2 — Progres 1):**
+>
 > - Working app on **physical Android device**
 > - Complete customer flow: Splash → Login → Browse → Search → Product Detail → Cart → Checkout → BCA VA Payment → Payment Success → Order Detail
 > - All **15 screens** navigable with real product data (**10 dummy products**, real images from OTOMASIKU catalog)

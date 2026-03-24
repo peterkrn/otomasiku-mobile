@@ -121,287 +121,203 @@ class CompareScreen extends ConsumerWidget {
     // Define standard attributes order
     final orderedKeys = ['Power', 'Voltage', 'Warranty', ...specKeys.where((k) => !['Power', 'Voltage', 'Warranty'].contains(k))];
 
-    return Column(
-      children: [
-        // Product cards header
-        Container(
-          color: Colors.white,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              // Product cards row
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: products.map((product) => Expanded(
-                  child: _buildProductCard(context, l10n, ref, product),
-                )).toList(),
-              ),
-            ],
-          ),
-        ),
-        // Comparison table
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Column(
-                children: [
-                  // Header row
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(color: AppColors.border),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 80),
-                        ...products.map((p) => Expanded(
-                          child: Text(
-                            p.name,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        )),
-                      ],
-                    ),
-                  ),
-                  // Specification rows
-                  ...orderedKeys.map((key) => _buildSpecRow(key, products)),
-                ],
-              ),
-            ),
-          ),
-        ),
-        // Bottom padding
-        const SizedBox(height: 16),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: products.map((product) => _buildProductColumn(context, l10n, ref, product, orderedKeys)).toList(),
+      ),
     );
   }
 
-  Widget _buildProductCard(
+  Widget _buildProductColumn(
     BuildContext context,
     AppLocalizations l10n,
     WidgetRef ref,
     Product product,
+    List<String> specKeys,
   ) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      padding: const EdgeInsets.all(12),
+      width: 180,
+      margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Column(
+          // Product image with remove button
+          Stack(
             children: [
               // Product image
               Container(
-                height: 100,
+                height: 140,
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: AppColors.surfaceVariant,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                   child: Image.asset(
                     product.primaryImage,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Center(
+                    errorBuilder: (context, error, stackTrace) => Center(
                       child: Icon(
                         _getCategoryIcon(product.category),
-                        size: 32,
+                        size: 48,
                         color: AppColors.textTertiary,
                       ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
-              // Product name
-              Text(
-                product.name,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              // Brand
-              Text(
-                product.brand == ProductBrand.mitsubishi ? 'Mitsubishi' : 'Danfoss',
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              // Price
-              Text(
-                CurrencyFormatter.formatCompact(product.price),
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.mitsubishiRed,
-                ),
-              ),
-              const SizedBox(height: 8),
-              // Buy button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => context.pushNamed(
-                    AppRoute.productDetail,
-                    pathParameters: {'id': product.id},
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.mitsubishiRed,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+              // Remove button
+              Positioned(
+                top: 8,
+                right: 8,
+                child: GestureDetector(
+                  onTap: () {
+                    ref.read(compareProvider.notifier).toggle(product.id);
+                    if (ref.read(compareProvider).productIds.isEmpty) {
+                      context.pop();
+                    }
+                  },
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.15),
+                          blurRadius: 4,
+                        ),
+                      ],
                     ),
-                  ),
-                  child: Text(
-                    l10n.buy,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                    child: const Icon(
+                      Icons.close,
+                      size: 16,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          // Remove button
-          Positioned(
-            top: 0,
-            right: 0,
-            child: GestureDetector(
-              onTap: () {
-                ref.read(compareProvider.notifier).toggle(product.id);
-                if (ref.read(compareProvider).productIds.isEmpty) {
-                  context.pop();
-                }
-              },
-              child: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 4,
-                    ),
-                  ],
+          // Product info
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Product name
+                Text(
+                  product.name,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                child: const Icon(
-                  Icons.close,
-                  size: 14,
-                  color: AppColors.textTertiary,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSpecRow(String specKey, List<Product> products) {
-    // Find the best value to highlight
-    String? bestValue;
-    bool shouldHighlight = ['Power', 'Warranty'].contains(specKey);
-
-    if (shouldHighlight) {
-      int bestIdx = -1;
-      double bestVal = -1;
-
-      for (int i = 0; i < products.length; i++) {
-        final val = products[i].specifications?[specKey];
-        if (val != null) {
-          // Extract numeric value
-          final numMatch = RegExp(r'[\d.]+').firstMatch(val);
-          if (numMatch != null) {
-            final numVal = double.tryParse(numMatch.group(0) ?? '0') ?? 0;
-            // For power, higher is better; for warranty, higher is better
-            if (numVal > bestVal) {
-              bestVal = numVal;
-              bestIdx = i;
-            }
-          }
-        }
-      }
-
-      if (bestIdx >= 0) {
-        bestValue = products[bestIdx].specifications?[specKey];
-      }
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: AppColors.border),
-        ),
-      ),
-      child: Row(
-        children: [
-          // Label
-          SizedBox(
-            width: 80,
-            child: Text(
-              specKey,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-          // Values
-          ...products.map((product) {
-            final value = product.specifications?[specKey] ?? '-';
-            final isBest = shouldHighlight && value == bestValue;
-            return Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: isBest
-                      ? BoxDecoration(
-                          color: AppColors.success.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        )
-                      : null,
-                  child: Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: isBest ? FontWeight.bold : FontWeight.normal,
-                      color: isBest ? AppColors.success : AppColors.textPrimary,
-                    ),
-                    textAlign: TextAlign.center,
+                const SizedBox(height: 4),
+                // Brand
+                Text(
+                  product.brand == ProductBrand.mitsubishi ? 'Mitsubishi' : 'Danfoss',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
                   ),
                 ),
+                const SizedBox(height: 4),
+                // Price
+                Text(
+                  CurrencyFormatter.formatCompact(product.price),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.mitsubishiRed,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          // Specifications
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: specKeys.map((key) {
+                final value = product.specifications?[key] ?? '-';
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 60,
+                        child: Text(
+                          key,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.right,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          // Buy button
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => context.pushNamed(
+                  AppRoute.productDetail,
+                  pathParameters: {'id': product.id},
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.mitsubishiRed,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  l10n.buy,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                ),
               ),
-            );
-          }),
+            ),
+          ),
         ],
       ),
     );

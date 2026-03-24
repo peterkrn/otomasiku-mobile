@@ -5,6 +5,7 @@ import '../../core/router/app_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/theme_provider.dart';
 import '../../data/dummy/dummy_orders.dart';
 import '../../models/order.dart';
 
@@ -23,11 +24,11 @@ class ProfileScreen extends ConsumerWidget {
       o.status == OrderStatus.processing || o.status == OrderStatus.shipped).length;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(l10n.profile),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
         actions: [
           IconButton(
@@ -43,11 +44,11 @@ class ProfileScreen extends ConsumerWidget {
         child: Column(
           children: [
             // User card
-            _buildUserCard(l10n),
+            _buildUserCard(l10n, ref),
             const SizedBox(height: 16),
 
             // Stats grid
-            _buildStatsGrid(l10n, totalOrders, completedOrders, processingOrders),
+            _buildStatsGrid(context, l10n, totalOrders, completedOrders, processingOrders),
             const SizedBox(height: 16),
 
             // Menu list
@@ -62,7 +63,9 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildUserCard(AppLocalizations l10n) {
+  Widget _buildUserCard(AppLocalizations l10n, WidgetRef ref) {
+    final isDark = ref.watch(themeProvider) == ThemeMode.dark;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -73,48 +76,77 @@ class ProfileScreen extends ConsumerWidget {
         ),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
+      child: Stack(
         children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
-            ),
-            child: ClipOval(
-              child: Container(
-                color: AppColors.surfaceVariant,
-                child: const Icon(
-                  Icons.person,
-                  size: 32,
-                  color: AppColors.textTertiary,
+          Row(
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
+                ),
+                child: ClipOval(
+                  child: Container(
+                    color: AppColors.surfaceVariant,
+                    child: const Icon(
+                      Icons.person,
+                      size: 32,
+                      color: AppColors.textTertiary,
+                    ),
+                  ),
                 ),
               ),
-            ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'John Doe',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'johndoe@otomasiku.com',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'John Doe',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+          // Dark mode toggle button
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: GestureDetector(
+              onTap: () => ref.read(themeProvider.notifier).toggleTheme(),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    width: 1,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'johndoe@otomasiku.com',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white.withValues(alpha: 0.7),
-                  ),
+                child: Icon(
+                  isDark ? Icons.light_mode : Icons.dark_mode,
+                  color: isDark ? const Color(0xFFFCD34D) : Colors.white,
+                  size: 20,
                 ),
-              ],
+              ),
             ),
           ),
         ],
@@ -123,6 +155,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildStatsGrid(
+    BuildContext context,
     AppLocalizations l10n,
     int totalOrders,
     int completedOrders,
@@ -132,6 +165,7 @@ class ProfileScreen extends ConsumerWidget {
       children: [
         Expanded(
           child: _buildStatCard(
+            context,
             '$totalOrders',
             l10n.orders,
             AppColors.textPrimary,
@@ -140,6 +174,7 @@ class ProfileScreen extends ConsumerWidget {
         const SizedBox(width: 12),
         Expanded(
           child: _buildStatCard(
+            context,
             '$completedOrders',
             l10n.delivered,
             AppColors.success,
@@ -148,6 +183,7 @@ class ProfileScreen extends ConsumerWidget {
         const SizedBox(width: 12),
         Expanded(
           child: _buildStatCard(
+            context,
             '$processingOrders',
             l10n.processing,
             Colors.orange,
@@ -157,13 +193,15 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatCard(String value, String label, Color valueColor) {
+  Widget _buildStatCard(BuildContext context, String value, String label, Color valueColor) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
       ),
       child: Column(
         children: [
@@ -178,9 +216,9 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: AppColors.textSecondary,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             ),
           ),
         ],
@@ -189,39 +227,45 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildMenuList(BuildContext context, AppLocalizations l10n) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
       ),
       child: Column(
         children: [
           _buildMenuItem(
+            context,
             icon: Icons.assignment,
             iconColor: Colors.blue,
             title: l10n.myOrders,
             subtitle: l10n.orderHistory,
             onTap: () => context.pushNamed(AppRoute.orders),
           ),
-          _buildDivider(),
+          _buildDivider(context),
           _buildMenuItem(
+            context,
             icon: Icons.location_on,
             iconColor: AppColors.mitsubishiRed,
             title: l10n.addressBook,
             subtitle: '2 alamat tersimpan',
             onTap: () => context.pushNamed(AppRoute.shipping),
           ),
-          _buildDivider(),
+          _buildDivider(context),
           _buildMenuItem(
+            context,
             icon: Icons.credit_card,
             iconColor: AppColors.success,
             title: l10n.paymentMethods,
             subtitle: l10n.bcaVirtualAccount,
             onTap: () => context.pushNamed(AppRoute.paymentMethods),
           ),
-          _buildDivider(),
+          _buildDivider(context),
           _buildMenuItem(
+            context,
             icon: Icons.headset_mic,
             iconColor: Colors.purple,
             title: l10n.helpCenter,
@@ -234,7 +278,8 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMenuItem({
+  Widget _buildMenuItem(
+    BuildContext context, {
     required IconData icon,
     required Color iconColor,
     required String title,
@@ -242,6 +287,8 @@ class ProfileScreen extends ConsumerWidget {
     required VoidCallback onTap,
     bool isLast = false,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -252,7 +299,7 @@ class ProfileScreen extends ConsumerWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.1),
+                color: iconColor.withValues(alpha: isDark ? 0.2 : 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: iconColor, size: 20),
@@ -264,26 +311,27 @@ class ProfileScreen extends ConsumerWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
+                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right,
               size: 20,
-              color: AppColors.textTertiary,
+              color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
             ),
           ],
         ),
@@ -291,18 +339,28 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDivider() {
-    return const Divider(height: 1, indent: 68, endIndent: 16);
+  Widget _buildDivider(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Divider(
+      height: 1,
+      indent: 68,
+      endIndent: 16,
+      color: isDark ? AppColors.darkBorder : AppColors.border,
+    );
   }
 
   Widget _buildLogoutButton(BuildContext context, AppLocalizations l10n, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton(
         onPressed: () => _showLogoutDialog(context, l10n, ref),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.mitsubishiRed,
-          side: BorderSide(color: const Color(0xFFE7192D).withValues(alpha: 0.3)),
+          side: BorderSide(
+            color: AppColors.mitsubishiRed.withValues(alpha: isDark ? 0.4 : 0.3),
+          ),
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

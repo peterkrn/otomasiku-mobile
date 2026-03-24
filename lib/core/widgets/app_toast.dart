@@ -15,7 +15,7 @@ class AppToast {
       builder: (context) => Positioned(
         left: 16,
         right: 16,
-        bottom: 100, // Above bottom nav
+        bottom: 24, // Just above bottom nav
         child: SafeArea(
           child: Material(
             color: Colors.transparent,
@@ -94,7 +94,7 @@ class _ToastWidgetState extends State<_ToastWidget>
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),

@@ -18,6 +18,7 @@ import '../../features/order/order_detail_screen.dart';
 import '../../features/order/orders_screen.dart';
 import '../../features/shared/widgets/bottom_nav_bar.dart';
 import '../../features/compare/compare_screen.dart';
+import '../../features/home/widgets/compare_bar.dart';
 import '../../features/address/edit_address_screen.dart';
 import '../../features/shipping/shipping_screen.dart';
 import '../../features/payment_methods/payment_methods_screen.dart';
@@ -123,9 +124,16 @@ final GoRouter appRouter = GoRouter(
           },
           child: Scaffold(
             body: navigationShell,
-            bottomNavigationBar: BottomNavBar(
-              currentIndex: navigationShell.currentIndex,
-              onTap: (index) => navigationShell.goBranch(index),
+            bottomNavigationBar: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Global compare bar - appears on all pages when products are selected
+                const CompareBar(),
+                BottomNavBar(
+                  currentIndex: navigationShell.currentIndex,
+                  onTap: (index) => navigationShell.goBranch(index),
+                ),
+              ],
             ),
           ),
         );

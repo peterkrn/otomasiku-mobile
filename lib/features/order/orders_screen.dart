@@ -43,7 +43,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-          onPressed: () => context.goNamed(AppRoute.home),
+          onPressed: () => context.goNamed(AppRoute.profile),
         ),
         title: Text(l10n.myOrders),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
@@ -71,7 +71,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         canPop: false,
         onPopInvokedWithResult: (didPop, result) {
           if (!didPop) {
-            context.goNamed(AppRoute.home);
+            context.goNamed(AppRoute.profile);
           }
         },
         child: _buildOrderList(l10n, isDark),

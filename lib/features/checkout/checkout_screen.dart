@@ -42,6 +42,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       (a) => a.isDefault,
       orElse: () => dummyAddresses.first,
     );
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Calculate discount (simplified for M2)
     final discount = _calculateDiscount(cartItems);
@@ -50,18 +51,18 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final total = afterDiscount + tax;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
         leading: BackButton(
           onPressed: () => context.pop(),
         ),
         title: Text(l10n.checkout),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
       ),
       body: cartItems.isEmpty
-          ? _buildEmptyCart(l10n)
+          ? _buildEmptyCart(l10n, isDark)
           : _buildCheckoutContent(
               context,
               l10n,
@@ -72,14 +73,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               tax,
               total,
               defaultAddress,
+              isDark,
             ),
       bottomNavigationBar: cartItems.isEmpty
           ? null
-          : _buildBottomBar(context, l10n, total),
+          : _buildBottomBar(context, l10n, total, isDark),
     );
   }
 
-  Widget _buildEmptyCart(AppLocalizations l10n) {
+  Widget _buildEmptyCart(AppLocalizations l10n, bool isDark) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -87,14 +89,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           Icon(
             Icons.shopping_cart_outlined,
             size: 64,
-            color: AppColors.textTertiary,
+            color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
           ),
           const SizedBox(height: 16),
           Text(
             l10n.emptyCart,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 24),
@@ -121,6 +124,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     int tax,
     int total,
     defaultAddress,
+    bool isDark,
   ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -129,8 +133,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         children: [
           // Order Summary Section
           _buildSectionCard(
+            context,
             title: l10n.orderSummary,
             trailing: l10n.itemCount(cartItems.length),
+            isDark: isDark,
             child: Column(
               children: cartItems.asMap().entries
                   .map((entry) => _buildCheckoutItem(
@@ -139,6 +145,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         entry.value,
                         entry.key,
                         cartItems.length,
+                        isDark,
                       ))
                   .toList(),
             ),
@@ -147,30 +154,38 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
           // Shipping Address Section
           _buildSectionCard(
+            context,
             title: l10n.shippingAddress,
             trailing: l10n.edit,
+            isDark: isDark,
             onTrailingTap: () => context.pushNamed(AppRoute.shipping),
-            child: _buildAddressCard(defaultAddress, l10n),
+            child: _buildAddressCard(defaultAddress, l10n, isDark),
           ),
           const SizedBox(height: 12),
 
           // Payment Method Section
           _buildSectionCard(
+            context,
             title: l10n.paymentMethod,
-            child: _buildPaymentMethod(l10n),
+            isDark: isDark,
+            child: _buildPaymentMethod(l10n, isDark),
           ),
           const SizedBox(height: 12),
 
           // Shipping Section
           _buildSectionCard(
+            context,
             title: l10n.shipping,
-            child: _buildShippingOption(l10n),
+            isDark: isDark,
+            child: _buildShippingOption(l10n, isDark),
           ),
           const SizedBox(height: 12),
 
           // Payment Summary Section
           _buildSectionCard(
+            context,
             title: l10n.paymentSummary,
+            isDark: isDark,
             child: _buildPaymentSummary(
               l10n,
               totalItems,
@@ -178,6 +193,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               discount,
               tax,
               total,
+              isDark,
             ),
           ),
           const SizedBox(height: 100), // Space for bottom bar
@@ -186,17 +202,19 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
-  Widget _buildSectionCard({
+  Widget _buildSectionCard(
+    BuildContext context, {
     required String title,
     String? trailing,
     VoidCallback? onTrailingTap,
     required Widget child,
+    required bool isDark,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -207,10 +225,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                 ),
               ),
               if (trailing != null)
@@ -240,6 +258,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     CartItem item,
     int index,
     int totalItems,
+    bool isDark,
   ) {
     final product = item.product;
 
@@ -248,7 +267,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: AppColors.divider,
+            color: isDark ? AppColors.darkBorder : AppColors.divider,
             width: index < totalItems - 1 ? 1 : 0,
           ),
         ),
@@ -261,14 +280,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             child: Container(
               width: 72,
               height: 72,
-              color: AppColors.surfaceVariant,
+              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
               child: Image.asset(
                 product.primaryImage,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Icon(
                   _getCategoryIcon(product.category),
                   size: 28,
-                  color: AppColors.textTertiary,
+                  color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                 ),
               ),
             ),
@@ -285,9 +304,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     Expanded(
                       child: Text(
                         product.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
+                          color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -295,12 +315,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                     ),
                     GestureDetector(
                       onTap: () => _removeItem(product.id),
-                      child: const Padding(
-                        padding: EdgeInsets.all(4),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
                         child: Icon(
                           Icons.close,
                           size: 16,
-                          color: AppColors.textTertiary,
+                          color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                         ),
                       ),
                     ),
@@ -309,9 +329,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 const SizedBox(height: 2),
                 Text(
                   product.description ?? '',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -327,14 +347,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         '${item.quantity}x',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
+                          color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                         ),
                       ),
                     ),
@@ -356,13 +377,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
-  Widget _buildAddressCard(dynamic address, AppLocalizations l10n) {
+  Widget _buildAddressCard(dynamic address, AppLocalizations l10n, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
       ),
       child: Stack(
         children: [
@@ -382,23 +403,24 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 children: [
                   Text(
                     address.fullName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
+                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade100,
+                      color: isDark ? AppColors.bcaBlue.withValues(alpha: 0.2) : Colors.blue.shade100,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
                       address.name,
                       style: TextStyle(
                         fontSize: 10,
-                        color: Colors.blue.shade700,
+                        color: isDark ? AppColors.bcaBlue : Colors.blue.shade700,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -408,9 +430,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               const SizedBox(height: 8),
               Text(
                 '${address.company}\n${address.address}\n${address.city}, ${address.postalCode}\n${address.phone}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.textSecondary,
+                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                   height: 1.4,
                 ),
               ),
@@ -418,29 +440,30 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               // PO Number input
               Text(
                 l10n.companyPO,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 6),
               TextField(
                 controller: _poController,
+                style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
                 decoration: InputDecoration(
                   hintText: l10n.poPlaceholder,
-                  hintStyle: const TextStyle(color: AppColors.textTertiary),
+                  hintStyle: TextStyle(color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 10,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -455,14 +478,14 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
-  Widget _buildPaymentMethod(AppLocalizations l10n) {
+  Widget _buildPaymentMethod(AppLocalizations l10n, bool isDark) {
     return Column(
       children: [
         // BCA VA selected
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFFE3F2FD),
+            color: isDark ? AppColors.bcaBlue.withValues(alpha: 0.2) : const Color(0xFFE3F2FD),
             border: Border.all(color: AppColors.bcaBlue, width: 2),
             borderRadius: BorderRadius.circular(12),
           ),
@@ -483,16 +506,17 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   children: [
                     Text(
                       l10n.bcaVirtualAccount,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
+                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                       ),
                     ),
                     Text(
                       l10n.bankTransfer,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -523,9 +547,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
             l10n.paymentHowTo,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
             ),
           ),
         ),
@@ -542,6 +567,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             'Masukkan nomor VA yang diberikan',
             'Masukkan nominal sesuai tagihan lalu konfirmasi',
           ],
+          isDark: isDark,
         ),
         const SizedBox(height: 8),
         _buildExpandableInstruction(
@@ -556,6 +582,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             'Masukkan nomor VA yang diberikan',
             'Cek detail dan konfirmasi pembayaran',
           ],
+          isDark: isDark,
         ),
         const SizedBox(height: 8),
         _buildExpandableInstruction(
@@ -569,6 +596,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             'Masukkan nomor VA yang diberikan',
             'Masukkan nominal dan konfirmasi dengan KeyBCA',
           ],
+          isDark: isDark,
         ),
       ],
     );
@@ -580,6 +608,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     required bool expanded,
     required VoidCallback onTap,
     required List<String> steps,
+    required bool isDark,
   }) {
     return Column(
       children: [
@@ -588,7 +617,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.surfaceVariant,
+              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -598,9 +627,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
+                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -608,7 +638,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   expanded
                       ? Icons.keyboard_arrow_up
                       : Icons.keyboard_arrow_down,
-                  color: AppColors.textTertiary,
+                  color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                   size: 20,
                 ),
               ],
@@ -631,7 +661,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         '${entry.key + 1}. ',
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textSecondary,
+                          color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                         ),
                       ),
                       Expanded(
@@ -639,7 +669,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                           entry.value,
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.textSecondary,
+                            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                           ),
                         ),
                       ),
@@ -653,11 +683,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
-  Widget _buildShippingOption(AppLocalizations l10n) {
+  Widget _buildShippingOption(AppLocalizations l10n, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.mitsubishiRed.withValues(alpha: 0.05),
+        color: isDark ? AppColors.mitsubishiRed.withValues(alpha: 0.15) : AppColors.mitsubishiRed.withValues(alpha: 0.05),
         border: Border.all(color: AppColors.mitsubishiRed, width: 2),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -678,16 +708,17 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               children: [
                 Text(
                   l10n.standardShipping,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                   ),
                 ),
                 Text(
                   l10n.shippingEstimate,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                   ),
                 ),
               ],
@@ -713,36 +744,42 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     int discount,
     int tax,
     int total,
+    bool isDark,
   ) {
     return Column(
       children: [
         _buildSummaryRow(
           l10n.subtotal,
           CurrencyFormatter.format(subtotal),
+          isDark,
         ),
         _buildSummaryRow(
           l10n.volumeDiscountLabel,
           discount > 0 ? '- ${CurrencyFormatter.format(discount)}' : CurrencyFormatter.format(0),
+          isDark,
           valueColor: discount > 0 ? AppColors.success : null,
         ),
         _buildSummaryRow(
           l10n.shippingCost,
           l10n.freeShipping,
+          isDark,
           valueColor: AppColors.success,
         ),
         _buildSummaryRow(
           l10n.taxLabel,
           CurrencyFormatter.format(tax),
+          isDark,
         ),
-        const Divider(height: 24),
+        Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.divider),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               l10n.totalPayment,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
               ),
             ),
             Text(
@@ -779,9 +816,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 },
                 child: Text(
                   l10n.termsAgree,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                   ),
                 ),
               ),
@@ -792,7 +829,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
-  Widget _buildSummaryRow(String label, String value, {Color? valueColor}) {
+  Widget _buildSummaryRow(String label, String value, bool isDark, {Color? valueColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -800,9 +837,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondary,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             ),
           ),
           Text(
@@ -810,7 +847,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: valueColor ?? AppColors.textPrimary,
+              color: valueColor ?? (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
             ),
           ),
         ],
@@ -818,16 +855,16 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     );
   }
 
-  Widget _buildBottomBar(BuildContext context, AppLocalizations l10n, int total) {
+  Widget _buildBottomBar(BuildContext context, AppLocalizations l10n, int total, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Color(0x1A000000),
+            color: isDark ? Colors.black.withValues(alpha: 0.3) : const Color(0x1A000000),
             blurRadius: 8,
-            offset: Offset(0, -2),
+            offset: const Offset(0, -2),
           ),
         ],
       ),
@@ -841,9 +878,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               children: [
                 Text(
                   l10n.total,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                   ),
                 ),
                 Text(

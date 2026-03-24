@@ -36,40 +36,41 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
         leading: BackButton(
           onPressed: () => context.pop(),
         ),
         title: Text(l10n.myOrders),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: AppColors.border),
+                bottom: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
               ),
             ),
             child: Row(
               children: [
-                _buildTab('all', 'Semua'),
-                _buildTab('process', 'Diproses'),
-                _buildTab('selesai', 'Selesai'),
+                _buildTab('all', 'Semua', isDark),
+                _buildTab('process', 'Diproses', isDark),
+                _buildTab('selesai', 'Selesai', isDark),
               ],
             ),
           ),
         ),
       ),
-      body: _buildOrderList(l10n),
+      body: _buildOrderList(l10n, isDark),
     );
   }
 
-  Widget _buildTab(String filter, String label) {
+  Widget _buildTab(String filter, String label, bool isDark) {
     final isActive = _currentFilter == filter;
     return Expanded(
       child: GestureDetector(
@@ -90,7 +91,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: isActive ? AppColors.mitsubishiRed : AppColors.textSecondary,
+              color: isActive ? AppColors.mitsubishiRed : (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
             ),
           ),
         ),
@@ -98,11 +99,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  Widget _buildOrderList(AppLocalizations l10n) {
+  Widget _buildOrderList(AppLocalizations l10n, bool isDark) {
     final orders = _getFilteredOrders();
 
     if (orders.isEmpty) {
-      return _buildEmptyState(l10n);
+      return _buildEmptyState(l10n, isDark);
     }
 
     return ListView.builder(
@@ -111,13 +112,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: _buildOrderCard(context, l10n, orders[index]),
+          child: _buildOrderCard(context, l10n, orders[index], isDark),
         );
       },
     );
   }
 
-  Widget _buildEmptyState(AppLocalizations l10n) {
+  Widget _buildEmptyState(AppLocalizations l10n, bool isDark) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -126,22 +127,22 @@ class _OrdersScreenState extends State<OrdersScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppColors.surfaceVariant,
+              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.inventory_2_outlined,
               size: 36,
-              color: AppColors.textTertiary,
+              color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
             ),
           ),
           const SizedBox(height: 16),
           Text(
             l10n.noOrders,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 8),
@@ -165,6 +166,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     BuildContext context,
     AppLocalizations l10n,
     Order order,
+    bool isDark,
   ) {
     final isProcessing = order.status == OrderStatus.processing ||
         order.status == OrderStatus.shipped;
@@ -173,9 +175,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF3F4F6)),
+        border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFF3F4F6)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -183,8 +185,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
           // ========== HEADER ==========
           Container(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: Color(0xFFF9FAFB))),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: isDark ? AppColors.darkBorder : const Color(0xFFF9FAFB))),
             ),
             child: Row(
               children: [
@@ -192,7 +194,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: isProcessing ? const Color(0xFFFFF7ED) : const Color(0xFFF0FDF4),
+                    color: isProcessing
+                        ? (isDark ? Colors.orange.withValues(alpha: 0.2) : const Color(0xFFFFF7ED))
+                        : (isDark ? AppColors.success.withValues(alpha: 0.2) : const Color(0xFFF0FDF4)),
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
@@ -209,12 +213,19 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     children: [
                       Text(
                         order.orderNumber,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF111827)),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF111827),
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         _formatDate(order.createdAt),
-                        style: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? AppColors.darkTextTertiary : const Color(0xFF9CA3AF),
+                        ),
                       ),
                     ],
                   ),
@@ -222,7 +233,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: isProcessing ? const Color(0xFFFFF7ED) : const Color(0xFFF0FDF4),
+                    color: isProcessing
+                        ? (isDark ? Colors.orange.withValues(alpha: 0.2) : const Color(0xFFFFF7ED))
+                        : (isDark ? AppColors.success.withValues(alpha: 0.2) : const Color(0xFFF0FDF4)),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -252,14 +265,21 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           order.items.isNotEmpty
                               ? '${order.items[0].productName}  ×${order.items[0].quantity}'
                               : '',
-                          style: const TextStyle(fontSize: 14, color: Color(0xFF374151)),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isDark ? AppColors.darkTextSecondary : const Color(0xFF374151),
+                          ),
                         ),
                       ),
                       Text(
                         order.items.isNotEmpty
                             ? CurrencyFormatter.format(order.items[0].totalPrice)
                             : '',
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF111827)),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF111827),
+                        ),
                       ),
                     ],
                   ),
@@ -275,14 +295,21 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           order.items.length > 1
                               ? '${order.items[1].productName}  ×${order.items[1].quantity}'
                               : '',
-                          style: const TextStyle(fontSize: 14, color: Color(0xFF374151)),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isDark ? AppColors.darkTextSecondary : const Color(0xFF374151),
+                          ),
                         ),
                       ),
                       Text(
                         order.items.length > 1
                             ? CurrencyFormatter.format(order.items[1].totalPrice)
                             : '',
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF111827)),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF111827),
+                        ),
                       ),
                     ],
                   ),
@@ -299,11 +326,21 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('$totalQty item · Total', style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF))),
+                    Text(
+                      '$totalQty item · Total',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: isDark ? AppColors.darkTextTertiary : const Color(0xFF9CA3AF),
+                      ),
+                    ),
                     const SizedBox(height: 2),
                     Text(
                       CurrencyFormatter.format(order.total),
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.mitsubishiRed),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.mitsubishiRed,
+                      ),
                     ),
                   ],
                 ),
@@ -317,7 +354,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     alignment: Alignment.center,
-                    child: const Text('✓ Selesai', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF16A34A))),
+                    child: const Text(
+                      '✓ Selesai',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF16A34A),
+                      ),
+                    ),
                   ),
                 if (isProcessing) const SizedBox(width: 8),
                 GestureDetector(
@@ -326,11 +370,18 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     height: 32,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF111827),
+                      color: isDark ? AppColors.darkSurfaceVariant : const Color(0xFF111827),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     alignment: Alignment.center,
-                    child: const Text('Detail', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white)),
+                    child: Text(
+                      'Detail',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? AppColors.darkTextPrimary : Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ],

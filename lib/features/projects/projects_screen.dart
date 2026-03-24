@@ -102,6 +102,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
     int totalItems,
     int totalEstimate,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       children: [
         Expanded(
@@ -109,7 +111,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
             context,
             '$activeProjects',
             l10n.activeProjects,
-            AppColors.textPrimary,
+            isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            isDark,
           ),
         ),
         const SizedBox(width: 12),
@@ -119,6 +122,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
             '$totalItems',
             l10n.totalItems,
             AppColors.mitsubishiRed,
+            isDark,
           ),
         ),
         const SizedBox(width: 12),
@@ -127,15 +131,15 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
             context,
             CurrencyFormatter.formatCompact(totalEstimate),
             l10n.totalEstimate,
-            AppColors.textPrimary,
+            isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            isDark,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String value, String label, Color valueColor) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  Widget _buildStatCard(BuildContext context, String value, String label, Color valueColor, bool isDark) {
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
@@ -327,7 +331,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                     child: Image.asset(
                       item.productImage!,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Icon(
+                      errorBuilder: (context, error, stackTrace) => Icon(
                         Icons.inventory_2,
                         color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                         size: 20,

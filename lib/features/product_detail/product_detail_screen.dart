@@ -57,6 +57,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final product = _product;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (product == null) {
       return Scaffold(
@@ -76,7 +77,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
         : null;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
         leading: BackButton(
           onPressed: () {
@@ -88,8 +89,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
           },
         ),
         title: Text(l10n.productDetail),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
         actions: [
           // Compare button
@@ -97,7 +98,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             onPressed: () => _handleCompare(product, l10n),
             icon: Icon(
               Icons.balance,
-              color: isInCompare ? AppColors.mitsubishiRed : AppColors.textSecondary,
+              color: isInCompare ? AppColors.mitsubishiRed : (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
             ),
           ),
         ],
@@ -107,26 +108,26 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Product image section
-            _buildImageSection(product, l10n),
+            _buildImageSection(product, l10n, isDark),
 
             // Product info section
-            _buildProductInfo(product, l10n, displayStock),
+            _buildProductInfo(product, l10n, displayStock, isDark),
 
             // Tiered pricing section
-            _buildTieredPricing(product, l10n),
+            _buildTieredPricing(product, l10n, isDark),
 
             // Tabs section
-            _buildTabs(product, l10n),
+            _buildTabs(product, l10n, isDark),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(product, l10n, displayStock),
+      bottomNavigationBar: _buildBottomBar(product, l10n, displayStock, isDark),
     );
   }
 
-  Widget _buildImageSection(Product product, AppLocalizations l10n) {
+  Widget _buildImageSection(Product product, AppLocalizations l10n, bool isDark) {
     return Container(
-      color: Colors.white,
+      color: isDark ? AppColors.darkSurface : Colors.white,
       padding: const EdgeInsets.all(24),
       child: Stack(
         children: [
@@ -135,7 +136,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Container(
-                color: AppColors.surfaceVariant,
+                color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
                 child: Image.asset(
                   product.primaryImage,
                     fit: BoxFit.cover,
@@ -144,7 +145,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                         child: Icon(
                           _getCategoryIcon(product.category),
                           size: 64,
-                          color: AppColors.textTertiary,
+                          color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                         ),
                       );
                     },
@@ -218,9 +219,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     Product product,
     AppLocalizations l10n,
     int? displayStock,
+    bool isDark,
   ) {
     return Container(
-      color: Colors.white,
+      color: isDark ? AppColors.darkSurface : Colors.white,
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,10 +230,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
           // Product name
           Text(
             product.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 4),
@@ -239,9 +241,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
           if (product.description != null)
             Text(
               product.description!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
               ),
             ),
           const SizedBox(height: 16),
@@ -250,8 +252,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                border: Border.all(color: Colors.green.shade200),
+                color: isDark ? Colors.green.withValues(alpha: 0.15) : Colors.green.shade50,
+                border: Border.all(color: isDark ? Colors.green.withValues(alpha: 0.4) : Colors.green.shade200),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -260,7 +262,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Colors.green.shade100,
+                      color: isDark ? Colors.green.withValues(alpha: 0.2) : Colors.green.shade100,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -297,13 +299,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             ),
           const SizedBox(height: 16),
           // Price section
-          const Divider(height: 1),
+          Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.divider),
           const SizedBox(height: 16),
           Text(
             l10n.pricePerUnit,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: AppColors.textSecondary,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 4),
@@ -325,7 +327,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                   CurrencyFormatter.format(product.originalPrice!),
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textTertiary,
+                    color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                     decoration: TextDecoration.lineThrough,
                   ),
                 ),
@@ -337,14 +339,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     );
   }
 
-  Widget _buildTieredPricing(Product product, AppLocalizations l10n) {
+  Widget _buildTieredPricing(Product product, AppLocalizations l10n, bool isDark) {
     // Calculate tier prices (simplified for M2)
     final tierPrice1 = product.price; // 1-5 units
     final tierPrice2 = product.hasDiscount ? product.price : (product.price * 0.92).round(); // 6-10 units (8% discount)
     final savings = tierPrice1 - tierPrice2;
 
     return Container(
-      color: Colors.white,
+      color: isDark ? AppColors.darkSurface : Colors.white,
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -352,10 +354,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
         children: [
           Text(
             l10n.tieredPricing,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 12),
@@ -367,6 +369,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
               l10n.priceNormal,
               tierPrice1,
               isSelected: _quantity >= 1 && _quantity <= 5,
+              isDark: isDark,
             ),
           ),
           const SizedBox(height: 8),
@@ -379,6 +382,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
               tierPrice2,
               isBestDeal: true,
               isSelected: _quantity >= 6 && _quantity <= 10,
+              isDark: isDark,
             ),
           ),
           const SizedBox(height: 8),
@@ -386,7 +390,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.surfaceVariant,
+              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -397,16 +401,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                   children: [
                     Text(
                       '11+ Unit',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
+                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                       ),
                     ),
                     Text(
                       l10n.contactSales,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -441,15 +446,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     int price, {
     bool isBestDeal = false,
     bool isSelected = false,
+    bool isDark = false,
   }) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isBestDeal ? Colors.green.shade50 : AppColors.surfaceVariant,
+        color: isBestDeal
+            ? (isDark ? Colors.green.withValues(alpha: 0.15) : Colors.green.shade50)
+            : (isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant),
         border: Border.all(
           color: isSelected
               ? AppColors.mitsubishiRed
-              : (isBestDeal ? Colors.green.shade200 : Colors.transparent),
+              : (isBestDeal
+                  ? (isDark ? Colors.green.withValues(alpha: 0.4) : Colors.green.shade200)
+                  : Colors.transparent),
           width: isSelected ? 2 : 1,
         ),
         borderRadius: BorderRadius.circular(8),
@@ -469,14 +479,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: isBestDeal ? Colors.green.shade800 : AppColors.textPrimary,
+                          color: isBestDeal ? Colors.green.shade800 : (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
                         ),
                       ),
                       Text(
                         subtitle,
                         style: TextStyle(
                           fontSize: 12,
-                          color: isBestDeal ? Colors.green.shade600 : AppColors.textSecondary,
+                          color: isBestDeal ? Colors.green.shade600 : (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
                         ),
                       ),
                     ],
@@ -515,16 +525,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     );
   }
 
-  Widget _buildTabs(Product product, AppLocalizations l10n) {
+  Widget _buildTabs(Product product, AppLocalizations l10n, bool isDark) {
     return Container(
-      color: Colors.white,
+      color: isDark ? AppColors.darkSurface : Colors.white,
       margin: const EdgeInsets.only(top: 12),
       child: Column(
         children: [
           TabBar(
             controller: _tabController,
             labelColor: AppColors.mitsubishiRed,
-            unselectedLabelColor: AppColors.textSecondary,
+            unselectedLabelColor: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             indicatorColor: AppColors.mitsubishiRed,
             labelStyle: const TextStyle(
               fontSize: 14,
@@ -541,9 +551,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildSpecsTab(product, l10n),
-                _buildDocsTab(l10n),
-                _buildCompatTab(product, l10n),
+                _buildSpecsTab(product, l10n, isDark),
+                _buildDocsTab(l10n, isDark),
+                _buildCompatTab(product, l10n, isDark),
               ],
             ),
           ),
@@ -552,14 +562,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     );
   }
 
-  Widget _buildSpecsTab(Product product, AppLocalizations l10n) {
+  Widget _buildSpecsTab(Product product, AppLocalizations l10n, bool isDark) {
     final specs = product.specifications ?? {};
 
     if (specs.isEmpty) {
       return Center(
         child: Text(
           l10n.noProducts,
-          style: const TextStyle(color: AppColors.textSecondary),
+          style: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
         ),
       );
     }
@@ -569,9 +579,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
       children: specs.entries.map((entry) {
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(
-              bottom: BorderSide(color: AppColors.divider),
+              bottom: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.divider),
             ),
           ),
           child: Row(
@@ -579,14 +589,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             children: [
               Text(
                 entry.key,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
+                style: TextStyle(
+                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                 ),
               ),
               Text(
                 entry.value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w600,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                 ),
               ),
             ],
@@ -596,7 +607,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     );
   }
 
-  Widget _buildDocsTab(AppLocalizations l10n) {
+  Widget _buildDocsTab(AppLocalizations l10n, bool isDark) {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
@@ -606,6 +617,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
           Icons.picture_as_pdf,
           Colors.red,
           l10n,
+          isDark,
         ),
         const SizedBox(height: 12),
         _buildDocItem(
@@ -614,6 +626,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
           Icons.menu_book,
           Colors.blue,
           l10n,
+          isDark,
         ),
       ],
     );
@@ -625,11 +638,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     IconData icon,
     Color color,
     AppLocalizations l10n,
+    bool isDark,
   ) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.border),
+        color: isDark ? AppColors.darkSurfaceVariant : null,
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -638,7 +653,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: color.withValues(alpha: isDark ? 0.2 : 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: color, size: 20),
@@ -650,15 +665,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                   ),
                 ),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                   ),
                 ),
               ],
@@ -679,7 +695,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     );
   }
 
-  Widget _buildCompatTab(Product product, AppLocalizations l10n) {
+  Widget _buildCompatTab(Product product, AppLocalizations l10n, bool isDark) {
     // Find compatible products from dummy data
     final compatProducts = dummyProducts
         .where((p) => p.id != product.id)
@@ -690,7 +706,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
       return Center(
         child: Text(
           l10n.noProducts,
-          style: const TextStyle(color: AppColors.textSecondary),
+          style: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
         ),
       );
     }
@@ -700,28 +716,28 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
       children: [
         Text(
           l10n.compatibleWith(product.name),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: AppColors.textSecondary,
+            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
           ),
         ),
         const SizedBox(height: 12),
         ...compatProducts.map((p) => Padding(
           padding: const EdgeInsets.only(bottom: 8),
-          child: _buildCompatItem(p, l10n),
+          child: _buildCompatItem(p, l10n, isDark),
         )),
       ],
     );
   }
 
-  Widget _buildCompatItem(Product compatProduct, AppLocalizations l10n) {
+  Widget _buildCompatItem(Product compatProduct, AppLocalizations l10n, bool isDark) {
     return GestureDetector(
       onTap: () => _showCompatOptions(compatProduct, l10n),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.surfaceVariant,
-          border: Border.all(color: AppColors.border),
+          color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+          border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -730,7 +746,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.border,
+                color: isDark ? AppColors.darkBorder : AppColors.border,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: ClipRRect(
@@ -742,7 +758,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                     return Icon(
                       _getCategoryIcon(compatProduct.category),
                       size: 20,
-                      color: AppColors.textSecondary,
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                     );
                   },
                 ),
@@ -755,15 +771,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                 children: [
                   Text(
                     compatProduct.name,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     '${_categoryToString(compatProduct.category)} • ${_brandToString(compatProduct.brand)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                     ),
                   ),
                 ],
@@ -772,7 +791,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.green.shade100,
+                color: isDark ? Colors.green.withValues(alpha: 0.2) : Colors.green.shade100,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -941,16 +960,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     Product product,
     AppLocalizations l10n,
     int? displayStock,
+    bool isDark,
   ) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Color(0x1A000000),
+            color: isDark ? Colors.black.withValues(alpha: 0.3) : const Color(0x1A000000),
             blurRadius: 8,
-            offset: Offset(0, -2),
+            offset: const Offset(0, -2),
           ),
         ],
       ),
@@ -962,7 +982,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             Container(
               height: 48,
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -981,7 +1001,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                         );
                       }
                     },
-                    icon: const Icon(Icons.remove),
+                    icon: Icon(Icons.remove, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
                     iconSize: 18,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(minWidth: 40, minHeight: 48),
@@ -991,9 +1011,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                     child: Text(
                       '$_quantity',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                       ),
                     ),
                   ),
@@ -1003,7 +1024,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                         setState(() => _quantity++);
                       }
                     },
-                    icon: const Icon(Icons.add),
+                    icon: Icon(Icons.add, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
                     iconSize: 18,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(minWidth: 40, minHeight: 48),
@@ -1019,13 +1040,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
               child: OutlinedButton(
                 onPressed: () => _saveToProject(product, l10n),
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppColors.border),
+                  side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: EdgeInsets.zero,
                 ),
-                child: const Icon(Icons.bookmark_border, size: 20),
+                child: Icon(Icons.bookmark_border, size: 20, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
               ),
             ),
             const SizedBox(width: 8),

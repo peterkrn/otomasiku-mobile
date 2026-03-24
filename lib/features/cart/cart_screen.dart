@@ -26,6 +26,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     final cartItems = cartState.items;
     final selectedIds = ref.watch(selectedCartItemsProvider);
     final allSelected = cartItems.isNotEmpty && selectedIds.length == cartItems.length;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Calculate totals for selected items only
     final selectedItems = cartItems.where((item) => selectedIds.contains(item.product.id)).toList();
@@ -33,16 +34,16 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     final totalItems = selectedItems.fold(0, (sum, item) => sum + item.quantity);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
         title: Text(l10n.cart),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
         scrolledUnderElevation: 1,
       ),
       body: cartItems.isEmpty
-          ? _buildEmptyState(context, l10n)
+          ? _buildEmptyState(context, l10n, isDark)
           : _buildCartList(
               context,
               l10n,
@@ -51,11 +52,12 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               allSelected,
               subtotal,
               totalItems,
+              isDark,
             ),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {
+  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n, bool isDark) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -63,23 +65,23 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           Icon(
             Icons.shopping_cart_outlined,
             size: 80,
-            color: AppColors.textTertiary,
+            color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
           ),
           const SizedBox(height: 16),
           Text(
             l10n.emptyCart,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             l10n.noCartItems,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondary,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 24),
@@ -111,12 +113,13 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     bool allSelected,
     int subtotal,
     int totalItems,
+    bool isDark,
   ) {
     return Column(
       children: [
         // Select all header
         Container(
-          color: Colors.white,
+          color: isDark ? AppColors.darkSurface : Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
@@ -128,7 +131,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: allSelected ? AppColors.mitsubishiRed : AppColors.border,
+                      color: allSelected ? AppColors.mitsubishiRed : (isDark ? AppColors.darkBorder : AppColors.border),
                       width: 2,
                     ),
                     color: allSelected ? AppColors.mitsubishiRed : Colors.transparent,
@@ -143,65 +146,69 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                 onTap: () => _toggleSelectAll(cartItems, allSelected),
                 child: Text(
                   l10n.selectAll,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                   ),
                 ),
               ),
               const Spacer(),
               Text(
                 '${selectedIds.length}/${cartItems.length} item',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.textSecondary,
+                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                 ),
               ),
             ],
           ),
         ),
-        const Divider(height: 1),
+        Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.divider),
         // Cart items list
         Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.only(top: 8, bottom: 16),
-            itemCount: cartItems.length,
-            separatorBuilder: (context, index) => Divider(
-              height: 1,
-              thickness: 1,
-              color: AppColors.divider,
-              indent: 16,
-              endIndent: 16,
+          child: Container(
+            color: isDark ? AppColors.darkSurface : Colors.white,
+            child: ListView.separated(
+              padding: const EdgeInsets.only(top: 8, bottom: 16),
+              itemCount: cartItems.length,
+              separatorBuilder: (context, index) => Divider(
+                height: 1,
+                thickness: 1,
+                color: isDark ? AppColors.darkBorder : AppColors.divider,
+                indent: 16,
+                endIndent: 16,
+              ),
+              itemBuilder: (context, index) {
+                final item = cartItems[index];
+                final isSelected = selectedIds.contains(item.product.id);
+                return CartItemCard(
+                  item: item,
+                  isSelected: isSelected,
+                  isDark: isDark,
+                  onSelectionChanged: (selected) => _toggleItemSelection(item.product.id, selected),
+                  onQuantityChanged: (newQty) {
+                    ref.read(cartProvider.notifier).updateQuantity(
+                          item.product.id,
+                          newQty,
+                        );
+                  },
+                  onRemove: () => _showRemoveConfirmation(context, l10n, item.product.id),
+                );
+              },
             ),
-            itemBuilder: (context, index) {
-              final item = cartItems[index];
-              final isSelected = selectedIds.contains(item.product.id);
-              return CartItemCard(
-                item: item,
-                isSelected: isSelected,
-                onSelectionChanged: (selected) => _toggleItemSelection(item.product.id, selected),
-                onQuantityChanged: (newQty) {
-                  ref.read(cartProvider.notifier).updateQuantity(
-                        item.product.id,
-                        newQty,
-                      );
-                },
-                onRemove: () => _showRemoveConfirmation(context, l10n, item.product.id),
-              );
-            },
           ),
         ),
         // Bottom summary section
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkSurface : Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Color(0x1A000000),
+                color: isDark ? Colors.black.withValues(alpha: 0.3) : const Color(0x1A000000),
                 blurRadius: 8,
-                offset: Offset(0, -2),
+                offset: const Offset(0, -2),
               ),
             ],
           ),
@@ -216,17 +223,17 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                   children: [
                     Text(
                       '${l10n.subtotal} (${l10n.itemCount(totalItems)})',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.textSecondary,
+                        color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                       ),
                     ),
                     Text(
                       CurrencyFormatter.format(subtotal),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                       ),
                     ),
                   ],

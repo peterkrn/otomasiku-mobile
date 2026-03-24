@@ -106,9 +106,10 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
         leading: BackButton(
           onPressed: () => context.pop(),
@@ -116,8 +117,8 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
         title: Text(
           'Edit Alamat',
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -127,9 +128,9 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? AppColors.darkSurface : Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
             ),
             child: Column(
               children: [
@@ -141,6 +142,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
                         label: 'Nama Depan',
                         controller: _firstNameController,
                         placeholder: 'Contoh: John',
+                        isDark: isDark,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -149,6 +151,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
                         label: 'Nama Belakang',
                         controller: _lastNameController,
                         placeholder: 'Contoh: Doe',
+                        isDark: isDark,
                       ),
                     ),
                   ],
@@ -156,7 +159,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
                 const SizedBox(height: 16),
 
                 // Phone
-                _buildPhoneField(l10n),
+                _buildPhoneField(l10n, isDark),
                 const SizedBox(height: 16),
 
                 // Address
@@ -164,6 +167,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
                   label: l10n.addressFull,
                   controller: _addressController,
                   placeholder: 'Jl. Sudirman Kav. 28-30',
+                  isDark: isDark,
                 ),
                 const SizedBox(height: 16),
 
@@ -175,6 +179,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
                         label: l10n.city,
                         controller: _cityController,
                         placeholder: 'Jakarta Selatan',
+                        isDark: isDark,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -184,6 +189,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
                         controller: _postalCodeController,
                         placeholder: '12920',
                         keyboardType: TextInputType.number,
+                        isDark: isDark,
                       ),
                     ),
                   ],
@@ -195,7 +201,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.mitsubishiRed.withValues(alpha: 0.1),
+                      color: AppColors.mitsubishiRed.withValues(alpha: isDark ? 0.2 : 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -224,7 +230,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(l10n),
+      bottomNavigationBar: _buildBottomBar(l10n, isDark),
     );
   }
 
@@ -233,38 +239,40 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
     required TextEditingController controller,
     required String placeholder,
     TextInputType keyboardType = TextInputType.text,
+    bool isDark = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
+            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
           ),
         ),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
           keyboardType: keyboardType,
+          style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: placeholder,
-            hintStyle: const TextStyle(color: AppColors.textTertiary),
+            hintStyle: TextStyle(color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: isDark ? AppColors.darkSurfaceVariant : Colors.white,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 12,
               vertical: 12,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
@@ -276,16 +284,16 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
     );
   }
 
-  Widget _buildPhoneField(AppLocalizations l10n) {
+  Widget _buildPhoneField(AppLocalizations l10n, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           l10n.phone,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
+            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
           ),
         ),
         const SizedBox(height: 6),
@@ -294,19 +302,19 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
-                border: Border.all(color: AppColors.border),
+                color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+                border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(8),
                   bottomLeft: Radius.circular(8),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 '+62',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
+                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                 ),
               ),
             ),
@@ -314,25 +322,26 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
               child: TextField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
+                style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
                 decoration: InputDecoration(
                   hintText: '812 3456 7890',
-                  hintStyle: const TextStyle(color: AppColors.textTertiary),
+                  hintStyle: TextStyle(color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: isDark ? AppColors.darkSurfaceVariant : Colors.white,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 12,
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: const BorderRadius.only(
                       topRight: Radius.circular(8),
                       bottomRight: Radius.circular(8),
                     ),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: const BorderRadius.only(
@@ -354,38 +363,40 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
     required String label,
     required TextEditingController controller,
     required String placeholder,
+    bool isDark = false,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
+            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
           ),
         ),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
           maxLines: 3,
+          style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: placeholder,
-            hintStyle: const TextStyle(color: AppColors.textTertiary),
+            hintStyle: TextStyle(color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: isDark ? AppColors.darkSurfaceVariant : Colors.white,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 12,
               vertical: 12,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.border),
+              borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
@@ -397,16 +408,16 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
     );
   }
 
-  Widget _buildBottomBar(AppLocalizations l10n) {
+  Widget _buildBottomBar(AppLocalizations l10n, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Color(0x1A000000),
+            color: isDark ? Colors.black.withValues(alpha: 0.3) : const Color(0x1A000000),
             blurRadius: 8,
-            offset: Offset(0, -2),
+            offset: const Offset(0, -2),
           ),
         ],
       ),

@@ -161,6 +161,8 @@ class ProfileScreen extends ConsumerWidget {
     int completedOrders,
     int processingOrders,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       children: [
         Expanded(
@@ -168,7 +170,8 @@ class ProfileScreen extends ConsumerWidget {
             context,
             '$totalOrders',
             l10n.orders,
-            AppColors.textPrimary,
+            isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            isDark,
           ),
         ),
         const SizedBox(width: 12),
@@ -178,6 +181,7 @@ class ProfileScreen extends ConsumerWidget {
             '$completedOrders',
             l10n.delivered,
             AppColors.success,
+            isDark,
           ),
         ),
         const SizedBox(width: 12),
@@ -187,15 +191,14 @@ class ProfileScreen extends ConsumerWidget {
             '$processingOrders',
             l10n.processing,
             Colors.orange,
+            isDark,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String value, String label, Color valueColor) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
+  Widget _buildStatCard(BuildContext context, String value, String label, Color valueColor, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(

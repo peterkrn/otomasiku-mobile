@@ -8,6 +8,7 @@ import '../../../core/utils/currency_formatter.dart';
 class CartItemCard extends StatelessWidget {
   final CartItem item;
   final bool isSelected;
+  final bool isDark;
   final Function(bool) onSelectionChanged;
   final Function(int) onQuantityChanged;
   final VoidCallback onRemove;
@@ -16,6 +17,7 @@ class CartItemCard extends StatelessWidget {
     super.key,
     required this.item,
     required this.isSelected,
+    this.isDark = false,
     required this.onSelectionChanged,
     required this.onQuantityChanged,
     required this.onRemove,
@@ -45,7 +47,7 @@ class CartItemCard extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? AppColors.mitsubishiRed : AppColors.border,
+                  color: isSelected ? AppColors.mitsubishiRed : (isDark ? AppColors.darkBorder : AppColors.border),
                   width: 2,
                 ),
                 color: isSelected ? AppColors.mitsubishiRed : Colors.transparent,
@@ -61,14 +63,14 @@ class CartItemCard extends StatelessWidget {
             child: Container(
               width: 80,
               height: 80,
-              color: AppColors.surfaceVariant,
+              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
               child: Image.asset(
                 product.primaryImage,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Icon(
                   _getCategoryIcon(product.category.name),
                   size: 32,
-                  color: AppColors.textTertiary,
+                  color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                 ),
               ),
             ),
@@ -86,10 +88,10 @@ class CartItemCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         product.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -98,12 +100,12 @@ class CartItemCard extends StatelessWidget {
                     // Remove button
                     GestureDetector(
                       onTap: onRemove,
-                      child: const Padding(
-                        padding: EdgeInsets.all(4),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
                         child: Icon(
                           Icons.close,
                           size: 18,
-                          color: AppColors.textTertiary,
+                          color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                         ),
                       ),
                     ),
@@ -113,9 +115,9 @@ class CartItemCard extends StatelessWidget {
                 // Description (category + series)
                 Text(
                   '${_getCategoryLabel(product.category.name, l10n)} ${product.series}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -130,7 +132,7 @@ class CartItemCard extends StatelessWidget {
                     Container(
                       height: 32,
                       decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -146,11 +148,11 @@ class CartItemCard extends StatelessWidget {
                               width: 32,
                               height: 32,
                               alignment: Alignment.center,
-                              child: const Text(
+                              child: Text(
                                 '−',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: AppColors.textSecondary,
+                                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                                 ),
                               ),
                             ),
@@ -162,10 +164,10 @@ class CartItemCard extends StatelessWidget {
                             alignment: Alignment.center,
                             child: Text(
                               '${item.quantity}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
-                                color: AppColors.textPrimary,
+                                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                               ),
                             ),
                           ),
@@ -176,11 +178,11 @@ class CartItemCard extends StatelessWidget {
                               width: 32,
                               height: 32,
                               alignment: Alignment.center,
-                              child: const Text(
+                              child: Text(
                                 '+',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: AppColors.textSecondary,
+                                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                                 ),
                               ),
                             ),

@@ -15,9 +15,10 @@ class PaymentSuccessScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -29,7 +30,7 @@ class PaymentSuccessScreen extends ConsumerWidget {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: AppColors.success.withValues(alpha: 0.1),
+                  color: AppColors.success.withValues(alpha: isDark ? 0.2 : 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -42,10 +43,10 @@ class PaymentSuccessScreen extends ConsumerWidget {
               // Title
               Text(
                 l10n.paymentSuccessTitle,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -53,18 +54,18 @@ class PaymentSuccessScreen extends ConsumerWidget {
               // Subtitle
               Text(
                 l10n.paymentSuccessSubtitle,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: AppColors.textSecondary,
+                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
               // Order info card
-              _buildOrderInfoCard(context, l10n),
+              _buildOrderInfoCard(context, l10n, isDark),
               const Spacer(),
               // Action buttons
-              _buildActionButtons(context, l10n),
+              _buildActionButtons(context, l10n, isDark),
             ],
           ),
         ),
@@ -72,29 +73,32 @@ class PaymentSuccessScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildOrderInfoCard(BuildContext context, AppLocalizations l10n) {
+  Widget _buildOrderInfoCard(BuildContext context, AppLocalizations l10n, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: isDark ? AppColors.darkSurface : AppColors.surfaceVariant,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
       ),
       child: Column(
         children: [
           _buildInfoRow(
             l10n.orderNumber,
             orderId,
+            isDark,
           ),
-          const Divider(height: 24),
+          Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.border),
           _buildInfoRow(
             l10n.orderDate,
             _getCurrentDate(),
+            isDark,
           ),
-          const Divider(height: 24),
+          Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.border),
           _buildInfoRow(
             l10n.total,
             CurrencyFormatter.format(19813000),
+            isDark,
             valueColor: AppColors.mitsubishiRed,
           ),
         ],
@@ -102,15 +106,15 @@ class PaymentSuccessScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, {Color? valueColor}) {
+  Widget _buildInfoRow(String label, String value, bool isDark, {Color? valueColor}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: AppColors.textSecondary,
+            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
           ),
         ),
         Text(
@@ -118,14 +122,14 @@ class PaymentSuccessScreen extends ConsumerWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: valueColor ?? AppColors.textPrimary,
+            color: valueColor ?? (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, AppLocalizations l10n) {
+  Widget _buildActionButtons(BuildContext context, AppLocalizations l10n, bool isDark) {
     return Column(
       children: [
         // View Order button
@@ -160,8 +164,8 @@ class PaymentSuccessScreen extends ConsumerWidget {
           child: OutlinedButton(
             onPressed: () => context.goNamed(AppRoute.home),
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.textPrimary,
-              side: const BorderSide(color: AppColors.border),
+              foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+              side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),

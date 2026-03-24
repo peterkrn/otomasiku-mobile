@@ -1,5 +1,0 @@
-[functions.create-bca-va]
-verify_jwt = false
-
-[functions.check-bca-va]
-verify_jwt = false

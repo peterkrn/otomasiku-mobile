@@ -121,183 +121,248 @@ class CompareScreen extends ConsumerWidget {
     // Define standard attributes order
     final orderedKeys = ['Power', 'Voltage', 'Warranty', ...specKeys.where((k) => !['Power', 'Voltage', 'Warranty'].contains(k))];
 
+    // Calculate column width based on number of products
+    final productColumnWidth = 140.0;
+    final labelColumnWidth = 80.0;
+    final totalWidth = labelColumnWidth + (products.length * productColumnWidth);
+
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: products.map((product) => _buildProductColumn(context, l10n, ref, product, orderedKeys)).toList(),
+      child: Column(
+        children: [
+          // Product images row
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                // Empty space for label column
+                SizedBox(width: labelColumnWidth),
+                // Product images
+                ...products.map((product) => SizedBox(
+                  width: productColumnWidth,
+                  child: _buildProductHeader(context, l10n, ref, product),
+                )),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Comparison table
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              width: totalWidth,
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Column(
+                children: [
+                  // Header row with product names
+                  _buildHeaderRow(products, labelColumnWidth, productColumnWidth),
+                  // Specification rows
+                  ...orderedKeys.map((key) => _buildSpecRow(key, products, labelColumnWidth, productColumnWidth)),
+                  // Buy buttons row
+                  _buildBuyButtonRow(context, l10n, products, labelColumnWidth, productColumnWidth),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }
 
-  Widget _buildProductColumn(
+  Widget _buildProductHeader(
     BuildContext context,
     AppLocalizations l10n,
     WidgetRef ref,
     Product product,
-    List<String> specKeys,
   ) {
-    return Container(
-      width: 180,
-      margin: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Column(
+          children: [
+            // Product image
+            Container(
+              height: 100,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceVariant,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  product.primaryImage,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Center(
+                    child: Icon(
+                      _getCategoryIcon(product.category),
+                      size: 40,
+                      color: AppColors.textTertiary,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Product name
+            Text(
+              product.name,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 2),
+            // Price
+            Text(
+              CurrencyFormatter.formatCompact(product.price),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: AppColors.mitsubishiRed,
+              ),
+            ),
+          ],
+        ),
+        // Remove button
+        Positioned(
+          top: -4,
+          right: -4,
+          child: GestureDetector(
+            onTap: () {
+              ref.read(compareProvider.notifier).toggle(product.id);
+              if (ref.read(compareProvider).productIds.isEmpty) {
+                context.pop();
+              }
+            },
+            child: Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.15),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.close,
+                size: 14,
+                color: AppColors.textSecondary,
+              ),
+            ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeaderRow(List<Product> products, double labelWidth, double columnWidth) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: AppColors.border),
+        ),
+      ),
+      child: Row(
+        children: [
+          // Label column
+          SizedBox(
+            width: labelWidth,
+            child: Text(
+              'SPESIFIKASI',
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          // Product name columns
+          ...products.map((product) => SizedBox(
+            width: columnWidth,
+            child: Text(
+              product.name,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          )),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+    );
+  }
+
+  Widget _buildSpecRow(String specKey, List<Product> products, double labelWidth, double columnWidth) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: AppColors.border),
+        ),
+      ),
+      child: Row(
         children: [
-          // Product image with remove button
-          Stack(
-            children: [
-              // Product image
-              Container(
-                height: 140,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceVariant,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                  child: Image.asset(
-                    product.primaryImage,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Center(
-                      child: Icon(
-                        _getCategoryIcon(product.category),
-                        size: 48,
-                        color: AppColors.textTertiary,
-                      ),
-                    ),
-                  ),
-                ),
+          // Label column
+          SizedBox(
+            width: labelWidth,
+            child: Text(
+              specKey,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textSecondary,
               ),
-              // Remove button
-              Positioned(
-                top: 8,
-                right: 8,
-                child: GestureDetector(
-                  onTap: () {
-                    ref.read(compareProvider.notifier).toggle(product.id);
-                    if (ref.read(compareProvider).productIds.isEmpty) {
-                      context.pop();
-                    }
-                  },
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.15),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.close,
-                      size: 16,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          // Product info
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Product name
-                Text(
-                  product.name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                // Brand
-                Text(
-                  product.brand == ProductBrand.mitsubishi ? 'Mitsubishi' : 'Danfoss',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                // Price
-                Text(
-                  CurrencyFormatter.formatCompact(product.price),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.mitsubishiRed,
-                  ),
-                ),
-              ],
             ),
           ),
-          const Divider(height: 1),
-          // Specifications
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: specKeys.map((key) {
-                final value = product.specifications?[key] ?? '-';
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 60,
-                        child: Text(
-                          key,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          value,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.right,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-          // Buy button
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-            child: SizedBox(
-              width: double.infinity,
+          // Product value columns
+          ...products.map((product) {
+            final value = product.specifications?[specKey] ?? '-';
+            return SizedBox(
+              width: columnWidth,
+              child: Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBuyButtonRow(BuildContext context, AppLocalizations l10n, List<Product> products, double labelWidth, double columnWidth) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          // Empty label column
+          SizedBox(width: labelWidth),
+          // Buy buttons
+          ...products.map((product) => SizedBox(
+            width: columnWidth,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
               child: ElevatedButton(
                 onPressed: () => context.pushNamed(
                   AppRoute.productDetail,
@@ -306,18 +371,18 @@ class CompareScreen extends ConsumerWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.mitsubishiRed,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: Text(
                   l10n.buy,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
-          ),
+          )),
         ],
       ),
     );

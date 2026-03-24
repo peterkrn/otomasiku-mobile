@@ -47,6 +47,7 @@ class _ProductCardState extends ConsumerState<ProductCard>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final cartQuantity = ref.watch(
       cartProvider.select((s) => s.getQuantityForProduct(widget.product.id)),
     );
@@ -66,12 +67,12 @@ class _ProductCardState extends ConsumerState<ProductCard>
       ),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? AppColors.darkSurface : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -97,11 +98,11 @@ class _ProductCardState extends ConsumerState<ProductCard>
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: AppColors.surfaceVariant,
+                          color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
                           child: Icon(
                             _getCategoryIcon(widget.product.category),
                             size: 48,
-                            color: AppColors.textTertiary,
+                            color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                           ),
                         );
                       },
@@ -129,8 +130,8 @@ class _ProductCardState extends ConsumerState<ProductCard>
                       height: 32,
                       decoration: BoxDecoration(
                         color: isInCompare
-                            ? AppColors.mitsubishiRed.withValues(alpha: 0.1)
-                            : Colors.white.withValues(alpha: 0.9),
+                            ? AppColors.mitsubishiRed.withValues(alpha: 0.2)
+                            : (isDark ? AppColors.darkSurface : Colors.white).withValues(alpha: 0.9),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -138,7 +139,7 @@ class _ProductCardState extends ConsumerState<ProductCard>
                         size: 16,
                         color: isInCompare
                             ? AppColors.mitsubishiRed
-                            : AppColors.textTertiary,
+                            : (isDark ? AppColors.darkTextSecondary : AppColors.textTertiary),
                       ),
                     ),
                   ),
@@ -155,10 +156,10 @@ class _ProductCardState extends ConsumerState<ProductCard>
                 children: [
                   Text(
                     widget.product.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -167,9 +168,9 @@ class _ProductCardState extends ConsumerState<ProductCard>
                   if (widget.product.description != null)
                     Text(
                       widget.product.description!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 10,
-                        color: AppColors.textSecondary,
+                        color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -205,7 +206,7 @@ class _ProductCardState extends ConsumerState<ProductCard>
                               if (states.contains(WidgetState.hovered)) {
                                 return AppColors.mitsubishiRed;
                               }
-                              return AppColors.surfaceVariant;
+                              return isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant;
                             }),
                         foregroundColor:
                             WidgetStateProperty.resolveWith<Color?>((states) {
@@ -213,7 +214,7 @@ class _ProductCardState extends ConsumerState<ProductCard>
                               if (states.contains(WidgetState.hovered)) {
                                 return Colors.white;
                               }
-                              return AppColors.textPrimary;
+                              return isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
                             }),
                         overlayColor: WidgetStateProperty.all(
                           Colors.white.withValues(alpha: 0.1),

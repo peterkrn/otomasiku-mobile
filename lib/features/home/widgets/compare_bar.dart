@@ -14,6 +14,7 @@ class CompareBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final compareState = ref.watch(compareProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Hide if no products selected
     if (compareState.productIds.isEmpty) {
@@ -23,13 +24,13 @@ class CompareBar extends ConsumerWidget {
     return Container(
       height: 64,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         border: Border(
-          top: BorderSide(color: AppColors.border, width: 1),
+          top: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border, width: 1),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -43,7 +44,7 @@ class CompareBar extends ConsumerWidget {
             Container(
               width: 24,
               height: 24,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.mitsubishiRed,
                 shape: BoxShape.circle,
               ),
@@ -62,10 +63,10 @@ class CompareBar extends ConsumerWidget {
             // Product count text
             Text(
               l10n.productSelected(compareState.count),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
               ),
             ),
             const Spacer(),
@@ -75,7 +76,7 @@ class CompareBar extends ConsumerWidget {
                 ref.read(compareProvider.notifier).clear();
               },
               style: TextButton.styleFrom(
-                foregroundColor: AppColors.textSecondary,
+                foregroundColor: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
               ),
               child: Text(

@@ -40,11 +40,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final cartCount = ref.watch(
       cartProvider.select((state) => state.totalItems),
     );
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         elevation: 0,
         titleSpacing: 16,
         title: Row(
@@ -71,7 +72,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               ),
             ),
             const SizedBox(width: 8),
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -79,14 +80,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                   ),
                 ),
                 Text(
                   'Electric',
                   style: TextStyle(
                     fontSize: 9,
-                    color: AppColors.textTertiary,
+                    color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                   ),
                 ),
               ],
@@ -99,9 +100,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             alignment: Alignment.center,
             children: [
               IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.shopping_cart_outlined,
-                  color: AppColors.textPrimary,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                 ),
                 onPressed: () => context.pushNamed(AppRoute.cart),
               ),
@@ -154,9 +155,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       body: CustomScrollView(
         slivers: [
           // Search bar
-          SliverToBoxAdapter(child: _buildSearchBar(context)),
+          SliverToBoxAdapter(child: _buildSearchBar(context, isDark)),
           // Filter chips
-          SliverToBoxAdapter(child: _buildFilterChips()),
+          SliverToBoxAdapter(child: _buildFilterChips(isDark)),
           // Hero banner
           SliverToBoxAdapter(
             child: Padding(
@@ -170,10 +171,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
                 l10n.productCatalog,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                 ),
               ),
             ),
@@ -182,7 +183,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           SliverPadding(
             padding: const EdgeInsets.all(24),
             sliver: productState.filteredProducts.isEmpty
-                ? _buildEmptyState(l10n)
+                ? _buildEmptyState(l10n, isDark)
                 : _buildProductGrid(productState),
           ),
           // Bottom padding for navigation
@@ -192,18 +193,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildSearchBar(BuildContext context) {
+  Widget _buildSearchBar(BuildContext context, bool isDark) {
     final l10n = AppLocalizations.of(context);
 
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Colors.white,
+      color: isDark ? AppColors.darkSurface : Colors.white,
       child: TextField(
+        style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
         decoration: InputDecoration(
           hintText: l10n.searchHint,
-          prefixIcon: const Icon(Icons.search, color: AppColors.textTertiary),
+          hintStyle: TextStyle(color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+          prefixIcon: Icon(Icons.search, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
           filled: true,
-          fillColor: AppColors.surfaceVariant,
+          fillColor: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
@@ -217,32 +220,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildFilterChips() {
+  Widget _buildFilterChips(bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: Colors.white,
+      color: isDark ? AppColors.darkSurface : Colors.white,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            _FilterChip(label: 'Semua', category: FilterCategory.all),
+            _buildFilterChip(label: 'Semua', category: FilterCategory.all, isDark: isDark),
             const SizedBox(width: 8),
-            _FilterChip(label: 'Inverter', category: FilterCategory.inverter),
+            _buildFilterChip(label: 'Inverter', category: FilterCategory.inverter, isDark: isDark),
             const SizedBox(width: 8),
-            _FilterChip(label: 'PLC', category: FilterCategory.plc),
+            _buildFilterChip(label: 'PLC', category: FilterCategory.plc, isDark: isDark),
             const SizedBox(width: 8),
-            _FilterChip(label: 'Servo', category: FilterCategory.servo),
+            _buildFilterChip(label: 'Servo', category: FilterCategory.servo, isDark: isDark),
             const SizedBox(width: 8),
-            _FilterChip(label: 'HMI', category: FilterCategory.hmi),
+            _buildFilterChip(label: 'HMI', category: FilterCategory.hmi, isDark: isDark),
           ],
         ),
       ),
     );
   }
 
-  Widget _FilterChip({
+  Widget _buildFilterChip({
     required String label,
     required FilterCategory category,
+    required bool isDark,
   }) {
     final isSelected = _selectedCategory == category;
     return GestureDetector(
@@ -255,7 +259,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.mitsubishiRed
-              : AppColors.surfaceVariant,
+              : (isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -310,20 +314,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     );
   }
 
-  Widget _buildEmptyState(AppLocalizations l10n) {
+  Widget _buildEmptyState(AppLocalizations l10n, bool isDark) {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Center(
           child: Column(
             children: [
-              Icon(Icons.search_off, size: 64, color: AppColors.textTertiary),
+              Icon(Icons.search_off, size: 64, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
               const SizedBox(height: 16),
               Text(
                 l10n.noProducts,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: AppColors.textSecondary,
+                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                 ),
               ),
             ],

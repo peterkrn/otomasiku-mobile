@@ -183,12 +183,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final products = _getFilteredProducts();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
         automaticallyImplyLeading: false,
         titleSpacing: 0,
@@ -205,7 +206,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Icon(Icons.arrow_back, color: AppColors.textSecondary),
+                  child: Icon(Icons.arrow_back, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
                 ),
               ),
               const SizedBox(width: 8),
@@ -213,23 +214,24 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 child: Container(
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceVariant,
+                    color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextField(
                     controller: _searchController,
                     focusNode: _focusNode,
+                    style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
                     decoration: InputDecoration(
                       hintText: l10n.searchHint,
-                      hintStyle: const TextStyle(color: AppColors.textTertiary, fontSize: 14),
-                      prefixIcon: const Icon(Icons.search, color: AppColors.textTertiary, size: 20),
+                      hintStyle: TextStyle(color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary, fontSize: 14),
+                      prefixIcon: Icon(Icons.search, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary, size: 20),
                       suffixIcon: _searchController.text.isNotEmpty
                           ? GestureDetector(
                               onTap: () {
                                 _searchController.clear();
                                 setState(() {});
                               },
-                              child: const Icon(Icons.cancel, color: AppColors.textTertiary, size: 20),
+                              child: Icon(Icons.cancel, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary, size: 20),
                             )
                           : null,
                       border: InputBorder.none,
@@ -248,7 +250,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         children: [
           // Active filters
           Container(
-            color: Colors.white,
+            color: isDark ? AppColors.darkSurface : Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -256,7 +258,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 children: [
                   Text(
                     'Filter aktif:',
-                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    style: TextStyle(fontSize: 12, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
                   ),
                   const SizedBox(width: 8),
                   if (_activeFilters.isEmpty)
@@ -265,13 +267,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       style: TextStyle(
                         fontSize: 12,
                         fontStyle: FontStyle.italic,
-                        color: AppColors.textTertiary,
+                        color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                       ),
                     )
                   else
                     ..._activeFilters.map((f) => Padding(
                           padding: const EdgeInsets.only(right: 8),
-                          child: _buildFilterChip(_getFilterLabel(f, l10n), () => _removeFilter(f)),
+                          child: _buildFilterChip(_getFilterLabel(f, l10n), () => _removeFilter(f), isDark),
                         )),
                   const SizedBox(width: 8),
                   GestureDetector(
@@ -279,7 +281,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.mitsubishiRed.withValues(alpha: 0.05),
+                        color: AppColors.mitsubishiRed.withValues(alpha: isDark ? 0.15 : 0.05),
                         border: Border.all(color: AppColors.mitsubishiRed.withValues(alpha: 0.3)),
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -307,26 +309,29 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
           // Results count & sort
           Container(
-            color: Colors.white,
+            color: isDark ? AppColors.darkSurface : Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Ditemukan ${products.length} produk',
-                  style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 14, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.border),
+                    color: isDark ? AppColors.darkSurfaceVariant : null,
+                    border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       value: _sortBy,
                       isDense: true,
-                      items: const [
+                      dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
+                      style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+                      items: [
                         DropdownMenuItem(value: 'relevance', child: Text('Relevansi')),
                         DropdownMenuItem(value: 'price-low', child: Text('Harga Terendah')),
                         DropdownMenuItem(value: 'price-high', child: Text('Harga Tertinggi')),
@@ -346,12 +351,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           // Product list
           Expanded(
             child: products.isEmpty
-                ? _buildEmptyState()
+                ? _buildEmptyState(isDark)
                 : ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: products.length,
                     itemBuilder: (context, index) {
-                      return _buildProductCard(products[index]);
+                      return _buildProductCard(products[index], isDark);
                     },
                   ),
           ),
@@ -360,11 +365,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  Widget _buildFilterChip(String label, VoidCallback onRemove) {
+  Widget _buildFilterChip(String label, VoidCallback onRemove, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.mitsubishiRed.withValues(alpha: 0.1),
+        color: AppColors.mitsubishiRed.withValues(alpha: isDark ? 0.2 : 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -387,13 +392,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  Widget _buildProductCard(Product product) {
+  Widget _buildProductCard(Product product, bool isDark) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
       ),
       child: InkWell(
         onTap: () => context.pushNamed(
@@ -411,14 +416,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 child: Container(
                   width: 96,
                   height: 96,
-                  color: AppColors.surfaceVariant,
+                  color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
                   child: Image.asset(
                     product.primaryImage,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Icon(
                       _getCategoryIcon(product.category),
                       size: 32,
-                      color: AppColors.textTertiary,
+                      color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                     ),
                   ),
                 ),
@@ -435,9 +440,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     // Name
                     Text(
                       product.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
+                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -446,7 +452,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       '${product.brand == ProductBrand.mitsubishi ? 'Mitsubishi' : 'Danfoss'} ${product.category.name}',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -465,7 +471,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               // Compare button
               IconButton(
                 onPressed: () => _addToCompare(product),
-                icon: const Icon(Icons.balance, color: AppColors.textTertiary),
+                icon: Icon(Icons.balance, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
               ),
             ],
           ),
@@ -519,7 +525,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(bool isDark) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -528,21 +534,22 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: AppColors.surfaceVariant,
+              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.search,
               size: 28,
-              color: AppColors.textTertiary,
+              color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Tidak ada produk ditemukan',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 4),
@@ -550,7 +557,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             'Coba ubah kata kunci atau filter',
             style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondary,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             ),
           ),
         ],
@@ -612,13 +619,14 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.85,
       ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -632,7 +640,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.border,
+                  color: isDark ? AppColors.darkBorder : AppColors.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -645,21 +653,22 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 children: [
                   Text(
                     l10n.addFilter,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                     ),
                   ),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close, size: 20),
+                    icon: Icon(Icons.close, size: 20, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
                 ],
               ),
             ),
-            const Divider(height: 1),
+            Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.border),
 
             // Content
             Padding(
@@ -668,19 +677,19 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Kategori Produk
-                  _buildFilterSection(l10n.filterCategory, widget.categories),
+                  _buildFilterSection(l10n.filterCategory, widget.categories, isDark),
                   const SizedBox(height: 20),
 
                   // Ketersediaan Stok
-                  _buildFilterSection(l10n.filterAvailability, widget.stockOptions),
+                  _buildFilterSection(l10n.filterAvailability, widget.stockOptions, isDark),
                   const SizedBox(height: 20),
 
                   // Brand
-                  _buildFilterSection(l10n.brand, widget.brands),
+                  _buildFilterSection(l10n.brand, widget.brands, isDark),
                   const SizedBox(height: 20),
 
                   // Rentang Daya
-                  _buildFilterSection(l10n.filterPower, widget.powerRanges),
+                  _buildFilterSection(l10n.filterPower, widget.powerRanges, isDark),
                   const SizedBox(height: 20),
 
                   // Apply button
@@ -711,16 +720,16 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
     );
   }
 
-  Widget _buildFilterSection(String title, List<(String, String)> options) {
+  Widget _buildFilterSection(String title, List<(String, String)> options, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title.toUpperCase(),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
+            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             letterSpacing: 0.5,
           ),
         ),
@@ -735,9 +744,11 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.mitsubishiRed.withValues(alpha: 0.1) : Colors.white,
+                  color: isSelected
+                      ? AppColors.mitsubishiRed.withValues(alpha: isDark ? 0.2 : 0.1)
+                      : (isDark ? AppColors.darkSurfaceVariant : Colors.white),
                   border: Border.all(
-                    color: isSelected ? AppColors.mitsubishiRed : AppColors.border,
+                    color: isSelected ? AppColors.mitsubishiRed : (isDark ? AppColors.darkBorder : AppColors.border),
                     width: isSelected ? 1.5 : 1,
                   ),
                   borderRadius: BorderRadius.circular(20),
@@ -747,7 +758,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
-                    color: isSelected ? AppColors.mitsubishiRed : AppColors.textPrimary,
+                    color: isSelected ? AppColors.mitsubishiRed : (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
                   ),
                 ),
               ),

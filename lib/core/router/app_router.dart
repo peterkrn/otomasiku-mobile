@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/splash/splash_screen.dart';
@@ -92,35 +91,14 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const RegisterScreen(),
     ),
 
-    // Bottom navigation shell with 5 tabs
+    // Bottom navigation shell with 4 tabs
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return PopScope(
           canPop: false, // Always intercept back button
           onPopInvokedWithResult: (didPop, result) {
-            if (navigationShell.currentIndex != 0) {
-              // On non-home tab → go to home tab
-              navigationShell.goBranch(0);
-            } else {
-              // On home tab → show exit confirmation dialog
-              showDialog(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: const Text('Keluar Aplikasi'),
-                  content: const Text('Yakin ingin keluar?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      child: const Text('Batal'),
-                    ),
-                    TextButton(
-                      onPressed: () => SystemNavigator.pop(),
-                      child: const Text('Keluar'),
-                    ),
-                  ],
-                ),
-              );
-            }
+            // Always go to home tab on back press
+            navigationShell.goBranch(0);
           },
           child: Scaffold(
             body: navigationShell,

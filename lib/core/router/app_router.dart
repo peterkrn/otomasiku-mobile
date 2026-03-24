@@ -10,8 +10,8 @@ import '../../features/search/search_screen.dart';
 import '../../features/projects/projects_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/product_detail/product_detail_screen.dart';
-import '../../features/cart/cart_screen.dart';
 import '../../features/checkout/checkout_screen.dart';
+import '../../features/cart/cart_screen.dart';
 import '../../features/payment/payment_screen.dart';
 import '../../features/payment/payment_success_screen.dart';
 import '../../features/order/order_detail_screen.dart';
@@ -169,17 +169,7 @@ final GoRouter appRouter = GoRouter(
             ),
           ],
         ),
-        // Cart tab (4th position)
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/cart',
-              name: AppRoute.cart,
-              builder: (context, state) => const CartScreen(),
-            ),
-          ],
-        ),
-        // Profile tab (5th position)
+        // Profile tab (4th position)
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -200,6 +190,13 @@ final GoRouter appRouter = GoRouter(
         final productId = state.pathParameters['id']!;
         return ProductDetailScreen(productId: productId);
       },
+    ),
+
+    // Cart (outside shell)
+    GoRoute(
+      path: '/cart',
+      name: AppRoute.cart,
+      builder: (context, state) => const CartScreen(),
     ),
 
     // Checkout flow (outside shell)

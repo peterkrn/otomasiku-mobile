@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../providers/cart_provider.dart';
 
-/// Bottom navigation bar with 5 tabs: Beranda, Cari, Proyek, Keranjang, Profil
+/// Bottom navigation bar with 4 tabs: Beranda, Cari, Proyek, Profil
 /// Uses StatefulNavigationShell for proper state preservation
 class BottomNavBar extends ConsumerWidget {
   final int currentIndex;
@@ -18,8 +17,6 @@ class BottomNavBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final cartItems = ref.watch(cartProvider).items;
-    final cartCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
 
     return NavigationBar(
       selectedIndex: currentIndex,
@@ -48,21 +45,7 @@ class BottomNavBar extends ConsumerWidget {
           selectedIcon: const Icon(Icons.folder, color: Color(0xFFE7192D)),
           label: l10n.project,
         ),
-        // Tab 4: Keranjang (Cart)
-        NavigationDestination(
-          icon: Badge(
-            isLabelVisible: cartCount > 0,
-            label: Text('$cartCount'),
-            child: const Icon(Icons.shopping_cart_outlined),
-          ),
-          selectedIcon: Badge(
-            isLabelVisible: cartCount > 0,
-            label: Text('$cartCount'),
-            child: const Icon(Icons.shopping_cart, color: Color(0xFFE7192D)),
-          ),
-          label: l10n.cart,
-        ),
-        // Tab 5: Profil (Profile)
+        // Tab 4: Profil (Profile)
         NavigationDestination(
           icon: const Icon(Icons.person_outline),
           selectedIcon: const Icon(Icons.person, color: Color(0xFFE7192D)),

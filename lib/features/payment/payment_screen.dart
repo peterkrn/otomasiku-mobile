@@ -87,7 +87,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: BackButton(
-          onPressed: () => context.goNamed(AppRoute.home),
+          onPressed: () => context.pop(),
         ),
         title: Text(l10n.payment),
         backgroundColor: Colors.white,

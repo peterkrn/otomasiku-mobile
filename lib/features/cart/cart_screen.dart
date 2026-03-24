@@ -244,7 +244,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: selectedIds.isEmpty
-                        ? () => AppToast.show(context, l10n.noItemSelected, isError: true)
+                        ? () => AppToast.show(context, l10n.noItemSelected, isError: true, bottomOffset: 160)
                         : () => context.pushNamed(AppRoute.checkout),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.mitsubishiRed,

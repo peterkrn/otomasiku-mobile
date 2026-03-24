@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 
 /// Toast notification widget
 /// Usage: AppToast.show(context, 'Message', isError: false)
+/// Use bottomOffset to position toast above bottom bars (e.g., checkout button area ~160px)
+/// Default 24px is for screens without bottom action bars
 class AppToast {
   static void show(
     BuildContext context,
     String message, {
     bool isError = false,
+    double bottomOffset = 24, // Default close to bottom nav
   }) {
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
@@ -15,7 +18,7 @@ class AppToast {
       builder: (context) => Positioned(
         left: 16,
         right: 16,
-        bottom: 24, // Just above bottom nav
+        bottom: bottomOffset,
         child: SafeArea(
           child: Material(
             color: Colors.transparent,

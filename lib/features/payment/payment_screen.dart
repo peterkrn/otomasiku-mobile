@@ -63,12 +63,12 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
   void _copyVaNumber(AppLocalizations l10n) {
     Clipboard.setData(ClipboardData(text: _vaNumber.replaceAll(' ', '')));
-    AppToast.show(context, l10n.vaCopied, isError: false);
+    AppToast.show(context, l10n.vaCopied, isError: false, bottomOffset: 160);
   }
 
   void _copyAmount(AppLocalizations l10n) {
     Clipboard.setData(ClipboardData(text: _amount.toString()));
-    AppToast.show(context, 'Jumlah berhasil disalin', isError: false);
+    AppToast.show(context, 'Jumlah berhasil disalin', isError: false, bottomOffset: 160);
   }
 
   void _checkStatus() {

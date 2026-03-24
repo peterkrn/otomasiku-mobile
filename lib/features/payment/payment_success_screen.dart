@@ -19,54 +19,70 @@ class PaymentSuccessScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              const Spacer(),
-              // Success icon
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: AppColors.success.withValues(alpha: isDark ? 0.2 : 0.1),
-                  shape: BoxShape.circle,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+          onPressed: () => context.goNamed(AppRoute.home),
+        ),
+        backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
+        elevation: 0,
+      ),
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop) {
+            context.goNamed(AppRoute.home);
+          }
+        },
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                const Spacer(),
+                // Success icon
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withValues(alpha: isDark ? 0.2 : 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_circle,
+                    size: 80,
+                    color: AppColors.success,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.check_circle,
-                  size: 80,
-                  color: AppColors.success,
+                const SizedBox(height: 24),
+                // Title
+                Text(
+                  l10n.paymentSuccessTitle,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-              const SizedBox(height: 24),
-              // Title
-              Text(
-                l10n.paymentSuccessTitle,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                const SizedBox(height: 8),
+                // Subtitle
+                Text(
+                  l10n.paymentSuccessSubtitle,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              // Subtitle
-              Text(
-                l10n.paymentSuccessSubtitle,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              // Order info card
-              _buildOrderInfoCard(context, l10n, isDark),
-              const Spacer(),
-              // Action buttons
-              _buildActionButtons(context, l10n, isDark),
-            ],
+                const SizedBox(height: 32),
+                // Order info card
+                _buildOrderInfoCard(context, l10n, isDark),
+                const Spacer(),
+                // Action buttons
+                _buildActionButtons(context, l10n, isDark),
+              ],
+            ),
           ),
         ),
       ),

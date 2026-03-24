@@ -123,7 +123,7 @@ class _ShippingScreenState extends ConsumerState<ShippingScreen> {
     // Clear form
     _clearForm();
 
-    AppToast.show(context, 'Alamat berhasil ditambahkan', isError: false);
+    AppToast.show(context, 'Alamat berhasil ditambahkan', isError: false, bottomOffset: 160);
   }
 
   void _clearForm() {

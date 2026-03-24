@@ -924,6 +924,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                     context,
                     l10n.addedToCart(compatProduct.name),
                     isError: false,
+                    bottomOffset: 100,
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -998,6 +999,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                           context,
                           l10n.minQuantityTier(minQty),
                           isError: true,
+                          bottomOffset: 100,
                         );
                       }
                     },
@@ -1110,9 +1112,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   void _handleCompare(Product product, AppLocalizations l10n) {
     final result = ref.read(compareProvider.notifier).toggle(product.id);
     if (!result) {
-      AppToast.show(context, l10n.compareMaxError, isError: true);
+      AppToast.show(context, l10n.compareMaxError, isError: true, bottomOffset: 160);
     } else {
-      AppToast.show(context, l10n.addedToCompare, isError: false);
+      AppToast.show(context, l10n.addedToCompare, isError: false, bottomOffset: 160);
     }
   }
 
@@ -1131,6 +1133,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
       context,
       l10n.addedToCart(product.name),
       isError: false,
+      bottomOffset: 100,
     );
 
     Future.delayed(const Duration(milliseconds: 1500), () {
@@ -1147,6 +1150,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
         context,
         l10n.insufficientStock(displayStock),
         isError: true,
+        bottomOffset: 100,
       );
       return;
     }
@@ -1186,6 +1190,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                 context,
                 l10n.savedToProject('Project 1'),
                 isError: false,
+                bottomOffset: 100,
               );
             },
             child: Text(l10n.save),
@@ -1249,7 +1254,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pop(ctx);
-                  AppToast.show(context, l10n.rfqSent, isError: false);
+                  AppToast.show(context, l10n.rfqSent, isError: false, bottomOffset: 160);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.mitsubishiRed,

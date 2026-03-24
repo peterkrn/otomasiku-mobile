@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/widgets/app_toast.dart';
 import '../../../models/order.dart';
@@ -30,8 +31,9 @@ class OrderDetailScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: () => context.pop(),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+          onPressed: () => context.goNamed(AppRoute.orders),
         ),
         title: Column(
           children: [
@@ -57,21 +59,29 @@ class OrderDetailScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildStatusBanner(order, l10n),
-            const SizedBox(height: 16),
-            _buildTimelineSection(order, l10n, isDark),
-            const SizedBox(height: 16),
-            _buildItemsSection(order, l10n, isDark),
-            const SizedBox(height: 16),
-            _buildShippingInfoSection(order, l10n, isDark),
-            const SizedBox(height: 16),
-            _buildActionButtons(context, l10n, isDark),
-            const SizedBox(height: 24),
-          ],
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop) {
+            context.goNamed(AppRoute.orders);
+          }
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              _buildStatusBanner(order, l10n),
+              const SizedBox(height: 16),
+              _buildTimelineSection(order, l10n, isDark),
+              const SizedBox(height: 16),
+              _buildItemsSection(order, l10n, isDark),
+              const SizedBox(height: 16),
+              _buildShippingInfoSection(order, l10n, isDark),
+              const SizedBox(height: 16),
+              _buildActionButtons(context, l10n, isDark),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );

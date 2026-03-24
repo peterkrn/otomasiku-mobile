@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Provider for managing product compare list (max 3 products)
+/// Provider for managing product compare list (max 2 products)
 final compareProvider = StateNotifierProvider<CompareNotifier, CompareState>((ref) {
   return CompareNotifier();
 });
@@ -19,8 +19,8 @@ class CompareState {
   /// Count of products in compare list
   int get count => productIds.length;
 
-  /// Check if can add more products (max 3)
-  bool get canAddMore => productIds.length < 3;
+  /// Check if can add more products (max 2)
+  bool get canAddMore => productIds.length < 2;
 
   CompareState copyWith({
     List<String>? productIds,
@@ -37,8 +37,8 @@ class CompareNotifier extends StateNotifier<CompareState> {
 
   /// Toggle product in compare list
   /// - If already in list → remove
-  /// - If not in list AND count < 3 → add
-  /// - If count == 3 and trying to add → return false (caller shows error toast)
+  /// - If not in list AND count < 2 → add
+  /// - If count == 2 and trying to add → return false (caller shows error toast)
   bool toggle(String productId) {
     if (state.productIds.contains(productId)) {
       // Remove from list
@@ -47,7 +47,7 @@ class CompareNotifier extends StateNotifier<CompareState> {
       );
       return true;
     } else {
-      if (state.productIds.length >= 3) {
+      if (state.productIds.length >= 2) {
         // Max reached
         return false;
       }

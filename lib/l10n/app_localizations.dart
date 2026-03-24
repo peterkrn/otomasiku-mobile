@@ -809,7 +809,7 @@ abstract class AppLocalizations {
   /// No description provided for @compareMaxError.
   ///
   /// In id, this message translates to:
-  /// **'Maksimal 3 produk untuk dibandingkan'**
+  /// **'Maksimal 2 produk untuk dibandingkan'**
   String get compareMaxError;
 
   /// No description provided for @compare.

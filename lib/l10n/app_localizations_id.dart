@@ -369,7 +369,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get added => '✓ Ditambahkan';
 
   @override
-  String get compareMaxError => 'Maksimal 3 produk untuk dibandingkan';
+  String get compareMaxError => 'Maksimal 2 produk untuk dibandingkan';
 
   @override
   String get compare => 'Bandingkan';

@@ -57,7 +57,14 @@ class CompareScreen extends ConsumerWidget {
       ),
       body: products.isEmpty
           ? _buildEmptyState(context, l10n, isDark)
-          : _buildCompareTable(context, l10n, ref, products, isDark),
+          : OverflowBox(
+              maxWidth: double.infinity,
+              maxHeight: double.infinity,
+              alignment: Alignment.topLeft,
+              child: ClipRect(
+                child: _buildCompareTable(context, l10n, ref, products, isDark),
+              ),
+            ),
     );
   }
 
@@ -124,27 +131,35 @@ class CompareScreen extends ConsumerWidget {
     const labelColumnWidth = 80.0;
     const productColumnWidth = 140.0;
 
+    // Only show "Add product" column if less than 2 products
+    final showAddColumn = products.length < 2;
+    final totalColumns = products.length + (showAddColumn ? 1 : 0);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       scrollDirection: Axis.horizontal,
-      child: Container(
-        width: labelColumnWidth + (products.length + 1) * productColumnWidth,
+      child: ClipRect(
+        child: Container(
+          width: labelColumnWidth + totalColumns * productColumnWidth + 2,
         decoration: BoxDecoration(
           color: isDark ? AppColors.darkSurface : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
         ),
+        clipBehavior: Clip.antiAlias,
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Row 1: PRODUK header + product images
-            _buildProductRow(context, l10n, ref, products, labelColumnWidth, productColumnWidth, isDark),
+            _buildProductRow(context, l10n, ref, products, labelColumnWidth, productColumnWidth, isDark, showAddColumn),
             // Specification rows
-            ...specKeys.map((key) => _buildSpecRow(key, products, labelColumnWidth, productColumnWidth, isDark)),
+            ...specKeys.map((key) => _buildSpecRow(key, products, labelColumnWidth, productColumnWidth, isDark, showAddColumn)),
             // Buy buttons row
-            _buildBuyButtonRow(context, l10n, products, labelColumnWidth, productColumnWidth, isDark),
+            _buildBuyButtonRow(context, l10n, products, labelColumnWidth, productColumnWidth, isDark, showAddColumn),
           ],
         ),
+      ),
       ),
     );
   }
@@ -157,6 +172,7 @@ class CompareScreen extends ConsumerWidget {
     double labelWidth,
     double columnWidth,
     bool isDark,
+    bool showAddColumn,
   ) {
     return Container(
       decoration: BoxDecoration(
@@ -164,30 +180,32 @@ class CompareScreen extends ConsumerWidget {
           bottom: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
         ),
       ),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Label column - "PRODUK"
-            Container(
-              width: labelWidth,
-              padding: const EdgeInsets.all(16),
-              color: isDark ? AppColors.darkSurfaceVariant : const Color(0xFFF9FAFB),
-              child: const Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
-                  'PRODUK',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textSecondary,
-                  ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Label column - "PRODUK"
+          Container(
+            width: labelWidth,
+            height: 250,
+            padding: const EdgeInsets.all(16),
+            color: isDark ? AppColors.darkSurfaceVariant : const Color(0xFFF9FAFB),
+            child: const Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                'PRODUK',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textSecondary,
                 ),
               ),
             ),
-            // Product columns
-            ...products.map((product) => Container(
-              width: columnWidth,
+          ),
+          // Product columns
+          ...products.map((product) => SizedBox(
+            width: columnWidth,
+            height: 250,
+            child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 border: Border(
@@ -285,52 +303,43 @@ class CompareScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-            )),
-            // Add product column
+            ),
+          )),
+          // Add product column (only if less than 2 products)
+          if (showAddColumn)
             Container(
               width: columnWidth,
+              height: 250,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 border: Border(
                   left: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
                 ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () => context.goNamed(AppRoute.home),
-                    child: Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isDark ? AppColors.darkBorder : AppColors.border,
-                          width: 2,
-                          style: BorderStyle.solid,
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.add,
-                        size: 24,
-                        color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => context.goNamed(AppRoute.home),
+                  child: Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isDark ? AppColors.darkBorder : AppColors.border,
+                        width: 2,
+                        style: BorderStyle.solid,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Tambah Produk',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    child: Icon(
+                      Icons.add,
+                      size: 24,
+                      color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                     ),
                   ),
-                ],
+                ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -386,6 +395,7 @@ class CompareScreen extends ConsumerWidget {
     double labelWidth,
     double columnWidth,
     bool isDark,
+    bool showAddColumn,
   ) {
     return Container(
       decoration: BoxDecoration(
@@ -394,6 +404,7 @@ class CompareScreen extends ConsumerWidget {
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Label column
           Container(
@@ -430,23 +441,24 @@ class CompareScreen extends ConsumerWidget {
               ),
             );
           }),
-          // Empty column for "add product"
-          Container(
-            width: columnWidth,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            decoration: BoxDecoration(
-              border: Border(
-                left: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
+          // Empty column for "add product" (only if less than 2 products)
+          if (showAddColumn)
+            Container(
+              width: columnWidth,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              decoration: BoxDecoration(
+                border: Border(
+                  left: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
+                ),
+              ),
+              child: Text(
+                '-',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                ),
               ),
             ),
-            child: Text(
-              '-',
-              style: TextStyle(
-                fontSize: 12,
-                color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -459,13 +471,18 @@ class CompareScreen extends ConsumerWidget {
     double labelWidth,
     double columnWidth,
     bool isDark,
+    bool showAddColumn,
   ) {
     return Container(
       color: isDark ? AppColors.darkSurfaceVariant : const Color(0xFFF9FAFB),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Empty label column
-          SizedBox(width: labelWidth),
+          SizedBox(
+            width: labelWidth,
+            height: 68,
+          ),
           // Buy buttons
           ...products.map((product) => Container(
             width: columnWidth,
@@ -494,8 +511,12 @@ class CompareScreen extends ConsumerWidget {
               ),
             ),
           )),
-          // Empty column for "add product"
-          SizedBox(width: columnWidth),
+          // Empty column for "add product" (only if less than 2 products)
+          if (showAddColumn)
+            SizedBox(
+              width: columnWidth,
+              height: 68,
+            ),
         ],
       ),
     );

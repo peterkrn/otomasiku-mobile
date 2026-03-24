@@ -136,7 +136,7 @@
   "language": "Language",
   "addToCartShort": "Add",
   "added": "✓ Added",
-  "compareMaxError": "Maximum 3 products for comparison",
+  "compareMaxError": "Maximum 2 products for comparison",
   "compare": "Compare",
   "clear": "Clear All",
   "cartRemoveConfirm": "Remove this item from cart?",

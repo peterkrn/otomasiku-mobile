@@ -41,8 +41,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: () => context.pop(),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+          onPressed: () => context.goNamed(AppRoute.home),
         ),
         title: Text(l10n.myOrders),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
@@ -66,7 +67,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
         ),
       ),
-      body: _buildOrderList(l10n, isDark),
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop) {
+            context.goNamed(AppRoute.home);
+          }
+        },
+        child: _buildOrderList(l10n, isDark),
+      ),
     );
   }
 

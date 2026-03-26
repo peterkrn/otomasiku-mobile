@@ -658,34 +658,99 @@ class _ShippingScreenState extends ConsumerState<ShippingScreen> {
       ),
       child: SafeArea(
         top: false,
-        child: SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: widget.isSelectable ? _useSelectedAddress : _saveNewAddress,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.mitsubishiRed,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.check, size: 18),
-                const SizedBox(width: 8),
-                Text(
-                  widget.isSelectable ? l10n.useAddress : l10n.saveAddress,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+        child: widget.isSelectable
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Button to use selected address
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _useSelectedAddress,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.mitsubishiRed,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.check, size: 18),
+                          const SizedBox(width: 8),
+                          Text(
+                            l10n.useAddress,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Button to save new address
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: _saveNewAddress,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                        side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.add_location_alt, size: 18),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Simpan Alamat Baru',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _saveNewAddress,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.mitsubishiRed,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.check, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.saveAddress,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }

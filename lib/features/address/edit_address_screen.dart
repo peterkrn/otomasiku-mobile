@@ -74,12 +74,13 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
 
     setState(() => _showError = false);
 
+    final fullName = [firstName, lastName].where((s) => s.isNotEmpty).join(' ');
+
     // Update the address in the provider
     if (_addressIndex != null) {
+      // Edit existing address
       final addresses = ref.read(addressesProvider);
       final oldAddress = addresses[_addressIndex!];
-
-      final fullName = [firstName, lastName].where((s) => s.isNotEmpty).join(' ');
 
       final updatedAddress = oldAddress.copyWith(
         fullName: fullName,
@@ -93,13 +94,36 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
       newAddresses[_addressIndex!] = updatedAddress;
 
       ref.read(addressesProvider.notifier).state = newAddresses;
+
+      AppToast.show(
+        context,
+        'Alamat berhasil disimpan',
+        isError: false,
+      );
+    } else {
+      // Add new address
+      final newAddress = Address(
+        id: 'addr-${DateTime.now().millisecondsSinceEpoch}',
+        name: fullName,
+        fullName: fullName,
+        phone: '+62 $phone',
+        address: address,
+        city: city,
+        province: 'DKI Jakarta',
+        postalCode: postalCode,
+        isDefault: false,
+      );
+
+      final addresses = ref.read(addressesProvider);
+      ref.read(addressesProvider.notifier).state = [...addresses, newAddress];
+
+      AppToast.show(
+        context,
+        'Alamat berhasil ditambahkan',
+        isError: false,
+      );
     }
 
-    AppToast.show(
-      context,
-      'Alamat berhasil disimpan',
-      isError: false,
-    );
     context.pop();
   }
 
@@ -115,7 +139,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Edit Alamat',
+          _addressIndex != null ? 'Edit Alamat' : 'Tambah Alamat',
         ),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
@@ -441,7 +465,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
                 const Icon(Icons.check, size: 18),
                 const SizedBox(width: 8),
                 Text(
-                  'Simpan Perubahan',
+                  _addressIndex != null ? 'Simpan Perubahan' : 'Simpan Alamat',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

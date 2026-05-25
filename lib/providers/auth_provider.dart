@@ -1,98 +1,148 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Provider for managing authentication state (M2 dummy auth)
-/// In Milestone 2, auth is faked with a simple boolean
-/// In Milestone 3, this will integrate with Supabase Auth
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier();
+import '../core/auth/auth_service.dart';
+import '../core/auth/token_storage.dart';
+import '../data/repositories/auth_repository.dart';
+import 'repository_providers.dart';
+
+final tokenStorageProvider = Provider<TokenStorage>((ref) {
+  return TokenStorage();
 });
 
-/// Authentication state
+final authServiceProvider = Provider<AuthService>((ref) {
+  return AuthService(
+    supabase: Supabase.instance.client,
+    tokenStorage: ref.read(tokenStorageProvider),
+  );
+});
+
+final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
+  final authService = ref.read(authServiceProvider);
+  final authRepository = ref.read(authRepositoryProvider);
+  return AuthNotifier(authService, authRepository, ref);
+});
+
 class AuthState {
-  final bool isLoggedIn;
+  final bool isAuthenticated;
+  final bool isLoading;
+  final String? errorCode;
   final String? userId;
-  final String? name;
   final String? email;
+  final String? name;
 
   const AuthState({
-    this.isLoggedIn = false,
+    this.isAuthenticated = false,
+    this.isLoading = false,
+    this.errorCode,
     this.userId,
-    this.name,
     this.email,
+    this.name,
   });
 
   AuthState copyWith({
-    bool? isLoggedIn,
+    bool? isAuthenticated,
+    bool? isLoading,
+    String? errorCode,
     String? userId,
-    String? name,
     String? email,
+    String? name,
   }) {
     return AuthState(
-      isLoggedIn: isLoggedIn ?? this.isLoggedIn,
+      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
+      isLoading: isLoading ?? this.isLoading,
+      errorCode: errorCode,
       userId: userId ?? this.userId,
-      name: name ?? this.name,
       email: email ?? this.email,
+      name: name ?? this.name,
     );
   }
 }
 
-/// Authentication notifier
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(const AuthState()) {
-    _loadAuthState();
+  AuthNotifier(this._authService, this._authRepository, this._ref)
+      : super(const AuthState()) {
+    _init();
   }
 
-  /// Load persisted auth state on init
-  Future<void> _loadAuthState() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-    if (isLoggedIn) {
+  final AuthService _authService;
+  final AuthRepository _authRepository;
+  final Ref _ref;
+
+  void _init() {
+    if (_authService.isAuthenticated) {
+      final session = Supabase.instance.client.auth.currentSession;
       state = state.copyWith(
-        isLoggedIn: true,
-        name: prefs.getString('userName') ?? '',
-        email: prefs.getString('userEmail') ?? '',
-        userId: prefs.getString('userId') ?? '',
+        isAuthenticated: true,
+        userId: session?.user.id,
+        email: session?.user.email,
+        name: session?.user.userMetadata?['full_name'] as String?,
       );
     }
   }
 
-  /// Login with dummy credentials (M2 only)
   Future<void> login(String email, String password) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', true);
-    await prefs.setString('userName', 'John Doe');
-    await prefs.setString('userEmail', email);
-    await prefs.setString('userId', 'user-001');
+    state = state.copyWith(isLoading: true, errorCode: null);
 
-    state = state.copyWith(
-      isLoggedIn: true,
-      email: email,
-      name: 'John Doe',
-      userId: 'user-001',
-    );
+    final result = await _authService.login(email, password);
+
+    if (result.isSuccess) {
+      _updateFromSession();
+      await _bootstrap();
+    } else {
+      state = state.copyWith(
+        isLoading: false,
+        errorCode: result.errorCode,
+      );
+    }
   }
 
-  /// Register with dummy credentials (M2 only)
-  Future<void> register(String name, String email, String password) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', true);
-    await prefs.setString('userName', name);
-    await prefs.setString('userEmail', email);
-    await prefs.setString('userId', 'user-001');
+  Future<void> register(
+    String name,
+    String email,
+    String password,
+  ) async {
+    state = state.copyWith(isLoading: true, errorCode: null);
 
-    state = state.copyWith(
-      isLoggedIn: true,
-      email: email,
-      name: name,
-      userId: 'user-001',
-    );
+    final result = await _authService.register(email, password, name);
+
+    if (result.isSuccess) {
+      _updateFromSession();
+      await _bootstrap();
+    } else {
+      state = state.copyWith(
+        isLoading: false,
+        errorCode: result.errorCode,
+      );
+    }
   }
 
-  /// Logout
   Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    await _authService.logout();
+    _ref.invalidate(authProvider);
     state = const AuthState();
+  }
+
+  void clearError() {
+    state = state.copyWith(errorCode: null);
+  }
+
+  void _updateFromSession() {
+    final session = Supabase.instance.client.auth.currentSession;
+    state = state.copyWith(
+      isAuthenticated: true,
+      isLoading: false,
+      userId: session?.user.id,
+      email: session?.user.email,
+      name: session?.user.userMetadata?['full_name'] as String?,
+    );
+  }
+
+  Future<void> _bootstrap() async {
+    try {
+      await _authRepository.bootstrap();
+    } catch (_) {
+      // Non-fatal — profile may already exist
+    }
   }
 }

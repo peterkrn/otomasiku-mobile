@@ -1687,6 +1687,138 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Bandingkan'**
   String get compareProduct;
+
+  /// No description provided for @errorInvalidCredentials.
+  ///
+  /// In id, this message translates to:
+  /// **'Email atau password salah.'**
+  String get errorInvalidCredentials;
+
+  /// No description provided for @errorDuplicateEntry.
+  ///
+  /// In id, this message translates to:
+  /// **'Email sudah terdaftar. Silakan login.'**
+  String get errorDuplicateEntry;
+
+  /// No description provided for @errorRateLimit.
+  ///
+  /// In id, this message translates to:
+  /// **'Terlalu banyak percobaan. Coba lagi nanti.'**
+  String get errorRateLimit;
+
+  /// No description provided for @errorUserNotFound.
+  ///
+  /// In id, this message translates to:
+  /// **'Akun tidak ditemukan.'**
+  String get errorUserNotFound;
+
+  /// No description provided for @errorValidation.
+  ///
+  /// In id, this message translates to:
+  /// **'Data tidak valid. Periksa kembali.'**
+  String get errorValidation;
+
+  /// No description provided for @loginTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Selamat Datang!'**
+  String get loginTitle;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk untuk melanjutkan'**
+  String get loginSubtitle;
+
+  /// No description provided for @registerTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Daftar Akun'**
+  String get registerTitle;
+
+  /// No description provided for @registerSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Lengkapi form di bawah ini'**
+  String get registerSubtitle;
+
+  /// No description provided for @rememberMe.
+  ///
+  /// In id, this message translates to:
+  /// **'Ingat saya'**
+  String get rememberMe;
+
+  /// No description provided for @noAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum punya akun?'**
+  String get noAccount;
+
+  /// No description provided for @haveAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Sudah punya akun?'**
+  String get haveAccount;
+
+  /// No description provided for @agreeTerms.
+  ///
+  /// In id, this message translates to:
+  /// **'Saya setuju dengan Syarat & Ketentuan'**
+  String get agreeTerms;
+
+  /// No description provided for @nameHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Lengkap'**
+  String get nameHint;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Password'**
+  String get passwordHint;
+
+  /// No description provided for @confirmPasswordHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi Password'**
+  String get confirmPasswordHint;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Username / Email'**
+  String get emailHint;
+
+  /// No description provided for @loginButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk'**
+  String get loginButton;
+
+  /// No description provided for @registerButton.
+  ///
+  /// In id, this message translates to:
+  /// **'Daftar'**
+  String get registerButton;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In id, this message translates to:
+  /// **'Password minimal 6 karakter'**
+  String get passwordMinLength;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'{field} harus diisi'**
+  String fieldRequired(String field);
+
+  /// No description provided for @agreeTermsRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda harus setuju dengan Syarat & Ketentuan'**
+  String get agreeTermsRequired;
 }
 
 class _AppLocalizationsDelegate

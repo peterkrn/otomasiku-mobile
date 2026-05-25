@@ -356,5 +356,32 @@
     }
   },
   "removeSelection": "Remove",
-  "compareProduct": "Compare"
+  "compareProduct": "Compare",
+  "errorInvalidCredentials": "Invalid email or password.",
+  "errorDuplicateEntry": "Email already registered. Please login.",
+  "errorRateLimit": "Too many attempts. Try again later.",
+  "errorUserNotFound": "Account not found.",
+  "errorValidation": "Invalid data. Please check again.",
+  "loginTitle": "Welcome!",
+  "loginSubtitle": "Login to continue",
+  "registerTitle": "Create Account",
+  "registerSubtitle": "Complete the form below",
+  "rememberMe": "Remember me",
+  "noAccount": "Don't have an account?",
+  "haveAccount": "Already have an account?",
+  "agreeTerms": "I agree to the Terms & Conditions",
+  "nameHint": "Full Name",
+  "passwordHint": "Password",
+  "confirmPasswordHint": "Confirm Password",
+  "emailHint": "Username / Email",
+  "loginButton": "Login",
+  "registerButton": "Register",
+  "passwordMinLength": "Password must be at least 6 characters",
+  "fieldRequired": "{field} is required",
+  "@fieldRequired": {
+    "placeholders": {
+      "field": { "type": "String" }
+    }
+  },
+  "agreeTermsRequired": "You must agree to the Terms & Conditions"
 }

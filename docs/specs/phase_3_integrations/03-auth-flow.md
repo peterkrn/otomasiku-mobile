@@ -4,7 +4,7 @@
 |-------|-------|
 | **Phase** | 3 — Backend Integration |
 | **Priority** | Critical — all feature specs depend on this |
-| **Status** | ⬜ Draft |
+| **Status** | ✅ Done |
 | **Depends On** | 01-infrastructure, 02-models-repositories |
 
 ---

@@ -51,22 +51,19 @@ abstract class AppRoute {
 // GoRouter instance with StatefulShellRoute for bottom navigation
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
-  // M2 dummy auth redirect — in Milestone 3, integrate with Supabase Auth
   redirect: (context, state) {
-    // Read auth state from Riverpod
     final container = ProviderScope.containerOf(context, listen: false);
-    final isLoggedIn = container.read(authProvider).isLoggedIn;
+    final authState = container.read(authProvider);
+    final isAuthenticated = authState.isAuthenticated;
 
     final isAuthRoute = state.matchedLocation == '/' ||
         state.matchedLocation == '/login' ||
         state.matchedLocation == '/register';
 
-    // Not logged in + trying to access protected route → redirect to login
-    if (!isLoggedIn && !isAuthRoute) {
+    if (!isAuthenticated && !isAuthRoute) {
       return '/login';
     }
-    // Logged in + trying to access auth route → redirect to home
-    if (isLoggedIn && isAuthRoute) {
+    if (isAuthenticated && isAuthRoute) {
       return '/home';
     }
     return null;

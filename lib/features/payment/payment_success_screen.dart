@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/router/app_router.dart';
-import '../../../core/utils/currency_formatter.dart';
+import '../../l10n/app_localizations.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/router/app_router.dart';
+import '../../core/utils/currency_formatter.dart';
+import '../../models/order.dart';
+import '../../providers/order_provider.dart';
 
-/// Payment success screen shown after successful payment
 class PaymentSuccessScreen extends ConsumerWidget {
   final String orderId;
 
@@ -15,32 +16,32 @@ class PaymentSuccessScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final orderAsync = ref.watch(orderDetailProvider(orderId));
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-          onPressed: () => context.goNamed(AppRoute.home),
-        ),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          context.goNamed(AppRoute.home);
+        }
+      },
+      child: Scaffold(
         backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
-        elevation: 0,
-      ),
-      body: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) {
-          if (!didPop) {
-            context.goNamed(AppRoute.home);
-          }
-        },
-        child: SafeArea(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+            onPressed: () => context.goNamed(AppRoute.home),
+          ),
+          backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
+          elevation: 0,
+        ),
+        body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
                 const Spacer(),
-                // Success icon
                 Container(
                   width: 120,
                   height: 120,
@@ -55,7 +56,6 @@ class PaymentSuccessScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Title
                 Text(
                   l10n.paymentSuccessTitle,
                   style: TextStyle(
@@ -66,7 +66,6 @@ class PaymentSuccessScreen extends ConsumerWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                // Subtitle
                 Text(
                   l10n.paymentSuccessSubtitle,
                   style: TextStyle(
@@ -76,10 +75,15 @@ class PaymentSuccessScreen extends ConsumerWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-                // Order info card
-                _buildOrderInfoCard(context, l10n, isDark),
+                orderAsync.when(
+                  data: (order) => _buildOrderInfoCard(context, l10n, order, isDark),
+                  loading: () => const SizedBox(
+                    height: 100,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (_, _) => _buildOrderInfoCardSimple(l10n, isDark),
+                ),
                 const Spacer(),
-                // Action buttons
                 _buildActionButtons(context, l10n, isDark),
               ],
             ),
@@ -89,7 +93,7 @@ class PaymentSuccessScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildOrderInfoCard(BuildContext context, AppLocalizations l10n, bool isDark) {
+  Widget _buildOrderInfoCard(BuildContext context, AppLocalizations l10n, Order order, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -99,24 +103,34 @@ class PaymentSuccessScreen extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          _buildInfoRow(
-            l10n.orderNumber,
-            orderId,
-            isDark,
-          ),
+          _buildInfoRow(l10n.orderNumber, order.orderNumber, isDark),
           Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.border),
-          _buildInfoRow(
-            l10n.orderDate,
-            _getCurrentDate(),
-            isDark,
-          ),
+          _buildInfoRow(l10n.orderDate, _formatDate(order.createdAt), isDark),
           Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.border),
           _buildInfoRow(
             l10n.total,
-            CurrencyFormatter.format(19813000),
+            CurrencyFormatter.format(order.totalAmount),
             isDark,
             valueColor: AppColors.mitsubishiRed,
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderInfoCardSimple(AppLocalizations l10n, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+      ),
+      child: Column(
+        children: [
+          _buildInfoRow(l10n.orderNumber, orderId, isDark),
+          Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.border),
+          _buildInfoRow(l10n.orderDate, _formatDate(DateTime.now()), isDark),
         ],
       ),
     );
@@ -148,7 +162,6 @@ class PaymentSuccessScreen extends ConsumerWidget {
   Widget _buildActionButtons(BuildContext context, AppLocalizations l10n, bool isDark) {
     return Column(
       children: [
-        // View Order button
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
@@ -174,7 +187,6 @@ class PaymentSuccessScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 12),
-        // Back to Home button
         SizedBox(
           width: double.infinity,
           child: OutlinedButton(
@@ -200,9 +212,8 @@ class PaymentSuccessScreen extends ConsumerWidget {
     );
   }
 
-  String _getCurrentDate() {
-    final now = DateTime.now();
-    return '${now.day} ${_getMonthName(now.month)} ${now.year}';
+  String _formatDate(DateTime date) {
+    return '${date.day} ${_getMonthName(date.month)} ${date.year}';
   }
 
   String _getMonthName(int month) {

@@ -1,81 +1,39 @@
-/// Address model for Otomasiku Marketplace
+import 'package:json_annotation/json_annotation.dart';
+
+part 'address.g.dart';
+
+@JsonSerializable()
 class Address {
   final String id;
-  final String name;
-  final String fullName;
-  final String? company;
+  final String label;
+  final String recipient;
   final String phone;
-  final String address;
+  final String street;
   final String city;
   final String province;
   final String postalCode;
-  final String? kecamatan;
-  final String? kelurahan;
-  final String? notes;
-  final String? npwp;
   final bool isDefault;
+  final DateTime createdAt;
 
   const Address({
     required this.id,
-    required this.name,
-    required this.fullName,
-    this.company,
+    required this.label,
+    required this.recipient,
     required this.phone,
-    required this.address,
+    required this.street,
     required this.city,
     required this.province,
     required this.postalCode,
-    this.kecamatan,
-    this.kelurahan,
-    this.notes,
-    this.npwp,
     required this.isDefault,
+    required this.createdAt,
   });
 
-  /// Get full address as single string
-  String get fullAddress {
-    final parts = [address, city, province, postalCode];
-    if (company != null) {
-      parts.insert(0, company!);
-    }
-    return parts.join(', ');
-  }
+  factory Address.fromJson(Map<String, dynamic> json) =>
+      _$AddressFromJson(json);
 
-  /// Get label for address selector
-  String get fullLabel => '$name - $fullAddress';
+  Map<String, dynamic> toJson() => _$AddressToJson(this);
 
-  /// Copy with new values
-  Address copyWith({
-    String? id,
-    String? name,
-    String? fullName,
-    String? company,
-    String? phone,
-    String? address,
-    String? city,
-    String? province,
-    String? postalCode,
-    String? kecamatan,
-    String? kelurahan,
-    String? notes,
-    String? npwp,
-    bool? isDefault,
-  }) {
-    return Address(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      fullName: fullName ?? this.fullName,
-      company: company ?? this.company,
-      phone: phone ?? this.phone,
-      address: address ?? this.address,
-      city: city ?? this.city,
-      province: province ?? this.province,
-      postalCode: postalCode ?? this.postalCode,
-      kecamatan: kecamatan ?? this.kecamatan,
-      kelurahan: kelurahan ?? this.kelurahan,
-      notes: notes ?? this.notes,
-      npwp: npwp ?? this.npwp,
-      isDefault: isDefault ?? this.isDefault,
-    );
-  }
+  String get fullAddress => '$street, $city, $province $postalCode';
+
+  String get fullLabel => '$label - $fullAddress';
 }

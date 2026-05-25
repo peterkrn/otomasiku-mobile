@@ -8,10 +8,9 @@ import 'package:otomasiku_mobile/app.dart';
 
 void main() {
   testWidgets('App loads successfully', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
     await tester.pumpWidget(const ProviderScope(child: OtomasikuApp()));
+    await tester.pump(const Duration(seconds: 4));
 
-    // Verify that the app renders (placeholder screens)
     expect(find.byType(MaterialApp), findsOneWidget);
   });
 }

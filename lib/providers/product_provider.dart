@@ -2,12 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product.dart' as model;
 import '../data/dummy/dummy_products.dart' as dummy_products;
 
-/// Provider for managing product list and filters
 final productProvider = StateNotifierProvider<ProductNotifier, ProductState>((ref) {
   return ProductNotifier();
 });
 
-/// Product filter options (matches ProductCategory enum from model)
 enum FilterCategory {
   all,
   inverter,
@@ -16,7 +14,6 @@ enum FilterCategory {
   hmi,
 }
 
-/// Product state
 class ProductState {
   final List<model.Product> allProducts;
   final List<model.Product> filteredProducts;
@@ -57,13 +54,11 @@ class ProductState {
   }
 }
 
-/// Product notifier
 class ProductNotifier extends StateNotifier<ProductState> {
   ProductNotifier() : super(const ProductState(allProducts: [], filteredProducts: [])) {
     loadProducts();
   }
 
-  /// Load products from dummy data (M2 only)
   void loadProducts() {
     state = state.copyWith(
       allProducts: dummy_products.dummyProducts,
@@ -71,15 +66,13 @@ class ProductNotifier extends StateNotifier<ProductState> {
     );
   }
 
-  /// Filter by category
   void setCategory(FilterCategory category) {
     List<model.Product> filtered = state.allProducts;
 
     if (category != FilterCategory.all) {
-      // Map FilterCategory to model.ProductCategory
-      final targetCategory = _mapFilterToProductCategory(category);
+      final targetSlug = _mapFilterToCategorySlug(category);
       filtered = state.allProducts
-          .where((p) => p.category == targetCategory)
+          .where((p) => p.category.slug == targetSlug)
           .toList();
     }
 
@@ -90,7 +83,6 @@ class ProductNotifier extends StateNotifier<ProductState> {
     );
   }
 
-  /// Set search query
   void setSearchQuery(String query) {
     state = state.copyWith(
       searchQuery: query,
@@ -98,7 +90,6 @@ class ProductNotifier extends StateNotifier<ProductState> {
     );
   }
 
-  /// Get product by ID
   model.Product? getProductById(String id) {
     try {
       return state.allProducts.firstWhere((p) => p.id == id);
@@ -107,7 +98,6 @@ class ProductNotifier extends StateNotifier<ProductState> {
     }
   }
 
-  /// Apply search filter
   List<model.Product> _applySearch(List<model.Product> products, String query) {
     if (query.isEmpty) {
       return products;
@@ -116,22 +106,21 @@ class ProductNotifier extends StateNotifier<ProductState> {
     final lowerQuery = query.toLowerCase();
     return products.where((p) {
       final nameMatch = p.name.toLowerCase().contains(lowerQuery);
-      final descMatch = p.description?.toLowerCase().contains(lowerQuery) ?? false;
+      final descMatch = p.descriptionId?.toLowerCase().contains(lowerQuery) ?? false;
       return nameMatch || descMatch;
     }).toList();
   }
 
-  /// Map FilterCategory to model.ProductCategory
-  model.ProductCategory _mapFilterToProductCategory(FilterCategory filter) {
+  String _mapFilterToCategorySlug(FilterCategory filter) {
     switch (filter) {
       case FilterCategory.inverter:
-        return model.ProductCategory.inverter;
+        return 'inverter';
       case FilterCategory.plc:
-        return model.ProductCategory.plc;
+        return 'plc';
       case FilterCategory.servo:
-        return model.ProductCategory.servo;
+        return 'servo';
       case FilterCategory.hmi:
-        return model.ProductCategory.hmi;
+        return 'hmi';
       case FilterCategory.all:
         throw Exception('Cannot map "all" to a specific category');
     }

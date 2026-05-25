@@ -2,8 +2,9 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 
-import '../../models/user_profile.dart';
+import '../../core/errors/app_exception.dart';
 import '../../core/network/api_response.dart';
+import '../../models/user_profile.dart';
 
 abstract class ProfileRepository {
   Future<UserProfile> getProfile();
@@ -28,9 +29,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
         );
 
     if (!apiResponse.success || apiResponse.data == null) {
-      throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+      throw ApiException(
+        code: apiResponse.error?.code ?? 'UNKNOWN',
+        statusCode: response.statusCode ?? 200,
+        details: apiResponse.error?.details,
       );
     }
 
@@ -49,9 +51,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
         );
 
     if (!apiResponse.success || apiResponse.data == null) {
-      throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+      throw ApiException(
+        code: apiResponse.error?.code ?? 'UNKNOWN',
+        statusCode: response.statusCode ?? 200,
+        details: apiResponse.error?.details,
       );
     }
 
@@ -73,9 +76,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
         );
 
     if (!apiResponse.success || apiResponse.data == null) {
-      throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+      throw ApiException(
+        code: apiResponse.error?.code ?? 'UNKNOWN',
+        statusCode: response.statusCode ?? 200,
+        details: apiResponse.error?.details,
       );
     }
 

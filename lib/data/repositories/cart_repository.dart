@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 
-import '../../models/cart_item.dart';
+import '../../core/errors/app_exception.dart';
 import '../../core/network/api_response.dart';
+import '../../models/cart_item.dart';
 
 abstract class CartRepository {
   Future<CartResponse> getCart();
@@ -33,9 +34,10 @@ class CartRepositoryImpl implements CartRepository {
         );
 
     if (!apiResponse.success || apiResponse.data == null) {
-      throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+      throw ApiException(
+        code: apiResponse.error?.code ?? 'UNKNOWN',
+        statusCode: response.statusCode ?? 200,
+        details: apiResponse.error?.details,
       );
     }
 
@@ -71,9 +73,10 @@ class CartRepositoryImpl implements CartRepository {
         );
 
     if (!apiResponse.success || apiResponse.data == null) {
-      throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+      throw ApiException(
+        code: apiResponse.error?.code ?? 'UNKNOWN',
+        statusCode: response.statusCode ?? 200,
+        details: apiResponse.error?.details,
       );
     }
 
@@ -96,9 +99,10 @@ class CartRepositoryImpl implements CartRepository {
         );
 
     if (!apiResponse.success || apiResponse.data == null) {
-      throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+      throw ApiException(
+        code: apiResponse.error?.code ?? 'UNKNOWN',
+        statusCode: response.statusCode ?? 200,
+        details: apiResponse.error?.details,
       );
     }
 

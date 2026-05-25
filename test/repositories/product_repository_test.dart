@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:otomasiku_mobile/core/errors/app_exception.dart';
 import 'package:otomasiku_mobile/data/repositories/product_repository.dart';
 
 void main() {
@@ -67,7 +68,7 @@ void main() {
       final adapter = _MockAdapter((options) {
         return Response(
           requestOptions: options,
-          statusCode: 404,
+          statusCode: 200,
           data: {
             'success': false,
             'error': {'code': 'PRODUCT_NOT_FOUND', 'correlationId': 'abc-123'},
@@ -78,7 +79,7 @@ void main() {
 
       expect(
         () => repository.getProducts(const ProductFilter()),
-        throwsA(isA<DioException>()),
+        throwsA(isA<ApiException>()),
       );
     });
   });

@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 
-import '../../models/order.dart';
+import '../../core/errors/app_exception.dart';
 import '../../core/network/api_response.dart';
+import '../../models/order.dart';
 
 abstract class OrderRepository {
   Future<OrderListResponse> getOrders({int page = 1, int pageSize = 20});
@@ -32,9 +33,10 @@ class OrderRepositoryImpl implements OrderRepository {
         );
 
     if (!apiResponse.success || apiResponse.data == null) {
-      throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+      throw ApiException(
+        code: apiResponse.error?.code ?? 'UNKNOWN',
+        statusCode: response.statusCode ?? 200,
+        details: apiResponse.error?.details,
       );
     }
 
@@ -61,9 +63,10 @@ class OrderRepositoryImpl implements OrderRepository {
         );
 
     if (!apiResponse.success || apiResponse.data == null) {
-      throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+      throw ApiException(
+        code: apiResponse.error?.code ?? 'UNKNOWN',
+        statusCode: response.statusCode ?? 200,
+        details: apiResponse.error?.details,
       );
     }
 
@@ -91,9 +94,10 @@ class OrderRepositoryImpl implements OrderRepository {
         );
 
     if (!apiResponse.success || apiResponse.data == null) {
-      throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+      throw ApiException(
+        code: apiResponse.error?.code ?? 'UNKNOWN',
+        statusCode: response.statusCode ?? 200,
+        details: apiResponse.error?.details,
       );
     }
 
@@ -115,9 +119,10 @@ class OrderRepositoryImpl implements OrderRepository {
         );
 
     if (!apiResponse.success || apiResponse.data == null) {
-      throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+      throw ApiException(
+        code: apiResponse.error?.code ?? 'UNKNOWN',
+        statusCode: response.statusCode ?? 200,
+        details: apiResponse.error?.details,
       );
     }
 

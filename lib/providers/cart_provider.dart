@@ -7,6 +7,20 @@ final cartProvider = StateNotifierProvider<CartNotifier, CartState>((ref) {
   return CartNotifier();
 });
 
+/// Provider for tracking selected cart item IDs
+final selectedCartItemsProvider = StateProvider<Set<String>>((ref) {
+  // By default, all items are selected
+  final cartItems = ref.watch(cartProvider).items;
+  return cartItems.map((item) => item.product.id).toSet();
+});
+
+/// Provider for getting selected cart items
+final selectedCartItemsListProvider = Provider<List<CartItem>>((ref) {
+  final cartItems = ref.watch(cartProvider).items;
+  final selectedIds = ref.watch(selectedCartItemsProvider);
+  return cartItems.where((item) => selectedIds.contains(item.product.id)).toList();
+});
+
 /// Shopping cart state
 class CartState {
   final List<CartItem> items;
@@ -25,6 +39,16 @@ class CartState {
   /// Total cart value
   int get totalValue => items.fold(0, (sum, item) => sum + item.totalPrice);
 
+  /// Get quantity of specific product in cart
+  int getQuantityForProduct(String productId) {
+    if (items.isEmpty) return 0;
+    final item = items.firstWhere(
+      (i) => i.product.id == productId,
+      orElse: () => CartItem(id: '', product: items.first.product, quantity: 0),
+    );
+    return item.quantity;
+  }
+
   CartState copyWith({
     List<CartItem>? items,
     bool? isLoading,
@@ -40,11 +64,15 @@ class CartState {
 
 /// Shopping cart notifier
 class CartNotifier extends StateNotifier<CartState> {
-  CartNotifier() : super(const CartState(items: []));
+  CartNotifier() : super(const CartState(items: [])) {
+    // Load dummy cart data on initialization (M2 only)
+    _loadInitialCart();
+  }
 
-  /// Load cart from dummy data (M2 only)
-  void loadCart() {
-    state = state.copyWith(items: dummy_cart.dummyCartItems);
+  void _loadInitialCart() {
+    if (state.items.isEmpty) {
+      state = state.copyWith(items: dummy_cart.dummyCartItems);
+    }
   }
 
   /// Add item to cart

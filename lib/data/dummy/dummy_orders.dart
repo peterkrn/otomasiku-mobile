@@ -36,7 +36,7 @@ final List<Order> dummyOrders = [
     paymentMethod: 'BCA Virtual Account',
     vaNumber: '8806081234567890',
     paymentDeadline: DateTime(2024, 11, 16, 23, 59, 59),
-    shippingAddressName: 'Peter - PT Otomasi Indonesia',
+    shippingAddressName: 'John Doe - Otomasi Indonesia',
     shippingAddressFull:
         'Jl. Sudirman Kav. 28-30, Jakarta Selatan, DKI Jakarta, 12920',
   ),
@@ -65,7 +65,7 @@ final List<Order> dummyOrders = [
     paymentMethod: 'BCA Virtual Account',
     vaNumber: '8806081234567891',
     paymentDeadline: DateTime(2024, 10, 29, 23, 59, 59),
-    shippingAddressName: 'Peter - PT Otomasi Indonesia',
+    shippingAddressName: 'John Doe - Otomasi Indonesia',
     shippingAddressFull:
         'Jl. Raya Bekasi Km.25 Cakung, Jakarta Timur, DKI Jakarta, 13910',
   ),
@@ -102,7 +102,7 @@ final List<Order> dummyOrders = [
     paymentMethod: 'BCA Virtual Account',
     vaNumber: '8806081234567892',
     paymentDeadline: DateTime(2024, 9, 11, 23, 59, 59),
-    shippingAddressName: 'Peter - PT Otomasi Indonesia',
+    shippingAddressName: 'John Doe - Otomasi Indonesia',
     shippingAddressFull:
         'Jl. Sudirman Kav. 28-30, Jakarta Selatan, DKI Jakarta, 12920',
   ),

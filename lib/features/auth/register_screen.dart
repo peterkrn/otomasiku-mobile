@@ -35,12 +35,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/bg-factory.jpg',
+              'assets/bg-landing-page.jpg',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
@@ -48,10 +49,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF2a2a2a),
-                        Color(0xFF1a1a1a),
-                      ],
+                      colors: [Color(0xFF2a2a2a), Color(0xFF1a1a1a)],
                     ),
                   ),
                 );
@@ -67,9 +65,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha:0.75),
-                    Colors.black.withValues(alpha:0.65),
-                    Colors.black.withValues(alpha:0.9),
+                    Colors.black.withValues(alpha: 0.75),
+                    Colors.black.withValues(alpha: 0.65),
+                    Colors.black.withValues(alpha: 0.9),
                   ],
                 ),
               ),
@@ -208,8 +206,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           children: [
                             Theme(
                               data: Theme.of(context).copyWith(
-                                unselectedWidgetColor:
-                                    Colors.white.withValues(alpha:0.6),
+                                unselectedWidgetColor: Colors.white.withValues(
+                                  alpha: 0.6,
+                                ),
                               ),
                               child: Checkbox(
                                 value: _agreeToTerms,
@@ -232,7 +231,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   text: 'Saya setuju dengan ',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.white.withValues(alpha:0.9),
+                                    color: Colors.white.withValues(alpha: 0.9),
                                   ),
                                   children: [
                                     TextSpan(
@@ -265,8 +264,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               elevation: 8,
-                              shadowColor:
-                                  AppColors.mitsubishiRed.withValues(alpha:0.4),
+                              shadowColor: AppColors.mitsubishiRed.withValues(
+                                alpha: 0.4,
+                              ),
                             ),
                             child: _isLoading
                                 ? const SizedBox(
@@ -274,8 +274,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor:
-                                          AlwaysStoppedAnimation<Color>(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
                                         Colors.white,
                                       ),
                                     ),
@@ -303,7 +302,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         'Sudah punya akun?',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white.withValues(alpha:0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -359,11 +358,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha:0.15),
+        color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.white.withValues(alpha:0.3),
-        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
       ),
       child: TextFormField(
         controller: controller,
@@ -373,16 +370,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(
-            color: Colors.white.withValues(alpha:0.6),
+          hintStyle: const TextStyle(
+            color: Colors.white70,
             fontSize: 15,
+            fontWeight: FontWeight.w400,
           ),
-          prefixIcon: Icon(
-            prefixIcon,
-            color: Colors.white.withValues(alpha:0.7),
-            size: 20,
-          ),
+          prefixIcon: Icon(prefixIcon, color: Colors.white70, size: 20),
           border: InputBorder.none,
+          fillColor: Colors.transparent,
+          filled: true,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 14,
@@ -435,9 +431,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         content: Text(message),
         backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }

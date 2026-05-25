@@ -1,11 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/splash/splash_screen.dart';
 import '../../features/auth/login_screen.dart';
 import '../../features/auth/register_screen.dart';
+import '../../features/home/screens/home_screen.dart';
+import '../../features/search/search_screen.dart';
+import '../../features/projects/projects_screen.dart';
+import '../../features/profile/profile_screen.dart';
+import '../../features/product_detail/product_detail_screen.dart';
+import '../../features/checkout/checkout_screen.dart';
+import '../../features/cart/cart_screen.dart';
+import '../../features/payment/payment_screen.dart';
+import '../../features/payment/payment_success_screen.dart';
+import '../../features/order/order_detail_screen.dart';
+import '../../features/order/orders_screen.dart';
+import '../../features/shared/widgets/bottom_nav_bar.dart';
+import '../../features/compare/compare_screen.dart';
+import '../../features/home/widgets/compare_bar.dart';
+import '../../features/address/edit_address_screen.dart';
+import '../../features/shipping/shipping_screen.dart';
+import '../../features/payment_methods/payment_methods_screen.dart';
+import '../../providers/auth_provider.dart';
 
 /// GoRouter configuration for Otomasiku Marketplace
-/// M2-1: Splash, Login & Register screens implemented
+/// M2-2: Bottom Navigation Shell with StatefulShellRoute.indexedStack
 
 // Route names (use these for context.goNamed())
 abstract class AppRoute {
@@ -14,6 +33,8 @@ abstract class AppRoute {
   static const String register = 'register';
   static const String home = 'home';
   static const String search = 'search';
+  static const String projects = 'projects';
+  static const String profile = 'profile';
   static const String productDetail = 'productDetail';
   static const String cart = 'cart';
   static const String checkout = 'checkout';
@@ -21,14 +42,35 @@ abstract class AppRoute {
   static const String payment = 'payment';
   static const String paymentSuccess = 'paymentSuccess';
   static const String orderDetail = 'orderDetail';
-  static const String profile = 'profile';
-  static const String projects = 'projects';
   static const String compare = 'compare';
+  static const String editAddress = 'editAddress';
+  static const String paymentMethods = 'paymentMethods';
+  static const String orders = 'orders';
 }
 
-// GoRouter instance
+// GoRouter instance with StatefulShellRoute for bottom navigation
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
+  // M2 dummy auth redirect — in Milestone 3, integrate with Supabase Auth
+  redirect: (context, state) {
+    // Read auth state from Riverpod
+    final container = ProviderScope.containerOf(context, listen: false);
+    final isLoggedIn = container.read(authProvider).isLoggedIn;
+
+    final isAuthRoute = state.matchedLocation == '/' ||
+        state.matchedLocation == '/login' ||
+        state.matchedLocation == '/register';
+
+    // Not logged in + trying to access protected route → redirect to login
+    if (!isLoggedIn && !isAuthRoute) {
+      return '/login';
+    }
+    // Logged in + trying to access auth route → redirect to home
+    if (isLoggedIn && isAuthRoute) {
+      return '/home';
+    }
+    return null;
+  },
   routes: [
     // Splash
     GoRoute(
@@ -49,43 +91,102 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const RegisterScreen(),
     ),
 
-    // Main screens
-    GoRoute(
-      path: '/home',
-      name: AppRoute.home,
-      builder: (context, state) => const Scaffold(body: PlaceholderHome()),
-    ),
-    GoRoute(
-      path: '/search',
-      name: AppRoute.search,
-      builder: (context, state) => const Scaffold(body: PlaceholderSearch()),
+    // Bottom navigation shell with 4 tabs
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) {
+        return PopScope(
+          canPop: false, // Always intercept back button
+          onPopInvokedWithResult: (didPop, result) {
+            // Always go to home tab on back press
+            navigationShell.goBranch(0);
+          },
+          child: Scaffold(
+            body: navigationShell,
+            bottomNavigationBar: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Global compare bar - appears on all pages when products are selected
+                const CompareBar(),
+                BottomNavBar(
+                  currentIndex: navigationShell.currentIndex,
+                  onTap: (index) => navigationShell.goBranch(index),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      branches: [
+        // Home tab
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/home',
+              name: AppRoute.home,
+              builder: (context, state) => const HomeScreen(),
+            ),
+          ],
+        ),
+        // Search tab
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/search',
+              name: AppRoute.search,
+              builder: (context, state) => const SearchScreen(),
+            ),
+          ],
+        ),
+        // Projects tab
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/projects',
+              name: AppRoute.projects,
+              builder: (context, state) => const ProjectsScreen(),
+            ),
+          ],
+        ),
+        // Profile tab (4th position)
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile',
+              name: AppRoute.profile,
+              builder: (context, state) => const ProfileScreen(),
+            ),
+          ],
+        ),
+      ],
     ),
 
-    // Product detail
+    // Product detail (outside shell - standalone route)
     GoRoute(
       path: '/product/:id',
       name: AppRoute.productDetail,
       builder: (context, state) {
         final productId = state.pathParameters['id']!;
-        return Scaffold(body: PlaceholderProductDetail(productId: productId));
+        return ProductDetailScreen(productId: productId);
       },
     ),
 
-    // Cart & Checkout
+    // Cart (outside shell)
     GoRoute(
       path: '/cart',
       name: AppRoute.cart,
-      builder: (context, state) => const Scaffold(body: PlaceholderCart()),
+      builder: (context, state) => const CartScreen(),
     ),
+
+    // Checkout flow (outside shell)
     GoRoute(
       path: '/checkout',
       name: AppRoute.checkout,
-      builder: (context, state) => const Scaffold(body: PlaceholderCheckout()),
+      builder: (context, state) => const CheckoutScreen(),
     ),
     GoRoute(
       path: '/shipping',
       name: AppRoute.shipping,
-      builder: (context, state) => const Scaffold(body: PlaceholderShipping()),
+      builder: (context, state) => const ShippingScreen(),
     ),
 
     // Payment
@@ -94,7 +195,7 @@ final GoRouter appRouter = GoRouter(
       name: AppRoute.payment,
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
-        return Scaffold(body: PlaceholderPayment(orderId: orderId));
+        return PaymentScreen(orderId: orderId);
       },
     ),
     GoRoute(
@@ -102,8 +203,15 @@ final GoRouter appRouter = GoRouter(
       name: AppRoute.paymentSuccess,
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
-        return Scaffold(body: PlaceholderPaymentSuccess(orderId: orderId));
+        return PaymentSuccessScreen(orderId: orderId);
       },
+    ),
+
+    // Orders list
+    GoRoute(
+      path: '/orders',
+      name: AppRoute.orders,
+      builder: (context, state) => const OrdersScreen(),
     ),
 
     // Order detail
@@ -112,55 +220,37 @@ final GoRouter appRouter = GoRouter(
       name: AppRoute.orderDetail,
       builder: (context, state) {
         final orderId = state.pathParameters['id']!;
-        return Scaffold(body: PlaceholderOrderDetail(orderId: orderId));
+        return OrderDetailScreen(orderId: orderId);
       },
     ),
 
-    // Profile & Projects
-    GoRoute(
-      path: '/profile',
-      name: AppRoute.profile,
-      builder: (context, state) => const Scaffold(body: PlaceholderProfile()),
-    ),
-    GoRoute(
-      path: '/projects',
-      name: AppRoute.projects,
-      builder: (context, state) => const Scaffold(body: PlaceholderProjects()),
-    ),
+    // Compare
     GoRoute(
       path: '/compare',
       name: AppRoute.compare,
-      builder: (context, state) => const Scaffold(body: PlaceholderCompare()),
+      builder: (context, state) => const CompareScreen(),
+    ),
+
+    // Edit Address
+    GoRoute(
+      path: '/edit-address',
+      name: AppRoute.editAddress,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return EditAddressScreen(extra: extra);
+      },
+    ),
+
+    // Payment Methods
+    GoRoute(
+      path: '/payment-methods',
+      name: AppRoute.paymentMethods,
+      builder: (context, state) => const PaymentMethodsScreen(),
     ),
   ],
 );
 
-// Placeholder widgets (replace with real screens in M2-1 through M2-9)
-class PlaceholderHome extends StatelessWidget {
-  const PlaceholderHome({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Home / Product Catalog'));
-}
-
-class PlaceholderSearch extends StatelessWidget {
-  const PlaceholderSearch({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Search'));
-}
-
-class PlaceholderProductDetail extends StatelessWidget {
-  final String productId;
-  const PlaceholderProductDetail({super.key, required this.productId});
-  @override
-  Widget build(BuildContext context) => Center(child: Text('Product Detail: $productId'));
-}
-
-class PlaceholderCart extends StatelessWidget {
-  const PlaceholderCart({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Cart'));
-}
-
+// Placeholder widgets (to be replaced in future phases)
 class PlaceholderCheckout extends StatelessWidget {
   const PlaceholderCheckout({super.key});
   @override
@@ -192,18 +282,6 @@ class PlaceholderOrderDetail extends StatelessWidget {
   const PlaceholderOrderDetail({super.key, required this.orderId});
   @override
   Widget build(BuildContext context) => Center(child: Text('Order Detail: $orderId'));
-}
-
-class PlaceholderProfile extends StatelessWidget {
-  const PlaceholderProfile({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Profile'));
-}
-
-class PlaceholderProjects extends StatelessWidget {
-  const PlaceholderProjects({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Projects'));
 }
 
 class PlaceholderCompare extends StatelessWidget {

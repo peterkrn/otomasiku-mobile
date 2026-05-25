@@ -24,6 +24,7 @@ class ProductState {
   final String searchQuery;
   final bool isLoading;
   final String? error;
+  final int filterVersion; // Increment on filter change to trigger stagger animation
 
   const ProductState({
     required this.allProducts,
@@ -32,6 +33,7 @@ class ProductState {
     this.searchQuery = '',
     this.isLoading = false,
     this.error,
+    this.filterVersion = 0,
   });
 
   ProductState copyWith({
@@ -41,6 +43,7 @@ class ProductState {
     String? searchQuery,
     bool? isLoading,
     String? error,
+    int? filterVersion,
   }) {
     return ProductState(
       allProducts: allProducts ?? this.allProducts,
@@ -49,6 +52,7 @@ class ProductState {
       searchQuery: searchQuery ?? this.searchQuery,
       isLoading: isLoading ?? this.isLoading,
       error: error,
+      filterVersion: filterVersion ?? this.filterVersion,
     );
   }
 }
@@ -82,6 +86,7 @@ class ProductNotifier extends StateNotifier<ProductState> {
     state = state.copyWith(
       selectedCategory: category,
       filteredProducts: _applySearch(filtered, state.searchQuery),
+      filterVersion: state.filterVersion + 1, // Trigger animation rebuild
     );
   }
 

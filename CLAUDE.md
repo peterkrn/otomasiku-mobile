@@ -116,6 +116,35 @@ npx prisma db seed             # Seed 125 products
 
 ---
 
+## Troubleshooting
+
+### Flutter Dependencies Not Resolving
+If you see `SDK version solving failed` errors:
+```bash
+# Use full path to upgraded Flutter
+"/c/Users/peter/flutter/bin/flutter" pub get
+```
+
+### Gradle Java Home Invalid
+If Gradle fails with `org.gradle.java.home is invalid`:
+1. Check actual JDK location: `dir "C:\Program Files\Java"`
+2. Update `android/gradle.properties`:
+   ```properties
+   org.gradle.java.home=C:/Program Files/Java/jdk-21.0.10
+   ```
+
+### Glass Input Fields Show as White Boxes
+Ensure the `_buildGlassInput` method has:
+- `style: TextStyle(color: Colors.white)` — not `Colors.black87`
+- `fillColor: Colors.transparent` and `filled: true` — prevents theme override
+- `Scaffold(backgroundColor: Colors.black)` — prevents white background
+
+### Dummy Login Credentials (Milestone 2)
+- **Email:** `johndoe@gmail.com`
+- **Password:** Any password (dummy login always succeeds)
+
+---
+
 ## Critical Rules Summary
 
 > Full rules in `docs/AI_RULES.md` — these are **mandatory**.

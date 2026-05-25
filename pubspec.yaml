@@ -55,6 +55,9 @@ dependencies:
   # Local notifications
   flutter_local_notifications: ^18.0.1
 
+  # Persistent storage (auth state)
+  shared_preferences: ^2.3.0
+
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
@@ -71,4 +74,9 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - assets/images/profile/
     - assets/images/products/
+    - assets/images/products/inverter/
+    - assets/images/products/plc/
+    - assets/images/products/servo/
+    - assets/images/products/hmi/

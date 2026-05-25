@@ -31,12 +31,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           // Background image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/bg-factory.jpg',
+              'assets/bg-landing-page.jpg',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
@@ -44,10 +46,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF2a2a2a),
-                        Color(0xFF1a1a1a),
-                      ],
+                      colors: [Color(0xFF2a2a2a), Color(0xFF1a1a1a)],
                     ),
                   ),
                 );
@@ -72,9 +71,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
           ),
 
-          // Main content
+          // Main content with scroll for keyboard
           SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
@@ -168,8 +167,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               children: [
                                 Theme(
                                   data: Theme.of(context).copyWith(
-                                    unselectedWidgetColor:
-                                        Colors.white.withValues(alpha: 0.6),
+                                    unselectedWidgetColor: Colors.white
+                                        .withValues(alpha: 0.6),
                                   ),
                                   child: Checkbox(
                                     value: _rememberMe,
@@ -233,8 +232,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               elevation: 8,
-                              shadowColor:
-                                  AppColors.mitsubishiRed.withValues(alpha: 0.4),
+                              shadowColor: AppColors.mitsubishiRed.withValues(
+                                alpha: 0.4,
+                              ),
                             ),
                             child: _isLoading
                                 ? const SizedBox(
@@ -242,8 +242,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor:
-                                          AlwaysStoppedAnimation<Color>(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
                                         Colors.white,
                                       ),
                                     ),
@@ -261,43 +260,42 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ),
 
-                  const Spacer(),
+                  const SizedBox(height: 24),
 
                   // Register link
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Belum punya akun?',
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Belum punya akun?',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withValues(alpha: 0.8),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: () {
+                          context.goNamed(AppRoute.register);
+                        },
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(0, 0),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: const Text(
+                          'Daftar',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.white.withValues(alpha: 0.8),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        TextButton(
-                          onPressed: () {
-                            context.goNamed(AppRoute.register);
-                          },
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(0, 0),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: const Text(
-                            'Daftar',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
@@ -330,9 +328,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
       ),
       child: TextFormField(
         controller: controller,
@@ -342,16 +338,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(
-            color: Colors.white.withValues(alpha: 0.6),
+          hintStyle: const TextStyle(
+            color: Colors.white70,
             fontSize: 15,
+            fontWeight: FontWeight.w400,
           ),
-          prefixIcon: Icon(
-            prefixIcon,
-            color: Colors.white.withValues(alpha: 0.7),
-            size: 20,
-          ),
+          prefixIcon: Icon(prefixIcon, color: Colors.white70, size: 20),
           border: InputBorder.none,
+          fillColor: Colors.transparent,
+          filled: true,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 14,
@@ -377,10 +372,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     // Dummy login - always succeeds in M2
     final authNotifier = ref.read(authProvider.notifier);
-    authNotifier.login(
-      _emailController.text,
-      _passwordController.text,
-    );
+    authNotifier.login(_emailController.text, _passwordController.text);
 
     setState(() {
       _isLoading = false;

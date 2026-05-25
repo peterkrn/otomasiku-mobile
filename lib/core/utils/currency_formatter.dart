@@ -26,4 +26,23 @@ class CurrencyFormatter {
     final cleaned = formatted.replaceAll(RegExp(r'[^0-9-]'), '');
     return cleaned.isEmpty ? 0 : int.parse(cleaned);
   }
+
+  /// Format price in compact form (e.g., 145000000 → "145jt")
+  static String formatCompact(int amount) {
+    if (amount >= 1000000000) {
+      // Billions - use "M" for miliar
+      final value = amount / 1000000000;
+      return '${value.toStringAsFixed(value == value.truncateToDouble() ? 0 : 1)}M';
+    } else if (amount >= 1000000) {
+      // Millions - use "jt" for juta
+      final value = amount / 1000000;
+      return '${value.toStringAsFixed(value == value.truncateToDouble() ? 0 : 1)}jt';
+    } else if (amount >= 1000) {
+      // Thousands - use "rb" for ribu
+      final value = amount / 1000;
+      return '${value.toStringAsFixed(value == value.truncateToDouble() ? 0 : 1)}rb';
+    } else {
+      return '$amount';
+    }
+  }
 }

@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/router/app_router.dart';
-import '../../../core/utils/currency_formatter.dart';
-import '../../../core/widgets/app_toast.dart';
+import '../../l10n/app_localizations.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/router/app_router.dart';
+import '../../core/utils/currency_formatter.dart';
+import '../../core/widgets/app_toast.dart';
+import '../../models/order.dart';
+import '../../providers/payment_provider.dart';
 
-/// Payment screen showing VA number, countdown timer, and instructions
-/// Uses dummy timer for M2 - will be replaced with BCA Sandbox in next phase
 class PaymentScreen extends ConsumerStatefulWidget {
   final String orderId;
 
@@ -22,10 +22,7 @@ class PaymentScreen extends ConsumerStatefulWidget {
 
 class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   Timer? _countdownTimer;
-  int _remainingSeconds = 24 * 60 * 60; // 24 hours dummy countdown
-  final String _vaNumber = '8277 0812 3456 7890'; // Dummy VA
-  final int _amount = 19813000; // Dummy amount
-
+  bool _navigatedToSuccess = false;
   bool _atmExpanded = false;
   bool _mbankingExpanded = false;
   bool _klikbcaExpanded = false;
@@ -43,46 +40,50 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   void _startCountdown() {
-    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_remainingSeconds > 0) {
-        setState(() => _remainingSeconds--);
-      } else {
-        timer.cancel();
-      }
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
     });
   }
 
-  String get _countdownDisplay {
-    final hours = _remainingSeconds ~/ 3600;
-    final minutes = (_remainingSeconds % 3600) ~/ 60;
-    final seconds = _remainingSeconds % 60;
+  Duration _remaining(Order order) {
+    if (order.vaExpiresAt == null) return Duration.zero;
+    final diff = order.vaExpiresAt!.difference(DateTime.now());
+    return diff.isNegative ? Duration.zero : diff;
+  }
+
+  String _countdownDisplay(Duration remaining) {
+    if (remaining == Duration.zero) return '00:00:00';
+    final hours = remaining.inHours;
+    final minutes = remaining.inMinutes.remainder(60);
+    final seconds = remaining.inSeconds.remainder(60);
     return '${hours.toString().padLeft(2, '0')}:'
            '${minutes.toString().padLeft(2, '0')}:'
            '${seconds.toString().padLeft(2, '0')}';
   }
 
-  void _copyVaNumber(AppLocalizations l10n) {
-    Clipboard.setData(ClipboardData(text: _vaNumber.replaceAll(' ', '')));
+  void _copyVaNumber(AppLocalizations l10n, String vaNumber) {
+    Clipboard.setData(ClipboardData(text: vaNumber.replaceAll(' ', '')));
     AppToast.show(context, l10n.vaCopied, isError: false, bottomOffset: 160);
-  }
-
-  void _copyAmount(AppLocalizations l10n) {
-    Clipboard.setData(ClipboardData(text: _amount.toString()));
-    AppToast.show(context, 'Jumlah berhasil disalin', isError: false, bottomOffset: 160);
-  }
-
-  void _checkStatus() {
-    // For M2, simulate payment success
-    context.goNamed(
-      AppRoute.paymentSuccess,
-      pathParameters: {'orderId': widget.orderId},
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final orderAsync = ref.watch(paymentPollingProvider(widget.orderId));
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    ref.listen(paymentPollingProvider(widget.orderId), (prev, next) {
+      next.whenData((order) {
+        if (order.paymentStatus == 'paid' && !_navigatedToSuccess && mounted) {
+          _navigatedToSuccess = true;
+          _countdownTimer?.cancel();
+          context.goNamed(
+            AppRoute.paymentSuccess,
+            pathParameters: {'orderId': widget.orderId},
+          );
+        }
+      });
+    });
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
@@ -95,30 +96,87 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildCountdownCard(l10n),
-            const SizedBox(height: 16),
-            _buildVaCard(l10n, isDark),
-            const SizedBox(height: 16),
-            _buildAmountCard(l10n, isDark),
-            const SizedBox(height: 16),
-            _buildInstructionsCard(l10n, isDark),
-          ],
+      body: orderAsync.when(
+        data: (order) => _buildPaymentContent(order, l10n, isDark),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 64, color: AppColors.mitsubishiRed),
+              const SizedBox(height: 16),
+              Text(l10n.errorGeneric),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.invalidate(paymentPollingProvider(widget.orderId)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.mitsubishiRed,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text(l10n.retry),
+              ),
+            ],
+          ),
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(l10n, isDark),
     );
   }
 
-  Widget _buildCountdownCard(AppLocalizations l10n) {
+  Widget _buildPaymentContent(Order order, AppLocalizations l10n, bool isDark) {
+    final remaining = _remaining(order);
+    final isExpired = remaining == Duration.zero && order.vaExpiresAt != null;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          _buildCountdownCard(order, remaining, isExpired, l10n),
+          const SizedBox(height: 16),
+          _buildVaCard(order, isExpired, l10n, isDark),
+          const SizedBox(height: 16),
+          _buildAmountCard(order, l10n, isDark),
+          const SizedBox(height: 16),
+          _buildInstructionsCard(l10n, isDark),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderRef(Order order, AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            '${l10n.orderNumber}:',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.white.withValues(alpha: 0.8),
+            ),
+          ),
+          Text(
+            order.orderNumber,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCountdownCard(Order order, Duration remaining, bool isExpired, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.bcaBlue, AppColors.bcaBlue.withBlue(180)],
+          colors: isExpired
+              ? [Colors.grey.shade600, Colors.grey.shade800]
+              : [AppColors.bcaBlue, AppColors.bcaBlue.withBlue(180)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -126,11 +184,13 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       ),
       child: Column(
         children: [
+          _buildOrderRef(order, l10n),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                l10n.paymentWaiting,
+                isExpired ? 'Waktu pembayaran habis' : l10n.paymentWaiting,
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
@@ -139,13 +199,13 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withValues(alpha: isExpired ? 0.1 : 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  _countdownDisplay,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  isExpired ? '-' : _countdownDisplay(remaining),
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: isExpired ? 0.5 : 1),
                     fontWeight: FontWeight.bold,
                     fontFamily: 'monospace',
                   ),
@@ -157,15 +217,17 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           Text(
             l10n.payBefore,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: Colors.white.withValues(alpha: isExpired ? 0.3 : 0.8),
               fontSize: 12,
             ),
           ),
           const SizedBox(height: 4),
           Text(
-            _getExpiryDate(),
-            style: const TextStyle(
-              color: Colors.white,
+            order.vaExpiresAt != null
+                ? _formatDate(order.vaExpiresAt!)
+                : '-',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: isExpired ? 0.3 : 1),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -174,7 +236,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     );
   }
 
-  Widget _buildVaCard(AppLocalizations l10n, bool isDark) {
+  Widget _buildVaCard(Order order, bool isExpired, AppLocalizations l10n, bool isDark) {
+    final vaNumber = order.vaNumber;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -213,36 +277,60 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                _vaNumber,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+          if (vaNumber != null)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    vaNumber,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                      color: isExpired
+                          ? (isDark ? AppColors.darkTextTertiary : AppColors.textTertiary)
+                          : (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+                    ),
+                  ),
                 ),
-              ),
-              OutlinedButton.icon(
-                onPressed: () => _copyVaNumber(l10n),
-                icon: const Icon(Icons.copy, size: 16),
-                label: Text(l10n.paymentCopy),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.bcaBlue,
-                  side: const BorderSide(color: AppColors.bcaBlue),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                if (!isExpired)
+                  OutlinedButton.icon(
+                    onPressed: () => _copyVaNumber(l10n, vaNumber),
+                    icon: const Icon(Icons.copy, size: 16),
+                    label: Text(l10n.paymentCopy),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.bcaBlue,
+                      side: const BorderSide(color: AppColors.bcaBlue),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                  ),
+              ],
+            )
+          else
+            Row(
+              children: [
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-              ),
-            ],
-          ),
+                const SizedBox(width: 12),
+                Text(
+                  'Sedang membuat nomor VA...',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildAmountCard(AppLocalizations l10n, bool isDark) {
+  Widget _buildAmountCard(Order order, AppLocalizations l10n, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -253,50 +341,16 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l10n.transferAmount,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                ),
-              ),
-              GestureDetector(
-                onTap: () => _copyAmount(l10n),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.mitsubishiRed.withValues(alpha: isDark ? 0.2 : 0.1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.copy,
-                        size: 12,
-                        color: AppColors.mitsubishiRed,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        l10n.paymentCopy,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: AppColors.mitsubishiRed,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+          Text(
+            l10n.transferAmount,
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
-            CurrencyFormatter.format(_amount),
+            CurrencyFormatter.format(order.totalAmount),
             style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -329,7 +383,6 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               ),
             ),
           ),
-          // Expandable payment methods
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
@@ -357,7 +410,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                   steps: const [
                     'Buka aplikasi BCA Mobile atau myBCA',
                     'Login dengan PIN / biometrik',
-                    'Pilih Transfer → BCA Virtual Account',
+                    'Pilih Transfer \u2192 BCA Virtual Account',
                     'Masukkan nomor VA yang diberikan',
                     'Cek detail dan konfirmasi pembayaran',
                   ],
@@ -371,7 +424,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                   onTap: () => setState(() => _klikbcaExpanded = !_klikbcaExpanded),
                   steps: const [
                     'Login di klikbca.com',
-                    'Pilih Transfer Dana → Transfer ke BCA Virtual Account',
+                    'Pilih Transfer Dana \u2192 Transfer ke BCA Virtual Account',
                     'Masukkan nomor VA yang diberikan',
                     'Masukkan nominal dan konfirmasi dengan KeyBCA',
                   ],
@@ -419,9 +472,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                   ),
                 ),
                 Icon(
-                  expanded
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
+                  expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                   color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                   size: 20,
                 ),
@@ -467,49 +518,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     );
   }
 
-  Widget _buildBottomBar(AppLocalizations l10n, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.3) : const Color(0x1A000000),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: _checkStatus,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.bcaBlue,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text(
-              l10n.paymentCheckStatus,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _getExpiryDate() {
-    final expiry = DateTime.now().add(const Duration(hours: 24));
-    return '${expiry.day} ${_getMonthName(expiry.month)} ${expiry.year}, 23:59 WIB';
+  String _formatDate(DateTime date) {
+    return '${date.day} ${_getMonthName(date.month)} ${date.year}, '
+        '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')} WIB';
   }
 
   String _getMonthName(int month) {

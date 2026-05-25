@@ -106,7 +106,18 @@
   "grandTotal": "Grand Total",
   "processing": "Processing",
   "loading": "Loading",
+  "loadingProducts": "Loading products...",
   "retry": "Retry",
+  "pullToRefresh": "Pull to refresh",
+  "productsCount": "{count} products",
+  "@productsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "errorLoadingProducts": "Failed to load products",
+  "errorLoadingProductDetail": "Failed to load product details",
+  "loadMore": "Load more",
   "back": "Back",
   "close": "Close",
   "save": "Save",

@@ -838,4 +838,73 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get compareProduct => 'Bandingkan';
+
+  @override
+  String get errorInvalidCredentials => 'Email atau password salah.';
+
+  @override
+  String get errorDuplicateEntry => 'Email sudah terdaftar. Silakan login.';
+
+  @override
+  String get errorRateLimit => 'Terlalu banyak percobaan. Coba lagi nanti.';
+
+  @override
+  String get errorUserNotFound => 'Akun tidak ditemukan.';
+
+  @override
+  String get errorValidation => 'Data tidak valid. Periksa kembali.';
+
+  @override
+  String get loginTitle => 'Selamat Datang!';
+
+  @override
+  String get loginSubtitle => 'Masuk untuk melanjutkan';
+
+  @override
+  String get registerTitle => 'Daftar Akun';
+
+  @override
+  String get registerSubtitle => 'Lengkapi form di bawah ini';
+
+  @override
+  String get rememberMe => 'Ingat saya';
+
+  @override
+  String get noAccount => 'Belum punya akun?';
+
+  @override
+  String get haveAccount => 'Sudah punya akun?';
+
+  @override
+  String get agreeTerms => 'Saya setuju dengan Syarat & Ketentuan';
+
+  @override
+  String get nameHint => 'Nama Lengkap';
+
+  @override
+  String get passwordHint => 'Password';
+
+  @override
+  String get confirmPasswordHint => 'Konfirmasi Password';
+
+  @override
+  String get emailHint => 'Username / Email';
+
+  @override
+  String get loginButton => 'Masuk';
+
+  @override
+  String get registerButton => 'Daftar';
+
+  @override
+  String get passwordMinLength => 'Password minimal 6 karakter';
+
+  @override
+  String fieldRequired(String field) {
+    return '$field harus diisi';
+  }
+
+  @override
+  String get agreeTermsRequired =>
+      'Anda harus setuju dengan Syarat & Ketentuan';
 }

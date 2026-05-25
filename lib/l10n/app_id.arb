@@ -356,5 +356,32 @@
     }
   },
   "removeSelection": "Hapus",
-  "compareProduct": "Bandingkan"
+  "compareProduct": "Bandingkan",
+  "errorInvalidCredentials": "Email atau password salah.",
+  "errorDuplicateEntry": "Email sudah terdaftar. Silakan login.",
+  "errorRateLimit": "Terlalu banyak percobaan. Coba lagi nanti.",
+  "errorUserNotFound": "Akun tidak ditemukan.",
+  "errorValidation": "Data tidak valid. Periksa kembali.",
+  "loginTitle": "Selamat Datang!",
+  "loginSubtitle": "Masuk untuk melanjutkan",
+  "registerTitle": "Daftar Akun",
+  "registerSubtitle": "Lengkapi form di bawah ini",
+  "rememberMe": "Ingat saya",
+  "noAccount": "Belum punya akun?",
+  "haveAccount": "Sudah punya akun?",
+  "agreeTerms": "Saya setuju dengan Syarat & Ketentuan",
+  "nameHint": "Nama Lengkap",
+  "passwordHint": "Password",
+  "confirmPasswordHint": "Konfirmasi Password",
+  "emailHint": "Username / Email",
+  "loginButton": "Masuk",
+  "registerButton": "Daftar",
+  "passwordMinLength": "Password minimal 6 karakter",
+  "fieldRequired": "{field} harus diisi",
+  "@fieldRequired": {
+    "placeholders": {
+      "field": { "type": "String" }
+    }
+  },
+  "agreeTermsRequired": "Anda harus setuju dengan Syarat & Ketentuan"
 }

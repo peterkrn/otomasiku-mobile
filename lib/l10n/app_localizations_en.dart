@@ -838,4 +838,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get compareProduct => 'Compare';
+
+  @override
+  String get errorInvalidCredentials => 'Invalid email or password.';
+
+  @override
+  String get errorDuplicateEntry => 'Email already registered. Please login.';
+
+  @override
+  String get errorRateLimit => 'Too many attempts. Try again later.';
+
+  @override
+  String get errorUserNotFound => 'Account not found.';
+
+  @override
+  String get errorValidation => 'Invalid data. Please check again.';
+
+  @override
+  String get loginTitle => 'Welcome!';
+
+  @override
+  String get loginSubtitle => 'Login to continue';
+
+  @override
+  String get registerTitle => 'Create Account';
+
+  @override
+  String get registerSubtitle => 'Complete the form below';
+
+  @override
+  String get rememberMe => 'Remember me';
+
+  @override
+  String get noAccount => 'Don\'t have an account?';
+
+  @override
+  String get haveAccount => 'Already have an account?';
+
+  @override
+  String get agreeTerms => 'I agree to the Terms & Conditions';
+
+  @override
+  String get nameHint => 'Full Name';
+
+  @override
+  String get passwordHint => 'Password';
+
+  @override
+  String get confirmPasswordHint => 'Confirm Password';
+
+  @override
+  String get emailHint => 'Username / Email';
+
+  @override
+  String get loginButton => 'Login';
+
+  @override
+  String get registerButton => 'Register';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 6 characters';
+
+  @override
+  String fieldRequired(String field) {
+    return '$field is required';
+  }
+
+  @override
+  String get agreeTermsRequired => 'You must agree to the Terms & Conditions';
 }

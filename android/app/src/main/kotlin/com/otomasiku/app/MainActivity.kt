@@ -1,4 +1,4 @@
-package com.example.otomasiku_mobile
+package com.otomasiku.app
 
 import io.flutter.embedding.android.FlutterActivity
 

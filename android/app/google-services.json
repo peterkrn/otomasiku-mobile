@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "286889370943",
+    "project_id": "otomasiku-mobile",
+    "storage_bucket": "otomasiku-mobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:286889370943:android:af8f7298f60db9f32e1f8a",
+        "android_client_info": {
+          "package_name": "com.otomasiku.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKhsMxbsxq0SSH5B-lcpeOcIpPTrEerIY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

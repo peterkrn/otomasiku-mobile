@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/router/app_router.dart';
-import '../../../core/utils/currency_formatter.dart';
-import '../../../core/widgets/app_toast.dart';
-import '../../../providers/cart_provider.dart';
+import '../../l10n/app_localizations.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/router/app_router.dart';
+import '../../core/utils/currency_formatter.dart';
+import '../../core/widgets/app_toast.dart';
+import '../../models/cart_item.dart';
+import '../../providers/cart_provider.dart';
 import 'widgets/cart_item_card.dart';
 
-/// Cart screen showing items in the shopping cart
-/// Accessible from the Keranjang tab in bottom navigation (4th tab)
 class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({super.key});
 
@@ -20,6 +19,14 @@ class CartScreen extends ConsumerStatefulWidget {
 
 class _CartScreenState extends ConsumerState<CartScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(cartProvider.notifier).loadCart();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final cartState = ref.watch(cartProvider);
@@ -28,9 +35,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     final allSelected = cartItems.isNotEmpty && selectedIds.length == cartItems.length;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Calculate totals for selected items only
-    final selectedItems = cartItems.where((item) => selectedIds.contains(item.product.id)).toList();
-    final subtotal = selectedItems.fold(0, (sum, item) => sum + item.totalPrice);
+    final selectedItems = cartItems.where((item) => selectedIds.contains(item.productId)).toList();
+    final subtotal = selectedItems.fold(0, (sum, item) => sum + item.productSnapshot.price * item.quantity);
     final totalItems = selectedItems.fold(0, (sum, item) => sum + item.quantity);
 
     return Scaffold(
@@ -42,18 +48,20 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         elevation: 0,
         scrolledUnderElevation: 1,
       ),
-      body: cartItems.isEmpty
-          ? _buildEmptyState(context, l10n, isDark)
-          : _buildCartList(
-              context,
-              l10n,
-              cartItems,
-              selectedIds,
-              allSelected,
-              subtotal,
-              totalItems,
-              isDark,
-            ),
+      body: cartState.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : cartItems.isEmpty
+              ? _buildEmptyState(context, l10n, isDark)
+              : _buildCartList(
+                  context,
+                  l10n,
+                  cartItems,
+                  selectedIds,
+                  allSelected,
+                  subtotal,
+                  totalItems,
+                  isDark,
+                ),
     );
   }
 
@@ -108,7 +116,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   Widget _buildCartList(
     BuildContext context,
     AppLocalizations l10n,
-    List cartItems,
+    List<CartItem> cartItems,
     Set<String> selectedIds,
     bool allSelected,
     int subtotal,
@@ -117,7 +125,6 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   ) {
     return Column(
       children: [
-        // Select all header
         Container(
           color: isDark ? AppColors.darkSurface : Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -165,7 +172,6 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           ),
         ),
         Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.divider),
-        // Cart items list
         Expanded(
           child: Container(
             color: isDark ? AppColors.darkSurface : Colors.white,
@@ -181,25 +187,24 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               ),
               itemBuilder: (context, index) {
                 final item = cartItems[index];
-                final isSelected = selectedIds.contains(item.product.id);
+                final isSelected = selectedIds.contains(item.productId);
                 return CartItemCard(
                   item: item,
                   isSelected: isSelected,
                   isDark: isDark,
-                  onSelectionChanged: (selected) => _toggleItemSelection(item.product.id, selected),
+                  onSelectionChanged: (selected) => _toggleItemSelection(item.productId, selected),
                   onQuantityChanged: (newQty) {
                     ref.read(cartProvider.notifier).updateQuantity(
-                          item.product.id,
+                          item.id,
                           newQty,
                         );
                   },
-                  onRemove: () => _showRemoveConfirmation(context, l10n, item.product.id),
+                  onRemove: () => _showRemoveConfirmation(context, l10n, item),
                 );
               },
             ),
           ),
         ),
-        // Bottom summary section
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -217,7 +222,6 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Subtotal row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -239,7 +243,6 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                // Checkout button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -273,14 +276,12 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
-  void _toggleSelectAll(List cartItems, bool allSelected) {
+  void _toggleSelectAll(List<CartItem> cartItems, bool allSelected) {
     final notifier = ref.read(selectedCartItemsProvider.notifier);
     if (allSelected) {
-      // Deselect all
       notifier.state = {};
     } else {
-      // Select all
-      notifier.state = cartItems.map((item) => item.product.id as String).toSet();
+      notifier.state = cartItems.map((item) => item.productId).toSet();
     }
   }
 
@@ -298,7 +299,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   void _showRemoveConfirmation(
     BuildContext context,
     AppLocalizations l10n,
-    String productId,
+    CartItem item,
   ) {
     showDialog(
       context: context,
@@ -312,9 +313,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           ),
           TextButton(
             onPressed: () {
-              ref.read(cartProvider.notifier).removeItem(productId);
-              // Also remove from selection
-              _toggleItemSelection(productId, false);
+              ref.read(cartProvider.notifier).removeItem(item.id);
+              _toggleItemSelection(item.productId, false);
               Navigator.pop(ctx);
             },
             style: TextButton.styleFrom(

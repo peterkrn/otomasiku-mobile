@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../providers/auth_provider.dart';
-import '../../../core/router/app_router.dart';
 
-/// Register screen for Otomasiku Marketplace
-/// Matches ui-otomasiku-marketplace/login.html style
+import '../../../core/constants/app_colors.dart';
+import '../../../core/router/app_router.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../providers/auth_provider.dart';
+
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
@@ -21,7 +21,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _agreeToTerms = false;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -32,13 +31,30 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     super.dispose();
   }
 
+  String? _translateError(String? code) {
+    if (code == null) return null;
+    final l10n = AppLocalizations.of(context);
+    switch (code) {
+      case 'DUPLICATE_ENTRY':
+        return l10n.errorDuplicateEntry;
+      case 'WEAK_PASSWORD':
+        return l10n.passwordMinLength;
+      case 'RATE_LIMIT_EXCEEDED':
+        return l10n.errorRateLimit;
+      default:
+        return l10n.errorGeneric;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final authState = ref.watch(authProvider);
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Background image
           Positioned.fill(
             child: Image.asset(
               'assets/bg-landing-page.jpg',
@@ -56,8 +72,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               },
             ),
           ),
-
-          // Dark overlay
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -73,22 +87,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
             ),
           ),
-
-          // Main content
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
                   const SizedBox(height: 24),
-
-                  // Back button
                   Align(
                     alignment: Alignment.centerLeft,
                     child: IconButton(
-                      onPressed: () {
-                        context.goNamed(AppRoute.login);
-                      },
+                      onPressed: () => context.goNamed(AppRoute.login),
                       icon: const Icon(
                         Icons.arrow_back_ios_new,
                         color: Colors.white,
@@ -98,99 +106,98 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       constraints: const BoxConstraints(),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Welcome heading
-                  const Text(
-                    'Daftar Akun',
-                    style: TextStyle(
+                  Text(
+                    l10n.registerTitle,
+                    style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
-
                   const SizedBox(height: 8),
-
                   Text(
-                    'Lengkapi form di bawah ini',
+                    l10n.registerSubtitle,
                     style: TextStyle(
                       fontSize: 16,
                       color: AppColors.mitsubishiRed,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-
                   const SizedBox(height: 32),
-
-                  // Register form
+                  if (authState.errorCode != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: AppColors.error.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.error.withValues(alpha: 0.5)),
+                        ),
+                        child: Text(
+                          _translateError(authState.errorCode)!,
+                          style: const TextStyle(color: AppColors.error, fontSize: 14),
+                        ),
+                      ),
+                    ),
                   Form(
                     key: _formKey,
                     child: Column(
                       children: [
-                        // Name field
                         _buildGlassInput(
                           controller: _nameController,
-                          hintText: 'Nama Lengkap',
+                          hintText: l10n.nameHint,
                           prefixIcon: Icons.person_outline,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Nama harus diisi';
+                              return l10n.fieldRequired(l10n.nameHint);
                             }
                             return null;
                           },
                         ),
-
                         const SizedBox(height: 16),
-
-                        // Email field
                         _buildGlassInput(
                           controller: _emailController,
-                          hintText: 'Email',
+                          hintText: l10n.email,
                           prefixIcon: Icons.email_outlined,
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Email harus diisi';
+                              return l10n.fieldRequired(l10n.email);
                             }
                             if (!value.contains('@')) {
-                              return 'Format email tidak valid';
+                              return l10n.errorValidation;
                             }
                             return null;
                           },
                         ),
-
                         const SizedBox(height: 16),
-
-                        // Password field
                         _buildGlassInput(
                           controller: _passwordController,
-                          hintText: 'Password',
+                          hintText: l10n.passwordHint,
                           prefixIcon: Icons.lock_outline,
                           obscureText: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Password harus diisi';
+                              return l10n.fieldRequired(l10n.password);
                             }
                             if (value.length < 6) {
-                              return 'Password minimal 6 karakter';
+                              return l10n.passwordMinLength;
                             }
                             return null;
                           },
                         ),
-
                         const SizedBox(height: 16),
-
-                        // Confirm password field
                         _buildGlassInput(
                           controller: _confirmPasswordController,
-                          hintText: 'Konfirmasi Password',
+                          hintText: l10n.confirmPasswordHint,
                           prefixIcon: Icons.lock_outline,
                           obscureText: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Konfirmasi password harus diisi';
+                              return l10n.fieldRequired(l10n.confirmPasswordHint);
                             }
                             if (value != _passwordController.text) {
                               return 'Password tidak sama';
@@ -198,24 +205,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             return null;
                           },
                         ),
-
                         const SizedBox(height: 20),
-
-                        // Terms & Conditions
                         Row(
                           children: [
                             Theme(
                               data: Theme.of(context).copyWith(
-                                unselectedWidgetColor: Colors.white.withValues(
-                                  alpha: 0.6,
-                                ),
+                                unselectedWidgetColor: Colors.white.withValues(alpha: 0.6),
                               ),
                               child: Checkbox(
                                 value: _agreeToTerms,
                                 onChanged: (value) {
-                                  setState(() {
-                                    _agreeToTerms = value ?? false;
-                                  });
+                                  setState(() => _agreeToTerms = value ?? false);
                                 },
                                 activeColor: AppColors.mitsubishiRed,
                                 checkColor: Colors.white,
@@ -228,34 +228,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             Expanded(
                               child: RichText(
                                 text: TextSpan(
-                                  text: 'Saya setuju dengan ',
+                                  text: l10n.agreeTerms,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.white.withValues(alpha: 0.9),
                                   ),
-                                  children: [
-                                    TextSpan(
-                                      text: 'Syarat & Ketentuan',
-                                      style: const TextStyle(
-                                        color: AppColors.mitsubishiRed,
-                                        fontWeight: FontWeight.w500,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 24),
-
-                        // Register button
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: _isLoading ? null : _handleRegister,
+                            onPressed: authState.isLoading ? null : _handleRegister,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.mitsubishiRed,
                               foregroundColor: Colors.white,
@@ -264,24 +251,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               elevation: 8,
-                              shadowColor: AppColors.mitsubishiRed.withValues(
-                                alpha: 0.4,
-                              ),
+                              shadowColor: AppColors.mitsubishiRed.withValues(alpha: 0.4),
                             ),
-                            child: _isLoading
+                            child: authState.isLoading
                                 ? const SizedBox(
                                     height: 20,
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                     ),
                                   )
-                                : const Text(
-                                    'Daftar',
-                                    style: TextStyle(
+                                : Text(
+                                    l10n.registerButton,
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -291,15 +274,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
-                  // Login link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Sudah punya akun?',
+                        l10n.haveAccount,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.white.withValues(alpha: 0.8),
@@ -307,17 +287,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ),
                       const SizedBox(width: 8),
                       TextButton(
-                        onPressed: () {
-                          context.goNamed(AppRoute.login);
-                        },
+                        onPressed: () => context.goNamed(AppRoute.login),
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
                           minimumSize: const Size(0, 0),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        child: const Text(
-                          'Masuk',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.loginButton,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -326,15 +304,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 24),
                 ],
               ),
             ),
           ),
-
-          // Loading overlay
-          if (_isLoading)
+          if (authState.isLoading)
             Container(
               color: Colors.black54,
               child: const Center(
@@ -379,60 +354,41 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           border: InputBorder.none,
           fillColor: Colors.transparent,
           filled: true,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       ),
     );
   }
 
   Future<void> _handleRegister() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     if (!_agreeToTerms) {
-      _showSnackBar('Anda harus setuju dengan Syarat & Ketentuan');
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.agreeTermsRequired),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    // Simulate network delay for dummy register
-    await Future.delayed(const Duration(milliseconds: 800));
-
-    if (!mounted) return;
-
-    // Dummy register - always succeeds in M2
-    final authNotifier = ref.read(authProvider.notifier);
-    authNotifier.register(
+    final notifier = ref.read(authProvider.notifier);
+    notifier.clearError();
+    await notifier.register(
       _nameController.text,
       _emailController.text,
       _passwordController.text,
     );
 
-    setState(() {
-      _isLoading = false;
-    });
+    if (!mounted) return;
 
-    // Navigate to home
-    if (mounted) {
+    final authState = ref.read(authProvider);
+    if (authState.isAuthenticated) {
       context.goNamed(AppRoute.home);
     }
-  }
-
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.error,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-    );
   }
 }

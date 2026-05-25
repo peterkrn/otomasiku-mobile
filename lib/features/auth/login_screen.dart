@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../providers/auth_provider.dart';
-import '../../../core/router/app_router.dart';
 
-/// Login screen for Otomasiku Marketplace
-/// Matches ui-otomasiku-marketplace/login.html
+import '../../../core/constants/app_colors.dart';
+import '../../../core/router/app_router.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../providers/auth_provider.dart';
+
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -18,8 +18,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _rememberMe = false;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -28,14 +26,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
+  String? _translateError(String? code) {
+    if (code == null) return null;
+    final l10n = AppLocalizations.of(context);
+    switch (code) {
+      case 'INVALID_CREDENTIALS':
+        return l10n.errorInvalidCredentials;
+      case 'DUPLICATE_ENTRY':
+        return l10n.errorDuplicateEntry;
+      case 'RATE_LIMIT_EXCEEDED':
+        return l10n.errorRateLimit;
+      case 'USER_NOT_FOUND':
+        return l10n.errorUserNotFound;
+      default:
+        return l10n.errorGeneric;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final authState = ref.watch(authProvider);
+
     return Scaffold(
       backgroundColor: Colors.black,
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // Background image
           Positioned.fill(
             child: Image.asset(
               'assets/bg-landing-page.jpg',
@@ -53,8 +70,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               },
             ),
           ),
-
-          // Dark overlay
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -70,22 +85,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ),
           ),
-
-          // Main content with scroll for keyboard
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
                   const SizedBox(height: 48),
-
-                  // Back button
                   Align(
                     alignment: Alignment.centerLeft,
                     child: IconButton(
-                      onPressed: () {
-                        context.goNamed(AppRoute.splash);
-                      },
+                      onPressed: () => context.goNamed(AppRoute.splash),
                       icon: const Icon(
                         Icons.arrow_back_ios_new,
                         color: Colors.white,
@@ -95,88 +104,90 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       constraints: const BoxConstraints(),
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
-                  // Welcome heading
-                  const Text(
-                    'Selamat Datang!',
-                    style: TextStyle(
+                  Text(
+                    l10n.loginTitle,
+                    style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
-
                   const SizedBox(height: 8),
-
                   Text(
-                    'Masuk untuk melanjutkan',
+                    l10n.loginSubtitle,
                     style: TextStyle(
                       fontSize: 16,
                       color: AppColors.mitsubishiRed,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-
                   const SizedBox(height: 32),
-
-                  // Login form
+                  if (authState.errorCode != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.error.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.error.withValues(alpha: 0.5)),
+                        ),
+                        child: Text(
+                          _translateError(authState.errorCode)!,
+                          style: const TextStyle(
+                            color: AppColors.error,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ),
                   Form(
                     key: _formKey,
                     child: Column(
                       children: [
-                        // Email field
                         _buildGlassInput(
                           controller: _emailController,
-                          hintText: 'Username / Email',
+                          hintText: l10n.emailHint,
                           prefixIcon: Icons.person_outline,
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Email harus diisi';
+                              return l10n.fieldRequired(l10n.email);
                             }
                             return null;
                           },
                         ),
-
                         const SizedBox(height: 16),
-
-                        // Password field
                         _buildGlassInput(
                           controller: _passwordController,
-                          hintText: 'Password',
+                          hintText: l10n.passwordHint,
                           prefixIcon: Icons.lock_outline,
                           obscureText: true,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Password harus diisi';
+                              return l10n.fieldRequired(l10n.password);
                             }
                             return null;
                           },
                         ),
-
                         const SizedBox(height: 12),
-
-                        // Remember me & Forgot password
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // Remember me
                             Row(
                               children: [
                                 Theme(
                                   data: Theme.of(context).copyWith(
-                                    unselectedWidgetColor: Colors.white
-                                        .withValues(alpha: 0.6),
+                                    unselectedWidgetColor: Colors.white.withValues(alpha: 0.6),
                                   ),
                                   child: Checkbox(
-                                    value: _rememberMe,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _rememberMe = value ?? false;
-                                      });
-                                    },
+                                    value: false,
+                                    onChanged: null,
                                     activeColor: AppColors.mitsubishiRed,
                                     checkColor: Colors.white,
                                     shape: RoundedRectangleBorder(
@@ -186,7 +197,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Ingat saya',
+                                  l10n.rememberMe,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.white.withValues(alpha: 0.9),
@@ -194,12 +205,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ),
                               ],
                             ),
-
-                            // Forgot password
                             TextButton(
-                              onPressed: () {
-                                // TODO: Navigate to forgot password
-                              },
+                              onPressed: () {},
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 minimumSize: const Size(0, 0),
@@ -216,14 +223,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 24),
-
-                        // Login button
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: _isLoading ? null : _handleLogin,
+                            onPressed: authState.isLoading ? null : _handleLogin,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.mitsubishiRed,
                               foregroundColor: Colors.white,
@@ -232,24 +236,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               elevation: 8,
-                              shadowColor: AppColors.mitsubishiRed.withValues(
-                                alpha: 0.4,
-                              ),
+                              shadowColor: AppColors.mitsubishiRed.withValues(alpha: 0.4),
                             ),
-                            child: _isLoading
+                            child: authState.isLoading
                                 ? const SizedBox(
                                     height: 20,
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                     ),
                                   )
-                                : const Text(
-                                    'Masuk',
-                                    style: TextStyle(
+                                : Text(
+                                    l10n.loginButton,
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -259,15 +259,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
-                  // Register link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Belum punya akun?',
+                        l10n.noAccount,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.white.withValues(alpha: 0.8),
@@ -275,17 +272,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(width: 8),
                       TextButton(
-                        onPressed: () {
-                          context.goNamed(AppRoute.register);
-                        },
+                        onPressed: () => context.goNamed(AppRoute.register),
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
                           minimumSize: const Size(0, 0),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        child: const Text(
-                          'Daftar',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.registerButton,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -294,15 +289,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 24),
                 ],
               ),
             ),
           ),
-
-          // Loading overlay
-          if (_isLoading)
+          if (authState.isLoading)
             Container(
               color: Colors.black54,
               child: const Center(
@@ -347,39 +339,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           border: InputBorder.none,
           fillColor: Colors.transparent,
           filled: true,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       ),
     );
   }
 
   Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    // Simulate network delay for dummy login
-    await Future.delayed(const Duration(milliseconds: 800));
+    final notifier = ref.read(authProvider.notifier);
+    notifier.clearError();
+    await notifier.login(_emailController.text, _passwordController.text);
 
     if (!mounted) return;
 
-    // Dummy login - always succeeds in M2
-    final authNotifier = ref.read(authProvider.notifier);
-    authNotifier.login(_emailController.text, _passwordController.text);
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    // Navigate to home
-    if (mounted) {
+    final authState = ref.read(authProvider);
+    if (authState.isAuthenticated) {
       context.goNamed(AppRoute.home);
     }
   }

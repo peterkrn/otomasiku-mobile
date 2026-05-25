@@ -27,7 +27,7 @@ Flutter App
 |---|------|-------|------------|--------|
 | 01 | [01-infrastructure.md](./01-infrastructure.md) | Dio client, interceptors, env config, connectivity | — | ✅ |
 | 02 | [02-models-repositories.md](./02-models-repositories.md) | Typed models + repository layer | 01 | ✅ |
-| 03 | [03-auth-flow.md](./03-auth-flow.md) | Supabase auth, token storage, GoRouter guards, bootstrap | 01, 02 | ⬜ |
+| 03 | [03-auth-flow.md](./03-auth-flow.md) | Supabase auth, token storage, GoRouter guards, bootstrap | 01, 02 | ✅ |
 | 04 | [04-product-catalog.md](./04-product-catalog.md) | Product list, search, filter, pagination | 01, 02, 03 | ⬜ |
 | 05 | [05-cart.md](./05-cart.md) | Cart CRUD, optimistic UI, idempotency | 01, 02, 03 | ⬜ |
 | 06 | [06-checkout-orders.md](./06-checkout-orders.md) | Checkout flow, order creation, order history | 01, 02, 03, 05 | ⬜ |

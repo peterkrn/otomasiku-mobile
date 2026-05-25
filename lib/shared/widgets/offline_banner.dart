@@ -11,8 +11,9 @@ class OfflineBanner extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isConnected = ref.watch(connectivityProvider);
+    final connected = isConnected.value ?? true;
 
-    if (isConnected.value != false) return const SizedBox.shrink();
+    if (connected) return const SizedBox.shrink();
 
     final l10n = AppLocalizations.of(context);
 

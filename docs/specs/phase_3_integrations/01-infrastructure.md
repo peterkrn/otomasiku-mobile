@@ -4,7 +4,7 @@
 |-------|-------|
 | **Phase** | 3 — Backend Integration |
 | **Priority** | Critical — all other specs depend on this |
-| **Status** | ⬜ Draft |
+| **Status** | ✅ Done |
 | **Depends On** | — (first spec) |
 
 ---

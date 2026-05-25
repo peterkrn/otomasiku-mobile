@@ -1,16 +1,17 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/router/app_router.dart';
-import '../../../core/utils/currency_formatter.dart';
-import '../../../core/widgets/app_toast.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../data/dummy/dummy_products.dart';
-import '../../../models/product.dart';
-import '../../../providers/compare_provider.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/router/app_router.dart';
+import '../../core/utils/currency_formatter.dart';
+import '../../core/widgets/app_toast.dart';
+import '../../l10n/app_localizations.dart';
+import '../../models/product.dart';
+import '../../providers/compare_provider.dart';
+import '../../providers/product_provider.dart';
+import '../../shared/widgets/product_image.dart' as product_image;
 
-/// Search screen with filters, sort, and product list
 class SearchScreen extends ConsumerStatefulWidget {
   final String? initialQuery;
 
@@ -23,14 +24,11 @@ class SearchScreen extends ConsumerStatefulWidget {
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _searchController = TextEditingController();
   final _focusNode = FocusNode();
+  Timer? _debounce;
 
-  // Active filters
   final Set<String> _activeFilters = {};
-
-  // Sort option
   String _sortBy = 'relevance';
 
-  // Filter keys (for logic)
   static const _categoryKeys = ['inverter', 'servo', 'plc', 'hmi'];
   static const _brandKeys = ['mitsubishi', 'danfoss'];
 
@@ -39,6 +37,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     super.initState();
     if (widget.initialQuery != null) {
       _searchController.text = widget.initialQuery!;
+      _onSearchChanged(widget.initialQuery!);
     }
   }
 
@@ -46,53 +45,52 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   void dispose() {
     _searchController.dispose();
     _focusNode.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
+  void _onSearchChanged(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      ref.read(productFilterProvider.notifier).state = ref.read(productFilterProvider).copyWith(
+        search: value.isEmpty ? null : value,
+        clearSearch: value.isEmpty,
+      );
+    });
+  }
+
   List<Product> _getFilteredProducts() {
-    var products = dummyProducts.toList();
+    final allProducts = ref.read(productListProvider).valueOrNull ?? [];
 
-    // Filter by search query
-    final query = _searchController.text.toLowerCase().trim();
-    if (query.isNotEmpty) {
-      products = products.where((p) {
-        return p.name.toLowerCase().contains(query) ||
-            p.sku.toLowerCase().contains(query) ||
-            p.series.toLowerCase().contains(query);
-      }).toList();
-    }
+    var products = allProducts.toList();
 
-    // Filter by category
     final activeCategories = _activeFilters
         .where((f) => _categoryKeys.contains(f))
         .toList();
     if (activeCategories.isNotEmpty) {
       products = products.where((p) {
-        final catName = p.category.name.toLowerCase();
-        return activeCategories.contains(catName);
+        final catSlug = p.category.slug.toLowerCase();
+        return activeCategories.contains(catSlug);
       }).toList();
     }
 
-    // Filter by stock
     if (_activeFilters.contains('ready-stock')) {
-      products = products.where((p) => p.stockStatus == StockStatus.inStock).toList();
+      products = products.where((p) => !p.isOutOfStock).toList();
     }
     if (_activeFilters.contains('indent')) {
-      products = products.where((p) => p.stockStatus == StockStatus.leadTime).toList();
+      products = products.where((p) => p.stock <= 5).toList();
     }
 
-    // Filter by brand
     final activeBrands = _activeFilters
         .where((f) => _brandKeys.contains(f))
         .toList();
     if (activeBrands.isNotEmpty) {
       products = products.where((p) {
-        final brandName = p.brand.name.toLowerCase();
-        return activeBrands.contains(brandName);
+        final brandSlug = p.brand.slug.toLowerCase();
+        return activeBrands.contains(brandSlug);
       }).toList();
     }
 
-    // Sort
     switch (_sortBy) {
       case 'price-low':
         products.sort((a, b) => a.price.compareTo(b.price));
@@ -121,9 +119,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       case 'indent': return l10n.stockIndent;
       case 'mitsubishi': return l10n.mitsubishi;
       case 'danfoss': return l10n.danfoss;
-      case 'daya-kecil': return '≤ 2.2 kW';
-      case 'daya-menengah': return '3.7–15 kW';
-      case 'daya-besar': return '≥ 18.5 kW';
+      case 'daya-kecil': return '\u2264 2.2 kW';
+      case 'daya-menengah': return '3.7\u201315 kW';
+      case 'daya-besar': return '\u2265 18.5 kW';
       default: return filterKey;
     }
   }
@@ -156,9 +154,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ('danfoss', l10n.danfoss),
         ],
         powerRanges: [
-          ('daya-kecil', '≤ 2.2 kW'),
-          ('daya-menengah', '3.7–15 kW'),
-          ('daya-besar', '≥ 18.5 kW'),
+          ('daya-kecil', '\u2264 2.2 kW'),
+          ('daya-menengah', '3.7\u201315 kW'),
+          ('daya-besar', '\u2265 18.5 kW'),
         ],
         onApply: (filters) {
           setState(() {
@@ -182,6 +180,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final productsAsync = ref.watch(productListProvider);
     final products = _getFilteredProducts();
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -229,6 +228,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           ? GestureDetector(
                               onTap: () {
                                 _searchController.clear();
+                                _onSearchChanged('');
                                 setState(() {});
                               },
                               child: Icon(Icons.cancel, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary, size: 20),
@@ -237,8 +237,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     ),
-                    onChanged: (_) => setState(() {}),
-                    onSubmitted: (_) => setState(() {}),
+                    onChanged: (value) {
+                      _onSearchChanged(value);
+                      setState(() {});
+                    },
+                    onSubmitted: (value) {
+                      _onSearchChanged(value);
+                      setState(() {});
+                    },
                   ),
                 ),
               ),
@@ -246,122 +252,121 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          // Active filters
-          Container(
-            color: isDark ? AppColors.darkSurface : Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  Text(
-                    'Filter aktif:',
-                    style: TextStyle(fontSize: 12, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
-                  ),
-                  const SizedBox(width: 8),
-                  if (_activeFilters.isEmpty)
-                    Text(
-                      'Tidak ada filter aktif',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontStyle: FontStyle.italic,
-                        color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
-                      ),
-                    )
-                  else
-                    ..._activeFilters.map((f) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: _buildFilterChip(_getFilterLabel(f, l10n), () => _removeFilter(f), isDark),
-                        )),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () => _openFilterSheet(l10n),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.mitsubishiRed.withValues(alpha: isDark ? 0.15 : 0.05),
-                        border: Border.all(color: AppColors.mitsubishiRed.withValues(alpha: 0.3)),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.add, size: 12, color: AppColors.mitsubishiRed),
-                          const SizedBox(width: 4),
+      body: productsAsync.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Container(
+                  color: isDark ? AppColors.darkSurface : Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        Text(
+                          'Filter aktif:',
+                          style: TextStyle(fontSize: 12, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
+                        ),
+                        const SizedBox(width: 8),
+                        if (_activeFilters.isEmpty)
                           Text(
-                            'Tambah Filter',
+                            'Tidak ada filter aktif',
                             style: TextStyle(
                               fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.mitsubishiRed,
+                              fontStyle: FontStyle.italic,
+                              color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                            ),
+                          )
+                        else
+                          ..._activeFilters.map((f) => Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: _buildFilterChip(_getFilterLabel(f, l10n), () => _removeFilter(f), isDark),
+                              )),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () => _openFilterSheet(l10n),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.mitsubishiRed.withValues(alpha: isDark ? 0.15 : 0.05),
+                              border: Border.all(color: AppColors.mitsubishiRed.withValues(alpha: 0.3)),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.add, size: 12, color: AppColors.mitsubishiRed),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Tambah Filter',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.mitsubishiRed,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Results count & sort
-          Container(
-            color: isDark ? AppColors.darkSurface : Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Ditemukan ${products.length} produk',
-                  style: TextStyle(fontSize: 14, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkSurfaceVariant : null,
-                    border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: _sortBy,
-                      isDense: true,
-                      dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
-                      style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-                      items: [
-                        DropdownMenuItem(value: 'relevance', child: Text('Relevansi')),
-                        DropdownMenuItem(value: 'price-low', child: Text('Harga Terendah')),
-                        DropdownMenuItem(value: 'price-high', child: Text('Harga Tertinggi')),
-                        DropdownMenuItem(value: 'name-asc', child: Text('Nama A-Z')),
-                        DropdownMenuItem(value: 'name-desc', child: Text('Nama Z-A')),
+                        ),
                       ],
-                      onChanged: (value) {
-                        if (value != null) setState(() => _sortBy = value);
-                      },
                     ),
                   ),
+                ),
+
+                Container(
+                  color: isDark ? AppColors.darkSurface : Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Ditemukan ${products.length} produk',
+                        style: TextStyle(fontSize: 14, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: isDark ? AppColors.darkSurfaceVariant : null,
+                          border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _sortBy,
+                            isDense: true,
+                            dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
+                            style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+                            items: [
+                              DropdownMenuItem(value: 'relevance', child: Text('Relevansi')),
+                              DropdownMenuItem(value: 'price-low', child: Text('Harga Terendah')),
+                              DropdownMenuItem(value: 'price-high', child: Text('Harga Tertinggi')),
+                              DropdownMenuItem(value: 'name-asc', child: Text('Nama A-Z')),
+                              DropdownMenuItem(value: 'name-desc', child: Text('Nama Z-A')),
+                            ],
+                            onChanged: (value) {
+                              if (value != null) setState(() => _sortBy = value);
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                Expanded(
+                  child: products.isEmpty
+                      ? _buildEmptyState(isDark)
+                      : ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: products.length,
+                          itemBuilder: (context, index) {
+                            return _buildProductCard(products[index], isDark);
+                          },
+                        ),
                 ),
               ],
             ),
-          ),
-
-          // Product list
-          Expanded(
-            child: products.isEmpty
-                ? _buildEmptyState(isDark)
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
-                      return _buildProductCard(products[index], isDark);
-                    },
-                  ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -410,34 +415,25 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              // Product image
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
                   width: 96,
                   height: 96,
                   color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-                  child: Image.asset(
-                    product.primaryImage,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Icon(
-                      _getCategoryIcon(product.category),
-                      size: 32,
-                      color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
-                    ),
-                  ),
+child: product_image.ProductNetworkImage(
+  imageUrl: product.primaryImageUrl,
+  categorySlug: product.category.slug,
+),
                 ),
               ),
               const SizedBox(width: 12),
-              // Product info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Stock badge
                     _buildStockBadge(product),
                     const SizedBox(height: 4),
-                    // Name
                     Text(
                       product.name,
                       style: TextStyle(
@@ -447,16 +443,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    // Description
                     Text(
-                      '${product.brand == ProductBrand.mitsubishi ? 'Mitsubishi' : 'Danfoss'} ${product.category.name}',
+                      '${product.brand.name} ${product.category.name}',
                       style: TextStyle(
                         fontSize: 12,
                         color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Price
                     Text(
                       CurrencyFormatter.format(product.price),
                       style: const TextStyle(
@@ -468,7 +462,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   ],
                 ),
               ),
-              // Compare button
               IconButton(
                 onPressed: () => _addToCompare(product),
                 icon: Icon(Icons.balance, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
@@ -485,27 +478,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     Color bgColor;
     Color textColor;
 
-    switch (product.stockStatus) {
-      case StockStatus.inStock:
-        label = '${product.stock} Unit Tersedia';
-        bgColor = Colors.green.withValues(alpha: 0.1);
-        textColor = Colors.green;
-        break;
-      case StockStatus.lowStock:
-        label = 'Sisa ${product.stock} Unit';
-        bgColor = Colors.red.withValues(alpha: 0.1);
-        textColor = Colors.red;
-        break;
-      case StockStatus.leadTime:
-        label = 'Indent ${product.stockLeadTime ?? '7-14 Hari'}';
-        bgColor = Colors.orange.withValues(alpha: 0.1);
-        textColor = Colors.orange;
-        break;
-      case StockStatus.outOfStock:
-        label = 'Habis';
-        bgColor = Colors.red.withValues(alpha: 0.1);
-        textColor = Colors.red;
-        break;
+    if (product.isOutOfStock) {
+      label = 'Habis';
+      bgColor = Colors.red.withValues(alpha: 0.1);
+      textColor = Colors.red;
+    } else if (product.isLowStock) {
+      label = 'Sisa ${product.stock} Unit';
+      bgColor = Colors.red.withValues(alpha: 0.1);
+      textColor = Colors.red;
+    } else {
+      label = '${product.stock} Unit Tersedia';
+      bgColor = Colors.green.withValues(alpha: 0.1);
+      textColor = Colors.green;
     }
 
     return Container(
@@ -564,18 +548,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       ),
     );
   }
-
-  IconData _getCategoryIcon(ProductCategory category) {
-    return switch (category) {
-      ProductCategory.inverter => Icons.bolt,
-      ProductCategory.plc => Icons.memory,
-      ProductCategory.hmi => Icons.desktop_mac,
-      ProductCategory.servo => Icons.settings,
-    };
-  }
 }
 
-// Filter Bottom Sheet
 class _FilterBottomSheet extends StatefulWidget {
   final Set<String> activeFilters;
   final List<(String, String)> categories;
@@ -633,7 +607,6 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Handle
             Center(
               child: Container(
                 margin: const EdgeInsets.only(top: 12),
@@ -645,7 +618,6 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 ),
               ),
             ),
-            // Header
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 12, 12, 12),
               child: Row(
@@ -670,29 +642,19 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             ),
             Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.border),
 
-            // Content
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Kategori Produk
                   _buildFilterSection(l10n.filterCategory, widget.categories, isDark),
                   const SizedBox(height: 20),
-
-                  // Ketersediaan Stok
                   _buildFilterSection(l10n.filterAvailability, widget.stockOptions, isDark),
                   const SizedBox(height: 20),
-
-                  // Brand
                   _buildFilterSection(l10n.brand, widget.brands, isDark),
                   const SizedBox(height: 20),
-
-                  // Rentang Daya
                   _buildFilterSection(l10n.filterPower, widget.powerRanges, isDark),
                   const SizedBox(height: 20),
-
-                  // Apply button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(

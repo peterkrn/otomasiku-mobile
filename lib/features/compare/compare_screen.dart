@@ -6,12 +6,11 @@ import '../../core/constants/app_colors.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/widgets/app_toast.dart';
 import '../../l10n/app_localizations.dart';
-import '../../data/dummy/dummy_products.dart';
 import '../../models/product.dart';
 import '../../providers/compare_provider.dart';
+import '../../providers/product_provider.dart';
+import '../../shared/widgets/product_image.dart' as product_image;
 
-/// Compare screen showing side-by-side product comparison
-/// Single table with sticky first column for attribute names
 class CompareScreen extends ConsumerWidget {
   const CompareScreen({super.key});
 
@@ -21,14 +20,11 @@ class CompareScreen extends ConsumerWidget {
     final compareState = ref.watch(compareProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Get products from dummy data
-    final products = compareState.productIds.map((id) {
-      try {
-        return dummyProducts.firstWhere((p) => p.id == id);
-      } catch (_) {
-        return null;
-      }
-    }).whereType<Product>().toList();
+    final productsAsync = ref.watch(productListProvider);
+    final products = productsAsync.valueOrNull ?? [];
+    final compareProducts = products
+        .where((p) => compareState.productIds.contains(p.id))
+        .toList();
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
@@ -42,7 +38,7 @@ class CompareScreen extends ConsumerWidget {
         elevation: 0,
         actions: [
           TextButton(
-            onPressed: products.isEmpty
+            onPressed: compareProducts.isEmpty
                 ? null
                 : () => _showClearAllDialog(context, ref),
             child: Text(
@@ -55,16 +51,18 @@ class CompareScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: products.isEmpty
-          ? _buildEmptyState(context, l10n, isDark)
-          : OverflowBox(
-              maxWidth: double.infinity,
-              maxHeight: double.infinity,
-              alignment: Alignment.topLeft,
-              child: ClipRect(
-                child: _buildCompareTable(context, l10n, ref, products, isDark),
-              ),
-            ),
+      body: productsAsync.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : compareProducts.isEmpty
+              ? _buildEmptyState(context, l10n, isDark)
+              : OverflowBox(
+                  maxWidth: double.infinity,
+                  maxHeight: double.infinity,
+                  alignment: Alignment.topLeft,
+                  child: ClipRect(
+                    child: _buildCompareTable(context, l10n, ref, compareProducts, isDark),
+                  ),
+                ),
     );
   }
 
@@ -119,21 +117,13 @@ class CompareScreen extends ConsumerWidget {
     List<Product> products,
     bool isDark,
   ) {
-    // Get all unique specification keys from all products
-    final specKeys = <String>{};
-    for (final product in products) {
-      if (product.specifications != null) {
-        specKeys.addAll(product.specifications!.keys);
-      }
-    }
-
-    // Column widths
     const labelColumnWidth = 80.0;
     const productColumnWidth = 140.0;
 
-    // Only show "Add product" column if less than 2 products
     final showAddColumn = products.length < 2;
     final totalColumns = products.length + (showAddColumn ? 1 : 0);
+
+    final attributeKeys = ['series', 'variant', 'unit', 'minOrder', 'stock', 'price'];
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -141,25 +131,22 @@ class CompareScreen extends ConsumerWidget {
       child: ClipRect(
         child: Container(
           width: labelColumnWidth + totalColumns * productColumnWidth + 2,
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurface : Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkSurface : Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildProductRow(context, l10n, ref, products, labelColumnWidth, productColumnWidth, isDark, showAddColumn),
+              ...attributeKeys.map((key) => _buildAttributeRow(key, products, labelColumnWidth, productColumnWidth, isDark, showAddColumn)),
+              _buildBuyButtonRow(context, l10n, products, labelColumnWidth, productColumnWidth, isDark, showAddColumn),
+            ],
+          ),
         ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Row 1: PRODUK header + product images
-            _buildProductRow(context, l10n, ref, products, labelColumnWidth, productColumnWidth, isDark, showAddColumn),
-            // Specification rows
-            ...specKeys.map((key) => _buildSpecRow(key, products, labelColumnWidth, productColumnWidth, isDark, showAddColumn)),
-            // Buy buttons row
-            _buildBuyButtonRow(context, l10n, products, labelColumnWidth, productColumnWidth, isDark, showAddColumn),
-          ],
-        ),
-      ),
       ),
     );
   }
@@ -183,7 +170,6 @@ class CompareScreen extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Label column - "PRODUK"
           Container(
             width: labelWidth,
             height: 250,
@@ -201,7 +187,6 @@ class CompareScreen extends ConsumerWidget {
               ),
             ),
           ),
-          // Product columns
           ...products.map((product) => SizedBox(
             width: columnWidth,
             height: 250,
@@ -217,7 +202,6 @@ class CompareScreen extends ConsumerWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Product image
                       Container(
                         height: 100,
                         decoration: BoxDecoration(
@@ -226,21 +210,13 @@ class CompareScreen extends ConsumerWidget {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            product.primaryImage,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Center(
-                              child: Icon(
-                                _getCategoryIcon(product.category),
-                                size: 32,
-                                color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
-                              ),
-                            ),
-                          ),
+child: product_image.ProductNetworkImage(
+  imageUrl: product.primaryImageUrl,
+  categorySlug: product.category.slug,
+),
                         ),
                       ),
                       const SizedBox(height: 8),
-                      // Product name
                       Text(
                         product.name,
                         style: TextStyle(
@@ -252,16 +228,14 @@ class CompareScreen extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
-                      // Brand
                       Text(
-                        _brandToString(product.brand),
+                        product.brand.name,
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 4),
-                      // Price
                       Text(
                         CurrencyFormatter.formatCompact(product.price),
                         style: const TextStyle(
@@ -271,11 +245,9 @@ class CompareScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      // Stock badge
                       _buildStockBadge(product, isDark),
                     ],
                   ),
-                  // Remove button
                   Positioned(
                     top: 0,
                     right: 0,
@@ -305,7 +277,6 @@ class CompareScreen extends ConsumerWidget {
               ),
             ),
           )),
-          // Add product column (only if less than 2 products)
           if (showAddColumn)
             Container(
               width: columnWidth,
@@ -349,27 +320,18 @@ class CompareScreen extends ConsumerWidget {
     Color bgColor;
     Color textColor;
 
-    switch (product.stockStatus) {
-      case StockStatus.inStock:
-        text = '${product.stock ?? 0} unit';
-        bgColor = isDark ? Colors.green.withValues(alpha: 0.2) : const Color(0xFFDCFCE7);
-        textColor = isDark ? Colors.green.shade300 : const Color(0xFF16A34A);
-        break;
-      case StockStatus.lowStock:
-        text = 'Stok ${product.stock}';
-        bgColor = isDark ? Colors.orange.withValues(alpha: 0.2) : const Color(0xFFFEF3C7);
-        textColor = isDark ? Colors.orange.shade300 : const Color(0xFFD97706);
-        break;
-      case StockStatus.outOfStock:
-        text = 'Habis';
-        bgColor = isDark ? AppColors.mitsubishiRed.withValues(alpha: 0.2) : const Color(0xFFFEE2E2);
-        textColor = AppColors.mitsubishiRed;
-        break;
-      case StockStatus.leadTime:
-        text = 'Indent';
-        bgColor = isDark ? Colors.orange.withValues(alpha: 0.2) : const Color(0xFFFED7AA);
-        textColor = isDark ? Colors.orange.shade300 : const Color(0xFFEA580C);
-        break;
+    if (product.isOutOfStock) {
+      text = 'Habis';
+      bgColor = isDark ? AppColors.mitsubishiRed.withValues(alpha: 0.2) : const Color(0xFFFEE2E2);
+      textColor = AppColors.mitsubishiRed;
+    } else if (product.isLowStock) {
+      text = 'Stok ${product.stock}';
+      bgColor = isDark ? Colors.orange.withValues(alpha: 0.2) : const Color(0xFFFEF3C7);
+      textColor = isDark ? Colors.orange.shade300 : const Color(0xFFD97706);
+    } else {
+      text = '${product.stock} unit';
+      bgColor = isDark ? Colors.green.withValues(alpha: 0.2) : const Color(0xFFDCFCE7);
+      textColor = isDark ? Colors.green.shade300 : const Color(0xFF16A34A);
     }
 
     return Container(
@@ -389,8 +351,8 @@ class CompareScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSpecRow(
-    String specKey,
+  Widget _buildAttributeRow(
+    String attributeKey,
     List<Product> products,
     double labelWidth,
     double columnWidth,
@@ -406,13 +368,12 @@ class CompareScreen extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Label column
           Container(
             width: labelWidth,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             color: isDark ? AppColors.darkSurfaceVariant : const Color(0xFFF9FAFB),
             child: Text(
-              _getLabelForKey(specKey),
+              _getLabelForKey(attributeKey),
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
@@ -420,9 +381,8 @@ class CompareScreen extends ConsumerWidget {
               ),
             ),
           ),
-          // Product value columns
           ...products.map((product) {
-            final value = product.specifications?[specKey] ?? '-';
+            final value = _getAttributeValue(product, attributeKey);
             return Container(
               width: columnWidth,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -441,7 +401,6 @@ class CompareScreen extends ConsumerWidget {
               ),
             );
           }),
-          // Empty column for "add product" (only if less than 2 products)
           if (showAddColumn)
             Container(
               width: columnWidth,
@@ -478,12 +437,10 @@ class CompareScreen extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Empty label column
           SizedBox(
             width: labelWidth,
             height: 68,
           ),
-          // Buy buttons
           ...products.map((product) => Container(
             width: columnWidth,
             padding: const EdgeInsets.all(12),
@@ -511,7 +468,6 @@ class CompareScreen extends ConsumerWidget {
               ),
             ),
           )),
-          // Empty column for "add product" (only if less than 2 products)
           if (showAddColumn)
             SizedBox(
               width: columnWidth,
@@ -524,30 +480,33 @@ class CompareScreen extends ConsumerWidget {
 
   String _getLabelForKey(String key) {
     const labels = {
-      'Power': 'DAYA',
-      'Voltage': 'TEGANGAN',
-      'Warranty': 'GARANSI',
-      'Phase': 'FASE',
-      'Current': 'ARUS',
-      'Frequency': 'FREKUENSI',
+      'series': 'SERIES',
+      'variant': 'VARIAN',
+      'unit': 'SATUAN',
+      'minOrder': 'MIN ORDER',
+      'stock': 'STOK',
+      'price': 'HARGA',
     };
     return labels[key] ?? key.toUpperCase();
   }
 
-  IconData _getCategoryIcon(ProductCategory category) {
-    return switch (category) {
-      ProductCategory.inverter => Icons.bolt,
-      ProductCategory.plc => Icons.memory,
-      ProductCategory.hmi => Icons.desktop_mac,
-      ProductCategory.servo => Icons.settings,
-    };
-  }
-
-  String _brandToString(ProductBrand brand) {
-    return switch (brand) {
-      ProductBrand.mitsubishi => 'Mitsubishi',
-      ProductBrand.danfoss => 'Danfoss',
-    };
+  String _getAttributeValue(Product product, String key) {
+    switch (key) {
+      case 'series':
+        return product.series ?? '-';
+      case 'variant':
+        return product.variant ?? '-';
+      case 'unit':
+        return product.unit;
+      case 'minOrder':
+        return '${product.minOrder}';
+      case 'stock':
+        return '${product.stock}';
+      case 'price':
+        return CurrencyFormatter.formatCompact(product.price);
+      default:
+        return '-';
+    }
   }
 
   void _showClearAllDialog(BuildContext context, WidgetRef ref) {

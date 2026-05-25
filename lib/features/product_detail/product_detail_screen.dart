@@ -10,10 +10,9 @@ import '../../models/product.dart';
 import '../../models/cart_item.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/compare_provider.dart';
-import '../../data/dummy/dummy_products.dart';
+import '../../providers/product_provider.dart';
+import '../../shared/widgets/product_image.dart' as product_image;
 
-/// Product Detail Screen - shows full product information
-/// Matches ui-otomasiku-marketplace/product-detail.html
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
 
@@ -28,23 +27,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   late TabController _tabController;
   int _quantity = 1;
   bool _isAddingToCart = false;
-  int? _selectedTierMin; // Track selected tier minimum quantity
-
-  Product? _product;
+  int? _selectedTierMin;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _loadProduct();
-  }
-
-  void _loadProduct() {
-    // Find product from dummy data
-    _product = dummyProducts.firstWhere(
-      (p) => p.id == widget.productId,
-      orElse: () => dummyProducts.first,
-    );
   }
 
   @override
@@ -56,25 +44,93 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final product = _product;
+    final productAsync = ref.watch(productDetailProvider(widget.productId));
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    if (product == null) {
-      return Scaffold(
-        appBar: AppBar(title: Text(l10n.productDetail)),
-        body: Center(child: Text(l10n.noProducts)),
-      );
-    }
-
-    final cartQuantity = ref.watch(
-      cartProvider.select((s) => s.getQuantityForProduct(product.id)),
+    return productAsync.when(
+      data: (product) => _buildProductScreen(product, l10n, isDark),
+      loading: () => _buildLoadingScreen(l10n, isDark),
+      error: (error, _) => _buildErrorScreen(l10n, isDark),
     );
+  }
+
+  Widget _buildLoadingScreen(AppLocalizations l10n, bool isDark) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.goNamed(AppRoute.home);
+            }
+          },
+        ),
+        title: Text(l10n.productDetail),
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+        elevation: 0,
+      ),
+      body: Center(
+        child: CircularProgressIndicator(
+          color: AppColors.mitsubishiRed,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorScreen(AppLocalizations l10n, bool isDark) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.goNamed(AppRoute.home);
+            }
+          },
+        ),
+        title: Text(l10n.productDetail),
+        backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+        elevation: 0,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: AppColors.mitsubishiRed),
+            const SizedBox(height: 16),
+            Text(
+              l10n.errorLoadingProductDetail,
+              style: TextStyle(fontSize: 16, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => ref.refresh(productDetailProvider(widget.productId)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.mitsubishiRed,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: Text(l10n.retry),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductScreen(Product product, AppLocalizations l10n, bool isDark) {
+    final cart = ref.watch(cartProvider);
+    final cartQuantity = cart.items
+        .where((i) => i.productId == product.id)
+        .fold(0, (sum, i) => sum + i.quantity);
     final isInCompare = ref.watch(
       compareProvider.select((s) => s.isInCompare(product.id)),
     );
-    final displayStock = product.stock != null
-        ? (product.stock! - cartQuantity)
-        : null;
+    final displayStock = product.stock - cartQuantity;
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
@@ -93,7 +149,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
         actions: [
-          // Compare button
           IconButton(
             onPressed: () => _handleCompare(product, l10n),
             icon: Icon(
@@ -107,16 +162,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product image section
             _buildImageSection(product, l10n, isDark),
-
-            // Product info section
             _buildProductInfo(product, l10n, displayStock, isDark),
-
-            // Tiered pricing section
             _buildTieredPricing(product, l10n, isDark),
-
-            // Tabs section
             _buildTabs(product, l10n, isDark),
           ],
         ),
@@ -137,32 +185,22 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
               borderRadius: BorderRadius.circular(16),
               child: Container(
                 color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-                child: Image.asset(
-                  product.primaryImage,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Center(
-                        child: Icon(
-                          _getCategoryIcon(product.category),
-                          size: 64,
-                          color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
-                        ),
-                      );
-                    },
-                  ),
+child: product_image.ProductNetworkImage(
+  imageUrl: product.primaryImageUrl,
+  categorySlug: product.category.slug,
+),
               ),
             ),
           ),
-          // Badges
           Positioned(
             top: 8,
             left: 8,
             child: Row(
               children: [
-                if (product.stockStatus == StockStatus.inStock)
-                  _buildBadge(l10n.newArrival, AppColors.mitsubishiRed),
-                const SizedBox(width: 8),
-                _buildStockBadge(product, l10n),
+                if (product.isOutOfStock) _buildBadge(l10n.stockEmpty, const Color(0xFFEF4444)),
+                if (product.isLowStock) _buildBadge(l10n.stockLow(product.stock), const Color(0xFFF59E0B)),
+                if (!product.isOutOfStock && !product.isLowStock)
+                  _buildBadge(l10n.stockUnit(product.stock), const Color(0xFF10B981)),
               ],
             ),
           ),
@@ -189,36 +227,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     );
   }
 
-  Widget _buildStockBadge(Product product, AppLocalizations l10n) {
-    String text;
-    Color color;
-
-    switch (product.stockStatus) {
-      case StockStatus.inStock:
-        text = l10n.stockReady;
-        color = Colors.green;
-        break;
-      case StockStatus.lowStock:
-        text = l10n.stockLow(product.stock ?? 0);
-        color = Colors.orange;
-        break;
-      case StockStatus.outOfStock:
-        text = l10n.stockEmpty;
-        color = AppColors.mitsubishiRed;
-        break;
-      case StockStatus.leadTime:
-        text = product.stockLeadTime ?? l10n.stockIndent;
-        color = Colors.blue;
-        break;
-    }
-
-    return _buildBadge(text, color);
-  }
-
   Widget _buildProductInfo(
     Product product,
     AppLocalizations l10n,
-    int? displayStock,
+    int displayStock,
     bool isDark,
   ) {
     return Container(
@@ -227,7 +239,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Product name
           Text(
             product.name,
             style: TextStyle(
@@ -237,18 +248,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             ),
           ),
           const SizedBox(height: 4),
-          // Description
-          if (product.description != null)
-            Text(
-              product.description!,
-              style: TextStyle(
-                fontSize: 14,
-                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-              ),
+          Text(
+            product.brand.name,
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             ),
+          ),
           const SizedBox(height: 16),
-          // Stock info card
-          if (product.stockStatus == StockStatus.inStock && displayStock != null)
+          if (displayStock > 0)
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -298,7 +306,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
               ),
             ),
           const SizedBox(height: 16),
-          // Price section
           Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.divider),
           const SizedBox(height: 16),
           Text(
@@ -340,9 +347,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   }
 
   Widget _buildTieredPricing(Product product, AppLocalizations l10n, bool isDark) {
-    // Calculate tier prices (simplified for M2)
-    final tierPrice1 = product.price; // 1-5 units
-    final tierPrice2 = product.hasDiscount ? product.price : (product.price * 0.92).round(); // 6-10 units (8% discount)
+    final tierPrice1 = product.price;
+    final tierPrice2 = product.hasDiscount ? product.price : (product.price * 0.92).round();
     final savings = tierPrice1 - tierPrice2;
 
     return Container(
@@ -361,7 +367,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             ),
           ),
           const SizedBox(height: 12),
-          // Tier 1: 1-5 units (current)
           GestureDetector(
             onTap: () => _selectTier(1, 1, l10n),
             child: _buildPriceTier(
@@ -373,7 +378,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             ),
           ),
           const SizedBox(height: 8),
-          // Tier 2: 6-10 units (best deal)
           GestureDetector(
             onTap: () => _selectTier(6, 6, l10n),
             child: _buildPriceTier(
@@ -386,7 +390,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             ),
           ),
           const SizedBox(height: 8),
-          // Tier 3: 11+ units (RFQ)
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -541,7 +544,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
               fontWeight: FontWeight.w600,
             ),
             tabs: [
-              Tab(text: l10n.specifications),
+              Tab(text: l10n.description),
               Tab(text: l10n.documents),
               Tab(text: l10n.compatible),
             ],
@@ -551,7 +554,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildSpecsTab(product, l10n, isDark),
+                _buildDescriptionTab(product, l10n, isDark),
                 _buildDocsTab(l10n, isDark),
                 _buildCompatTab(product, l10n, isDark),
               ],
@@ -562,10 +565,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     );
   }
 
-  Widget _buildSpecsTab(Product product, AppLocalizations l10n, bool isDark) {
-    final specs = product.specifications ?? {};
+  Widget _buildDescriptionTab(Product product, AppLocalizations l10n, bool isDark) {
+    final description = Localizations.localeOf(context).languageCode == 'id'
+        ? (product.descriptionId ?? product.descriptionEn)
+        : (product.descriptionEn ?? product.descriptionId);
 
-    if (specs.isEmpty) {
+    if (description == null || description.isEmpty) {
       return Center(
         child: Text(
           l10n.noProducts,
@@ -574,36 +579,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
       );
     }
 
-    return ListView(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
-      children: specs.entries.map((entry) {
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.divider),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                entry.key,
-                style: TextStyle(
-                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                ),
-              ),
-              Text(
-                entry.value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+      child: Text(
+        description,
+        style: TextStyle(
+          fontSize: 14,
+          height: 1.6,
+          color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+        ),
+      ),
     );
   }
 
@@ -696,263 +681,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   }
 
   Widget _buildCompatTab(Product product, AppLocalizations l10n, bool isDark) {
-    // Find compatible products from dummy data
-    final compatProducts = dummyProducts
-        .where((p) => p.id != product.id)
-        .take(3)
-        .toList();
-
-    if (compatProducts.isEmpty) {
-      return Center(
-        child: Text(
-          l10n.noProducts,
-          style: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
-        ),
-      );
-    }
-
-    return ListView(
-      padding: const EdgeInsets.all(24),
-      children: [
-        Text(
-          l10n.compatibleWith(product.name),
-          style: TextStyle(
-            fontSize: 12,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.build_outlined,
+            size: 48,
+            color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
           ),
-        ),
-        const SizedBox(height: 12),
-        ...compatProducts.map((p) => Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: _buildCompatItem(p, l10n, isDark),
-        )),
-      ],
-    );
-  }
-
-  Widget _buildCompatItem(Product compatProduct, AppLocalizations l10n, bool isDark) {
-    return GestureDetector(
-      onTap: () => _showCompatOptions(compatProduct, l10n),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-          border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkBorder : AppColors.border,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  compatProduct.primaryImage,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Icon(
-                      _getCategoryIcon(compatProduct.category),
-                      size: 20,
-                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                    );
-                  },
-                ),
-              ),
+          const SizedBox(height: 12),
+          Text(
+            l10n.comingSoon,
+            style: TextStyle(
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    compatProduct.name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    '${_categoryToString(compatProduct.category)} • ${_brandToString(compatProduct.brand)}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.green.withValues(alpha: 0.2) : Colors.green.shade100,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                'Cocok',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.green.shade700,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showCompatOptions(Product compatProduct, AppLocalizations l10n) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Product preview
-            Row(
-              children: [
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceVariant,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
-                      compatProduct.primaryImage,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Icon(
-                          _getCategoryIcon(compatProduct.category),
-                          size: 28,
-                          color: AppColors.textSecondary,
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        compatProduct.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        CurrencyFormatter.format(compatProduct.price),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.mitsubishiRed,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            // View Product button
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  context.pushNamed(
-                    AppRoute.productDetail,
-                    pathParameters: {'id': compatProduct.id},
-                  );
-                },
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppColors.mitsubishiRed),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.visibility, size: 18),
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.viewProduct,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.mitsubishiRed,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            // Add to Cart button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  ref.read(cartProvider.notifier).addItem(
-                    CartItem(
-                      id: DateTime.now().toString(),
-                      product: compatProduct,
-                      quantity: 1,
-                    ),
-                  );
-                  AppToast.show(
-                    context,
-                    l10n.addedToCart(compatProduct.name),
-                    isError: false,
-                    bottomOffset: 100,
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.mitsubishiRed,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.shopping_cart_outlined, size: 18),
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.addToCart,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -960,7 +705,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   Widget _buildBottomBar(
     Product product,
     AppLocalizations l10n,
-    int? displayStock,
+    int displayStock,
     bool isDark,
   ) {
     return Container(
@@ -979,7 +724,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
         top: false,
         child: Row(
           children: [
-            // Quantity controls
             Container(
               height: 48,
               decoration: BoxDecoration(
@@ -994,7 +738,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                       if (_quantity > minQty) {
                         setState(() => _quantity--);
                       } else if (_quantity == minQty && minQty > 1) {
-                        // Show error - can't go below minimum
                         AppToast.show(
                           context,
                           l10n.minQuantityTier(minQty),
@@ -1022,7 +765,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
                   ),
                   IconButton(
                     onPressed: () {
-                      if (displayStock == null || _quantity < displayStock) {
+                      if (_quantity < displayStock) {
                         setState(() => _quantity++);
                       }
                     },
@@ -1035,7 +778,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
               ),
             ),
             const SizedBox(width: 8),
-            // Save to project button
             SizedBox(
               width: 48,
               height: 48,
@@ -1052,7 +794,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
               ),
             ),
             const SizedBox(width: 8),
-            // Add to cart button
             SizedBox(
               width: 48,
               height: 48,
@@ -1075,7 +816,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
               ),
             ),
             const SizedBox(width: 8),
-            // Buy now button
             Expanded(
               child: ElevatedButton(
                 onPressed: () => _buyNow(product, l10n, displayStock),
@@ -1124,8 +864,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     ref.read(cartProvider.notifier).addItem(
       CartItem(
         id: DateTime.now().toString(),
-        product: product,
+        productId: product.id,
         quantity: _quantity,
+        productSnapshot: CartProductSnapshot(
+          name: product.name,
+          price: product.price,
+          primaryImageUrl: product.primaryImageUrl,
+        ),
+        createdAt: DateTime.now(),
       ),
     );
 
@@ -1143,9 +889,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     });
   }
 
-  void _buyNow(Product product, AppLocalizations l10n, int? displayStock) {
-    // Check stock
-    if (displayStock != null && _quantity > displayStock) {
+  void _buyNow(Product product, AppLocalizations l10n, int displayStock) {
+    if (_quantity > displayStock) {
       AppToast.show(
         context,
         l10n.insufficientStock(displayStock),
@@ -1155,12 +900,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
       return;
     }
 
-    // Add to cart and navigate to checkout
     ref.read(cartProvider.notifier).addItem(
       CartItem(
         id: DateTime.now().toString(),
-        product: product,
+        productId: product.id,
         quantity: _quantity,
+        productSnapshot: CartProductSnapshot(
+          name: product.name,
+          price: product.price,
+          primaryImageUrl: product.primaryImageUrl,
+        ),
+        createdAt: DateTime.now(),
       ),
     );
 
@@ -1168,7 +918,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   }
 
   void _saveToProject(Product product, AppLocalizations l10n) {
-    // Show dialog to select project (placeholder)
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -1276,30 +1025,5 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
         ),
       ),
     );
-  }
-
-  IconData _getCategoryIcon(ProductCategory category) {
-    return switch (category) {
-      ProductCategory.inverter => Icons.bolt,
-      ProductCategory.plc => Icons.memory,
-      ProductCategory.hmi => Icons.desktop_mac,
-      ProductCategory.servo => Icons.settings,
-    };
-  }
-
-  String _categoryToString(ProductCategory category) {
-    return switch (category) {
-      ProductCategory.inverter => 'Inverter',
-      ProductCategory.plc => 'PLC',
-      ProductCategory.hmi => 'HMI',
-      ProductCategory.servo => 'Servo',
-    };
-  }
-
-  String _brandToString(ProductBrand brand) {
-    return switch (brand) {
-      ProductBrand.mitsubishi => 'Mitsubishi',
-      ProductBrand.danfoss => 'Danfoss',
-    };
   }
 }

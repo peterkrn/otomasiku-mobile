@@ -5,14 +5,12 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_router.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/product.dart';
-import '../../../providers/cart_provider.dart';
 import '../../../providers/product_provider.dart';
+import '../../../shared/widgets/retry_widget.dart';
+import '../../../shared/widgets/shimmer_grid.dart';
 import '../widgets/hero_banner.dart';
 import '../widgets/product_card.dart';
 
-/// Home screen with product catalog grid.
-/// Matches HTML mockup: header with logo + cart + profile,
-/// search bar, filter chips, hero banner, product grid.
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -20,26 +18,36 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  FilterCategory _selectedCategory = FilterCategory.all;
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final _searchController = TextEditingController();
+  final _scrollController = ScrollController();
+  String _selectedCategorySlug = '';
 
   @override
   void initState() {
     super.initState();
-    // Load products on init
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(productProvider.notifier).loadProducts();
-    });
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      ref.read(productListProvider.notifier).loadMore();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final productState = ref.watch(productProvider);
-    final cartCount = ref.watch(
-      cartProvider.select((state) => state.totalItems),
-    );
+    final productsAsync = ref.watch(productListProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -95,7 +103,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ],
         ),
         actions: [
-          // Cart icon with badge
           Stack(
             alignment: Alignment.center,
             children: [
@@ -106,32 +113,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 ),
                 onPressed: () => context.pushNamed(AppRoute.cart),
               ),
-              if (cartCount > 0)
-                Positioned(
-                  right: 6,
-                  top: 6,
-                  child: Container(
-                    width: 16,
-                    height: 16,
-                    decoration: const BoxDecoration(
-                      color: AppColors.mitsubishiRed,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        cartCount > 99 ? '99+' : '$cartCount',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
-          // Profile avatar
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
@@ -152,43 +135,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           ),
         ],
       ),
-      body: CustomScrollView(
-        slivers: [
-          // Search bar
-          SliverToBoxAdapter(child: _buildSearchBar(context, isDark)),
-          // Filter chips
-          SliverToBoxAdapter(child: _buildFilterChips(isDark)),
-          // Hero banner
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: const HeroBanner(),
+      body: RefreshIndicator(
+        onRefresh: () => ref.read(productListProvider.notifier).refresh(),
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverToBoxAdapter(child: _buildSearchBar(context, isDark)),
+            SliverToBoxAdapter(child: _buildFilterChips(isDark)),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: const HeroBanner(),
+              ),
             ),
-          ),
-          // Product grid header
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                l10n.productCatalog,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(
+                  l10n.productCatalog,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                  ),
                 ),
               ),
             ),
-          ),
-          // Product grid
-          SliverPadding(
-            padding: const EdgeInsets.all(24),
-            sliver: productState.filteredProducts.isEmpty
-                ? _buildEmptyState(l10n, isDark)
-                : _buildProductGrid(productState),
-          ),
-          // Bottom padding for navigation
-          const SliverToBoxAdapter(child: SizedBox(height: 80)),
-        ],
+            productsAsync.when(
+              data: (products) => products.isEmpty
+                  ? _buildEmptyState(l10n, isDark)
+                  : _buildProductGrid(products),
+              loading: () => const ShimmerGrid(),
+              error: (error, _) => RetryWidget(
+                message: l10n.errorLoadingProducts,
+                onRetry: () => ref.read(productListProvider.notifier).refresh(),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 80)),
+          ],
+        ),
       ),
     );
   }
@@ -200,6 +185,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       padding: const EdgeInsets.all(16),
       color: isDark ? AppColors.darkSurface : Colors.white,
       child: TextField(
+        controller: _searchController,
         style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
         decoration: InputDecoration(
           hintText: l10n.searchHint,
@@ -214,103 +200,88 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
         onChanged: (value) {
-          ref.read(productProvider.notifier).setSearchQuery(value);
+          ref.read(productFilterProvider.notifier).state = ref.read(productFilterProvider).copyWith(
+            search: value.isEmpty ? null : value,
+            clearSearch: value.isEmpty,
+          );
         },
       ),
     );
   }
 
   Widget _buildFilterChips(bool isDark) {
+    final l10n = AppLocalizations.of(context);
+
+    final chips = [
+      ('', l10n.allCategories),
+      ('inverter', l10n.inverter),
+      ('plc', l10n.plc),
+      ('servo', l10n.servo),
+      ('hmi', l10n.hmi),
+    ];
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: isDark ? AppColors.darkSurface : Colors.white,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: [
-            _buildFilterChip(label: 'Semua', category: FilterCategory.all, isDark: isDark),
-            const SizedBox(width: 8),
-            _buildFilterChip(label: 'Inverter', category: FilterCategory.inverter, isDark: isDark),
-            const SizedBox(width: 8),
-            _buildFilterChip(label: 'PLC', category: FilterCategory.plc, isDark: isDark),
-            const SizedBox(width: 8),
-            _buildFilterChip(label: 'Servo', category: FilterCategory.servo, isDark: isDark),
-            const SizedBox(width: 8),
-            _buildFilterChip(label: 'HMI', category: FilterCategory.hmi, isDark: isDark),
-          ],
+          children: chips.map((chip) {
+            final (slug, label) = chip;
+            final isSelected = _selectedCategorySlug == slug;
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: GestureDetector(
+                onTap: () {
+                  setState(() => _selectedCategorySlug = slug);
+                  ref.read(productFilterProvider.notifier).state = ref.read(productFilterProvider).copyWith(
+                    category: slug.isEmpty ? null : slug,
+                    clearCategory: slug.isEmpty,
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.mitsubishiRed
+                        : (isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? Colors.white : AppColors.mitsubishiRed,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
         ),
       ),
     );
   }
 
-  Widget _buildFilterChip({
-    required String label,
-    required FilterCategory category,
-    required bool isDark,
-  }) {
-    final isSelected = _selectedCategory == category;
-    return GestureDetector(
-      onTap: () {
-        setState(() => _selectedCategory = category);
-        ref.read(productProvider.notifier).setCategory(category);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.mitsubishiRed
-              : (isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant),
-          borderRadius: BorderRadius.circular(20),
+  Widget _buildProductGrid(List<Product> products) {
+    return SliverPadding(
+      padding: const EdgeInsets.all(24),
+      sliver: SliverGrid(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 0.55,
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : AppColors.mitsubishiRed,
+        delegate: SliverChildBuilderDelegate(
+          (context, index) => ProductCard(
+            key: ValueKey('card-${products[index].id}'),
+            product: products[index],
           ),
+          childCount: products.length,
         ),
       ),
-    );
-  }
-
-  Widget _buildProductGrid(ProductState productState) {
-    return SliverGrid(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 0.55,
-      ),
-      delegate: SliverChildBuilderDelegate(
-        (context, index) => _buildAnimatedProductCard(
-          product: productState.filteredProducts[index],
-          index: index,
-        ),
-        childCount: productState.filteredProducts.length,
-      ),
-    );
-  }
-
-  Widget _buildAnimatedProductCard({
-    required Product product,
-    required int index,
-  }) {
-    return TweenAnimationBuilder<double>(
-      key: ValueKey(product.id),
-      duration: const Duration(milliseconds: 300),
-      tween: Tween(begin: 0.0, end: 1.0),
-      curve: Curves.easeOutCubic,
-      child: ProductCard(
-        key: ValueKey('card-${product.id}'),
-        product: product,
-      ),
-      builder: (context, value, child) {
-        return Transform.translate(
-          offset: Offset(0, 30 * (1 - value)),
-          child: Opacity(opacity: value, child: child),
-        );
-      },
     );
   }
 
@@ -344,7 +315,7 @@ class _Diamond extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Transform.rotate(
-      angle: 0.785, // 45 degrees
+      angle: 0.785,
       child: Container(
         width: 6,
         height: 6,

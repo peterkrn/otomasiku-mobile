@@ -131,6 +131,8 @@ src/
 ## Before Writing ANY Code — Checklist
 
 ```
+[ ] Create a feature branch: git checkout -b feat/spec-XX-short-description
+    (one branch per spec — NEVER implement directly on main or develop)
 [ ] Read the relevant spec in docs/specs/{oma-id}-{description}.md
 [ ] Read the HTML mockup in ui-otomasiku-marketplace/{file}.html
 [ ] Confirm the task is in scope for Milestone 2 (dummy data, no backend except BCA)

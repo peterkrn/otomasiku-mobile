@@ -279,7 +279,27 @@ class AppLocalizationsId extends AppLocalizations {
   String get loading => 'Memuat';
 
   @override
+  String get loadingProducts => 'Memuat produk...';
+
+  @override
   String get retry => 'Coba Lagi';
+
+  @override
+  String get pullToRefresh => 'Tarik untuk memuat ulang';
+
+  @override
+  String productsCount(int count) {
+    return '$count produk';
+  }
+
+  @override
+  String get errorLoadingProducts => 'Gagal memuat produk';
+
+  @override
+  String get errorLoadingProductDetail => 'Gagal memuat detail produk';
+
+  @override
+  String get loadMore => 'Muat lebih banyak';
 
   @override
   String get back => 'Kembali';

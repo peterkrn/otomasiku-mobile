@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../models/product.dart';
 
-/// Displays stock status badge for product cards.
-/// Matches actual StockStatus enum: inStock, lowStock, outOfStock, leadTime
 class StockBadge extends StatelessWidget {
-  final StockStatus status;
-  final int? stockCount;
-  final String? leadTime;
+  final int stock;
+  final bool isOutOfStock;
+  final bool isLowStock;
 
   const StockBadge({
     super.key,
-    required this.status,
-    this.stockCount,
-    this.leadTime,
+    required this.stock,
+    required this.isOutOfStock,
+    required this.isLowStock,
   });
 
   @override
@@ -23,28 +20,15 @@ class StockBadge extends StatelessWidget {
     String text;
     Color color;
 
-    switch (status) {
-      case StockStatus.inStock:
-        if (stockCount != null && stockCount! >= 5) {
-          text = l10n.stockUnit(stockCount!);
-          color = const Color(0xFF10B981); // Green
-        } else {
-          text = l10n.stockLow(stockCount ?? 0);
-          color = const Color(0xFFF59E0B); // Orange
-        }
-        break;
-      case StockStatus.lowStock:
-        text = l10n.stockLow(stockCount ?? 0);
-        color = const Color(0xFFF59E0B); // Orange
-        break;
-      case StockStatus.outOfStock:
-        text = l10n.stockEmpty;
-        color = const Color(0xFFEF4444); // Red
-        break;
-      case StockStatus.leadTime:
-        text = leadTime ?? l10n.stockIndent;
-        color = const Color(0xFFF59E0B); // Orange
-        break;
+    if (isOutOfStock) {
+      text = l10n.stockEmpty;
+      color = const Color(0xFFEF4444);
+    } else if (isLowStock) {
+      text = l10n.stockLow(stock);
+      color = const Color(0xFFF59E0B);
+    } else {
+      text = l10n.stockUnit(stock);
+      color = const Color(0xFF10B981);
     }
 
     return Container(

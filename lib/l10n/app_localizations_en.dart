@@ -279,7 +279,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loading => 'Loading';
 
   @override
+  String get loadingProducts => 'Loading products...';
+
+  @override
   String get retry => 'Retry';
+
+  @override
+  String get pullToRefresh => 'Pull to refresh';
+
+  @override
+  String productsCount(int count) {
+    return '$count products';
+  }
+
+  @override
+  String get errorLoadingProducts => 'Failed to load products';
+
+  @override
+  String get errorLoadingProductDetail => 'Failed to load product details';
+
+  @override
+  String get loadMore => 'Load more';
 
   @override
   String get back => 'Back';

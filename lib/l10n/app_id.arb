@@ -106,7 +106,18 @@
   "grandTotal": "Total Keseluruhan",
   "processing": "Memproses",
   "loading": "Memuat",
+  "loadingProducts": "Memuat produk...",
   "retry": "Coba Lagi",
+  "pullToRefresh": "Tarik untuk memuat ulang",
+  "productsCount": "{count} produk",
+  "@productsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "errorLoadingProducts": "Gagal memuat produk",
+  "errorLoadingProductDetail": "Gagal memuat detail produk",
+  "loadMore": "Muat lebih banyak",
   "back": "Kembali",
   "close": "Tutup",
   "save": "Simpan",

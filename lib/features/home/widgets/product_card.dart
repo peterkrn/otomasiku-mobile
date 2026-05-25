@@ -10,11 +10,9 @@ import '../../../models/product.dart';
 import '../../../models/cart_item.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/compare_provider.dart';
+import '../../../shared/widgets/product_image.dart' as product_image;
 import 'stock_badge.dart';
 
-/// Product card for home screen grid.
-/// Matches HTML mockup: white card, rounded-2xl, border, shadow-sm.
-/// Displays: stock badge, image, name, description, price, add-to-cart button.
 class ProductCard extends ConsumerStatefulWidget {
   final Product product;
 
@@ -48,17 +46,15 @@ class _ProductCardState extends ConsumerState<ProductCard>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cartQuantity = ref.watch(
-      cartProvider.select((s) => s.getQuantityForProduct(widget.product.id)),
-    );
-    final isInCompare = ref.watch(
-      compareProvider.select((s) => s.isInCompare(widget.product.id)),
-    );
+final cart = ref.watch(cartProvider);
+final cartQuantity = cart.items
+    .where((i) => i.productId == widget.product.id)
+    .fold(0, (sum, i) => sum + i.quantity);
+final isInCompare = ref.watch(
+  compareProvider.select((s) => s.isInCompare(widget.product.id)),
+);
 
-    // Calculate remaining stock after cart items
-    final displayStock = widget.product.stock != null
-        ? (widget.product.stock! - cartQuantity)
-        : null;
+final displayStock = widget.product.stock - cartQuantity;
 
     return GestureDetector(
       onTap: () => context.pushNamed(
@@ -83,43 +79,29 @@ class _ProductCardState extends ConsumerState<ProductCard>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image area with badges
             Stack(
               children: [
-                // Product image
                 AspectRatio(
                   aspectRatio: 1,
                   child: ClipRRect(
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(16),
                     ),
-                    child: Image.asset(
-                      widget.product.primaryImage,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-                          child: Icon(
-                            _getCategoryIcon(widget.product.category),
-                            size: 48,
-                            color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
-                          ),
-                        );
-                      },
-                    ),
+child: product_image.ProductNetworkImage(
+  imageUrl: widget.product.primaryImageUrl,
+  categorySlug: widget.product.category.slug,
+),
                   ),
                 ),
-                // Stock badge (top-left) - shows remaining after cart
                 Positioned(
                   top: 8,
                   left: 8,
                   child: StockBadge(
-                    status: widget.product.stockStatus,
-                    stockCount: displayStock,
-                    leadTime: widget.product.stockLeadTime,
+                    stock: displayStock,
+                    isOutOfStock: widget.product.isOutOfStock,
+                    isLowStock: widget.product.isLowStock,
                   ),
                 ),
-                // Compare button (top-right)
                 Positioned(
                   top: 8,
                   right: 8,
@@ -147,7 +129,6 @@ class _ProductCardState extends ConsumerState<ProductCard>
               ],
             ),
 
-            // Product info - compact layout
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
               child: Column(
@@ -165,16 +146,15 @@ class _ProductCardState extends ConsumerState<ProductCard>
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
-                  if (widget.product.description != null)
-                    Text(
-                      widget.product.description!,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                  Text(
+                    widget.product.category.name,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     CurrencyFormatter.format(widget.product.price),
@@ -188,7 +168,6 @@ class _ProductCardState extends ConsumerState<ProductCard>
               ),
             ),
 
-            // Add to cart button with animation
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 4, 10, 10),
               child: SizedBox(
@@ -202,20 +181,20 @@ class _ProductCardState extends ConsumerState<ProductCard>
                       style: ButtonStyle(
                         backgroundColor:
                             WidgetStateProperty.resolveWith<Color?>((states) {
-                              if (isAdded) return Colors.green;
-                              if (states.contains(WidgetState.hovered)) {
-                                return AppColors.mitsubishiRed;
-                              }
-                              return isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant;
-                            }),
+                          if (isAdded) return Colors.green;
+                          if (states.contains(WidgetState.hovered)) {
+                            return AppColors.mitsubishiRed;
+                          }
+                          return isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant;
+                        }),
                         foregroundColor:
                             WidgetStateProperty.resolveWith<Color?>((states) {
-                              if (isAdded) return Colors.white;
-                              if (states.contains(WidgetState.hovered)) {
-                                return Colors.white;
-                              }
-                              return isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
-                            }),
+                          if (isAdded) return Colors.white;
+                          if (states.contains(WidgetState.hovered)) {
+                            return Colors.white;
+                          }
+                          return isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
+                        }),
                         overlayColor: WidgetStateProperty.all(
                           Colors.white.withValues(alpha: 0.1),
                         ),
@@ -261,24 +240,26 @@ class _ProductCardState extends ConsumerState<ProductCard>
       _isAdding = true;
     });
 
-    ref
-        .read(cartProvider.notifier)
-        .addItem(
-          CartItem(
-            id: DateTime.now().toString(),
-            product: widget.product,
-            quantity: 1,
-          ),
-        );
+    ref.read(cartProvider.notifier).addItem(
+      CartItem(
+        id: DateTime.now().toString(),
+        productId: widget.product.id,
+        quantity: 1,
+        productSnapshot: CartProductSnapshot(
+          name: widget.product.name,
+          price: widget.product.price,
+          primaryImageUrl: widget.product.primaryImageUrl,
+        ),
+        createdAt: DateTime.now(),
+      ),
+    );
 
-    // Show toast
     AppToast.show(
       context,
       '${widget.product.name} ditambahkan ke keranjang',
       isError: false,
     );
 
-    // Animate button
     _buttonController.forward().then((_) {
       Future.delayed(const Duration(milliseconds: 600), () {
         if (mounted) {
@@ -296,17 +277,7 @@ class _ProductCardState extends ConsumerState<ProductCard>
     final l10n = AppLocalizations.of(context);
 
     if (!result) {
-      // Max 3 products reached
       AppToast.show(context, l10n.compareMaxError, isError: true);
     }
-  }
-
-  IconData _getCategoryIcon(ProductCategory category) {
-    return switch (category) {
-      ProductCategory.inverter => Icons.bolt,
-      ProductCategory.plc => Icons.memory,
-      ProductCategory.hmi => Icons.desktop_mac,
-      ProductCategory.servo => Icons.settings,
-    };
   }
 }

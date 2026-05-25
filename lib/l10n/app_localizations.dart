@@ -626,11 +626,47 @@ abstract class AppLocalizations {
   /// **'Memuat'**
   String get loading;
 
+  /// No description provided for @loadingProducts.
+  ///
+  /// In id, this message translates to:
+  /// **'Memuat produk...'**
+  String get loadingProducts;
+
   /// No description provided for @retry.
   ///
   /// In id, this message translates to:
   /// **'Coba Lagi'**
   String get retry;
+
+  /// No description provided for @pullToRefresh.
+  ///
+  /// In id, this message translates to:
+  /// **'Tarik untuk memuat ulang'**
+  String get pullToRefresh;
+
+  /// No description provided for @productsCount.
+  ///
+  /// In id, this message translates to:
+  /// **'{count} produk'**
+  String productsCount(int count);
+
+  /// No description provided for @errorLoadingProducts.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal memuat produk'**
+  String get errorLoadingProducts;
+
+  /// No description provided for @errorLoadingProductDetail.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal memuat detail produk'**
+  String get errorLoadingProductDetail;
+
+  /// No description provided for @loadMore.
+  ///
+  /// In id, this message translates to:
+  /// **'Muat lebih banyak'**
+  String get loadMore;
 
   /// No description provided for @back.
   ///

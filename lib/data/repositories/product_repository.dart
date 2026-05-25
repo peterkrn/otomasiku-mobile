@@ -89,6 +89,25 @@ class ProductFilter {
     this.page = 1,
     this.pageSize = 20,
   });
+
+  ProductFilter copyWith({
+    String? search,
+    String? brand,
+    String? category,
+    int? page,
+    int? pageSize,
+    bool clearSearch = false,
+    bool clearBrand = false,
+    bool clearCategory = false,
+  }) {
+    return ProductFilter(
+      search: clearSearch ? null : (search ?? this.search),
+      brand: clearBrand ? null : (brand ?? this.brand),
+      category: clearCategory ? null : (category ?? this.category),
+      page: page ?? this.page,
+      pageSize: pageSize ?? this.pageSize,
+    );
+  }
 }
 
 class ProductListResponse {

@@ -1,103 +1,103 @@
-/// Order status enum
+import 'package:json_annotation/json_annotation.dart';
+
+import '../core/utils/bigint_converter.dart';
+
+part 'order.g.dart';
+
+@JsonSerializable()
+class Order {
+  final String id;
+  final String orderNumber;
+  final String status;
+  final String paymentStatus;
+
+  @BigIntStringConverter()
+  final int totalAmount;
+
+  final String? vaNumber;
+  final DateTime? vaExpiresAt;
+  final OrderAddress shippingAddress;
+  final List<OrderItem> items;
+  final String? notes;
+  final String? resiNumber;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  const Order({
+    required this.id,
+    required this.orderNumber,
+    required this.status,
+    required this.paymentStatus,
+    required this.totalAmount,
+    this.vaNumber,
+    this.vaExpiresAt,
+    required this.shippingAddress,
+    required this.items,
+    this.notes,
+    this.resiNumber,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
+
+  Map<String, dynamic> toJson() => _$OrderToJson(this);
+}
+
+@JsonSerializable()
+class OrderItem {
+  final String productId;
+  final String productName;
+  final int quantity;
+
+  @BigIntStringConverter()
+  final int unitPrice;
+
+  @BigIntStringConverter()
+  final int subtotal;
+
+  const OrderItem({
+    required this.productId,
+    required this.productName,
+    required this.quantity,
+    required this.unitPrice,
+    required this.subtotal,
+  });
+
+  factory OrderItem.fromJson(Map<String, dynamic> json) =>
+      _$OrderItemFromJson(json);
+
+  Map<String, dynamic> toJson() => _$OrderItemToJson(this);
+}
+
+@JsonSerializable()
+class OrderAddress {
+  final String recipient;
+  final String phone;
+  final String street;
+  final String city;
+  final String province;
+  final String postalCode;
+
+  const OrderAddress({
+    required this.recipient,
+    required this.phone,
+    required this.street,
+    required this.city,
+    required this.province,
+    required this.postalCode,
+  });
+
+  factory OrderAddress.fromJson(Map<String, dynamic> json) =>
+      _$OrderAddressFromJson(json);
+
+  Map<String, dynamic> toJson() => _$OrderAddressToJson(this);
+}
+
 enum OrderStatus {
   pending,
   processing,
   shipped,
   delivered,
   cancelled,
-}
-
-/// Order model for Otomasiku Marketplace
-class Order {
-  final String id;
-  final String orderNumber;
-  final List<OrderItem> items;
-  final OrderStatus status;
-  final int subtotal;
-  final int shippingCost;
-  final int tax;
-  final int discount;
-  final int total;
-  final DateTime createdAt;
-  final String? paymentMethod;
-  final String? vaNumber;
-  final DateTime? paymentDeadline;
-  final String? shippingAddressName;
-  final String? shippingAddressFull;
-
-  const Order({
-    required this.id,
-    required this.orderNumber,
-    required this.items,
-    required this.status,
-    required this.subtotal,
-    required this.shippingCost,
-    required this.tax,
-    required this.discount,
-    required this.total,
-    required this.createdAt,
-    this.paymentMethod,
-    this.vaNumber,
-    this.paymentDeadline,
-    this.shippingAddressName,
-    this.shippingAddressFull,
-  });
-
-  Order copyWith({
-    String? id,
-    String? orderNumber,
-    List<OrderItem>? items,
-    OrderStatus? status,
-    int? subtotal,
-    int? shippingCost,
-    int? tax,
-    int? discount,
-    int? total,
-    DateTime? createdAt,
-    String? paymentMethod,
-    String? vaNumber,
-    DateTime? paymentDeadline,
-    String? shippingAddressName,
-    String? shippingAddressFull,
-  }) {
-    return Order(
-      id: id ?? this.id,
-      orderNumber: orderNumber ?? this.orderNumber,
-      items: items ?? this.items,
-      status: status ?? this.status,
-      subtotal: subtotal ?? this.subtotal,
-      shippingCost: shippingCost ?? this.shippingCost,
-      tax: tax ?? this.tax,
-      discount: discount ?? this.discount,
-      total: total ?? this.total,
-      createdAt: createdAt ?? this.createdAt,
-      paymentMethod: paymentMethod ?? this.paymentMethod,
-      vaNumber: vaNumber ?? this.vaNumber,
-      paymentDeadline: paymentDeadline ?? this.paymentDeadline,
-      shippingAddressName: shippingAddressName ?? this.shippingAddressName,
-      shippingAddressFull: shippingAddressFull ?? this.shippingAddressFull,
-    );
-  }
-}
-
-/// Order item model
-class OrderItem {
-  final String id;
-  final String productId;
-  final String productName;
-  final String productImage;
-  final int price;
-  final int quantity;
-
-  const OrderItem({
-    required this.id,
-    required this.productId,
-    required this.productName,
-    required this.productImage,
-    required this.price,
-    required this.quantity,
-  });
-
-  /// Calculate total price for this item (money-safe integer multiplication)
-  int get totalPrice => price * quantity;
 }

@@ -1,20 +1,29 @@
-/// User profile model for Otomasiku Marketplace
+import 'package:json_annotation/json_annotation.dart';
+
+part 'user_profile.g.dart';
+
+@JsonSerializable()
 class UserProfile {
   final String id;
   final String email;
-  final String name;
-  final String? company;
-  final String phone;
-  final String? npwp;
-  final DateTime? joinedAt;
+  final String role;
+  final String? fullName;
+  final String? phone;
+  final String? companyName;
+  final String? avatarUrl;
 
   const UserProfile({
     required this.id,
     required this.email,
-    required this.name,
-    this.company,
-    required this.phone,
-    this.npwp,
-    this.joinedAt,
+    required this.role,
+    this.fullName,
+    this.phone,
+    this.companyName,
+    this.avatarUrl,
   });
+
+  factory UserProfile.fromJson(Map<String, dynamic> json) =>
+      _$UserProfileFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UserProfileToJson(this);
 }

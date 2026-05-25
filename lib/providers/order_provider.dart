@@ -2,12 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/order.dart';
 import '../data/dummy/dummy_orders.dart' as dummy_orders;
 
-/// Provider for managing orders state
 final orderProvider = StateNotifierProvider<OrderNotifier, OrderState>((ref) {
   return OrderNotifier();
 });
 
-/// Order state
 class OrderState {
   final List<Order> orders;
   final Order? currentOrder;
@@ -36,18 +34,15 @@ class OrderState {
   }
 }
 
-/// Order notifier
 class OrderNotifier extends StateNotifier<OrderState> {
   OrderNotifier() : super(const OrderState(orders: [])) {
     loadOrders();
   }
 
-  /// Load orders from dummy data (M2 only)
   void loadOrders() {
     state = state.copyWith(orders: dummy_orders.dummyOrders);
   }
 
-  /// Get order by ID
   Order? getOrderById(String id) {
     try {
       return state.orders.firstWhere((o) => o.id == id);
@@ -56,13 +51,11 @@ class OrderNotifier extends StateNotifier<OrderState> {
     }
   }
 
-  /// Set current order (for detail view)
   void setCurrentOrder(String id) {
     final order = getOrderById(id);
     state = state.copyWith(currentOrder: order);
   }
 
-  /// Create order (M2 dummy — simulates creation)
   void createOrder(Order order) {
     state = state.copyWith(
       orders: [order, ...state.orders],
@@ -70,11 +63,24 @@ class OrderNotifier extends StateNotifier<OrderState> {
     );
   }
 
-  /// Update order status
-  void updateOrderStatus(String id, OrderStatus status) {
+  void updateOrderStatus(String id, String status) {
     final updatedOrders = state.orders.map((o) {
       if (o.id == id) {
-        return o.copyWith(status: status);
+        return Order(
+          id: o.id,
+          orderNumber: o.orderNumber,
+          status: status,
+          paymentStatus: o.paymentStatus,
+          totalAmount: o.totalAmount,
+          vaNumber: o.vaNumber,
+          vaExpiresAt: o.vaExpiresAt,
+          shippingAddress: o.shippingAddress,
+          items: o.items,
+          notes: o.notes,
+          resiNumber: o.resiNumber,
+          createdAt: o.createdAt,
+          updatedAt: DateTime.now(),
+        );
       }
       return o;
     }).toList();

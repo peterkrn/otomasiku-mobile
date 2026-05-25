@@ -9,7 +9,17 @@ import '../core/network/api_interceptor.dart';
 class LocaleNotifier extends StateNotifier<Locale> {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  LocaleNotifier() : super(const Locale('id'));
+  LocaleNotifier() : super(const Locale('id')) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    final stored = await _storage.read(key: 'app_locale');
+    if (stored != null && stored != state.languageCode) {
+      state = Locale(stored);
+      setInterceptorLanguage(stored);
+    }
+  }
 
   void setLocale(String languageCode) {
     state = Locale(languageCode);

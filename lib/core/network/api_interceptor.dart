@@ -144,7 +144,14 @@ class ApiInterceptor extends Interceptor {
           ),
         );
       default:
-        return err;
+        return DioException(
+          requestOptions: err.requestOptions,
+          error: ApiException(
+            code: 'UNKNOWN',
+            statusCode: 0,
+            details: {'type': err.type.name},
+          ),
+        );
     }
   }
 }

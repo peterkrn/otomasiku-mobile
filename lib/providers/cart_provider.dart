@@ -204,3 +204,9 @@ class CartNotifier extends StateNotifier<CartState> {
 
   String _generateLocalId() => 'local-${DateTime.now().millisecondsSinceEpoch}';
 }
+
+final selectedCartItemsListProvider = Provider<List<CartItem>>((ref) {
+  final selectedIds = ref.watch(selectedCartItemsProvider);
+  final cartItems = ref.watch(cartProvider).items;
+  return cartItems.where((item) => selectedIds.contains(item.productId)).toList();
+});

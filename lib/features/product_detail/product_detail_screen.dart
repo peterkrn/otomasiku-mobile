@@ -7,7 +7,6 @@ import '../../core/utils/currency_formatter.dart';
 import '../../core/widgets/app_toast.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/product.dart';
-import '../../models/cart_item.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/compare_provider.dart';
 import '../../providers/product_provider.dart';
@@ -861,19 +860,7 @@ child: product_image.ProductNetworkImage(
   void _addToCart(Product product, AppLocalizations l10n) {
     setState(() => _isAddingToCart = true);
 
-    ref.read(cartProvider.notifier).addItem(
-      CartItem(
-        id: DateTime.now().toString(),
-        productId: product.id,
-        quantity: _quantity,
-        productSnapshot: CartProductSnapshot(
-          name: product.name,
-          price: product.price,
-          primaryImageUrl: product.primaryImageUrl,
-        ),
-        createdAt: DateTime.now(),
-      ),
-    );
+    ref.read(cartProvider.notifier).addItem(product.id, _quantity);
 
     AppToast.show(
       context,
@@ -900,19 +887,7 @@ child: product_image.ProductNetworkImage(
       return;
     }
 
-    ref.read(cartProvider.notifier).addItem(
-      CartItem(
-        id: DateTime.now().toString(),
-        productId: product.id,
-        quantity: _quantity,
-        productSnapshot: CartProductSnapshot(
-          name: product.name,
-          price: product.price,
-          primaryImageUrl: product.primaryImageUrl,
-        ),
-        createdAt: DateTime.now(),
-      ),
-    );
+    ref.read(cartProvider.notifier).addItem(product.id, _quantity);
 
     context.pushNamed(AppRoute.checkout);
   }

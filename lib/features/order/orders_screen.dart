@@ -1,41 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/router/app_router.dart';
-import '../../../core/utils/currency_formatter.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../data/dummy/dummy_orders.dart';
-import '../../../models/order.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/router/app_router.dart';
+import '../../core/utils/currency_formatter.dart';
+import '../../l10n/app_localizations.dart';
+import '../../models/order.dart';
+import '../../providers/order_provider.dart';
+import '../../shared/widgets/retry_widget.dart';
 
-/// Orders list screen showing all user orders with filter tabs
-class OrdersScreen extends StatefulWidget {
+class OrdersScreen extends ConsumerStatefulWidget {
   const OrdersScreen({super.key});
 
   @override
-  State<OrdersScreen> createState() => _OrdersScreenState();
+  ConsumerState<OrdersScreen> createState() => _OrdersScreenState();
 }
 
-class _OrdersScreenState extends State<OrdersScreen> {
+class _OrdersScreenState extends ConsumerState<OrdersScreen> {
+  final _scrollController = ScrollController();
   String _currentFilter = 'all';
 
-  List<Order> _getFilteredOrders() {
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      ref.read(orderListProvider.notifier).loadMore();
+    }
+  }
+
+  List<Order> _getFilteredOrders(List<Order> allOrders) {
     switch (_currentFilter) {
       case 'process':
-        return dummyOrders
-            .where((o) =>
-                o.status == OrderStatus.processing ||
-                o.status == OrderStatus.shipped)
+        return allOrders
+            .where((o) => o.status == 'processing' || o.status == 'shipped')
             .toList();
       case 'selesai':
-        return dummyOrders.where((o) => o.status == OrderStatus.delivered).toList();
+        return allOrders.where((o) => o.status == 'done').toList();
       default:
-        return dummyOrders;
+        return allOrders;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final ordersAsync = ref.watch(orderListProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -74,7 +95,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
             context.goNamed(AppRoute.profile);
           }
         },
-        child: _buildOrderList(l10n, isDark),
+        child: ordersAsync.when(
+          data: (orders) => _buildOrderList(l10n, orders, isDark),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => RetryWidget(
+            message: l10n.errorGeneric,
+            onRetry: () => ref.read(orderListProvider.notifier).refresh(),
+          ),
+        ),
       ),
     );
   }
@@ -108,22 +136,26 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  Widget _buildOrderList(AppLocalizations l10n, bool isDark) {
-    final orders = _getFilteredOrders();
+  Widget _buildOrderList(AppLocalizations l10n, List<Order> allOrders, bool isDark) {
+    final orders = _getFilteredOrders(allOrders);
 
     if (orders.isEmpty) {
       return _buildEmptyState(l10n, isDark);
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: orders.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _buildOrderCard(context, l10n, orders[index], isDark),
-        );
-      },
+    return RefreshIndicator(
+      onRefresh: () => ref.read(orderListProvider.notifier).refresh(),
+      child: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.all(16),
+        itemCount: orders.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildOrderCard(context, l10n, orders[index], isDark),
+          );
+        },
+      ),
     );
   }
 
@@ -177,10 +209,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
     Order order,
     bool isDark,
   ) {
-    final isProcessing = order.status == OrderStatus.processing ||
-        order.status == OrderStatus.shipped;
-
+    final statusInfo = _getStatusInfo(order.status, l10n);
     final totalQty = order.items.fold(0, (sum, item) => sum + item.quantity);
+    final isProcessing = order.status == 'processing' || order.status == 'pending';
 
     return Container(
       decoration: BoxDecoration(
@@ -191,7 +222,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ========== HEADER ==========
           Container(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
             decoration: BoxDecoration(
@@ -203,15 +233,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: isProcessing
-                        ? (isDark ? Colors.orange.withValues(alpha: 0.2) : const Color(0xFFFFF7ED))
-                        : (isDark ? AppColors.success.withValues(alpha: 0.2) : const Color(0xFFF0FDF4)),
+                    color: statusInfo.bgColor,
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
                   child: Icon(
-                    isProcessing ? Icons.access_time : Icons.check,
-                    color: isProcessing ? const Color(0xFFEA580C) : const Color(0xFF16A34A),
+                    statusInfo.icon,
+                    color: statusInfo.color,
                     size: 16,
                   ),
                 ),
@@ -242,38 +270,33 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: isProcessing
-                        ? (isDark ? Colors.orange.withValues(alpha: 0.2) : const Color(0xFFFFF7ED))
-                        : (isDark ? AppColors.success.withValues(alpha: 0.2) : const Color(0xFFF0FDF4)),
+                    color: statusInfo.bgColor,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    isProcessing ? 'Diproses' : 'Selesai',
+                    statusInfo.label,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: isProcessing ? const Color(0xFFEA580C) : const Color(0xFF16A34A),
+                      color: statusInfo.color,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          // ========== ITEMS - SELALU 2 BARIS DENGAN TINGGI TETAP ==========
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
-              children: [
-                // Baris 1 - SELALU ADA
-                SizedBox(
+              children: order.items.take(2).toList().asMap().entries.map((entry) {
+                final item = entry.value;
+                return SizedBox(
                   height: 24,
                   child: Row(
                     children: [
                       Expanded(
                         child: Text(
-                          order.items.isNotEmpty
-                              ? '${order.items[0].productName}  ×${order.items[0].quantity}'
-                              : '',
+                          '${item.productName}  \u00d7${item.quantity}',
                           style: TextStyle(
                             fontSize: 14,
                             color: isDark ? AppColors.darkTextSecondary : const Color(0xFF374151),
@@ -281,9 +304,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                         ),
                       ),
                       Text(
-                        order.items.isNotEmpty
-                            ? CurrencyFormatter.format(order.items[0].totalPrice)
-                            : '',
+                        CurrencyFormatter.format(item.subtotal),
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -292,41 +313,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 4),
-                // Baris 2 - SELALU ADA
-                SizedBox(
-                  height: 24,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          order.items.length > 1
-                              ? '${order.items[1].productName}  ×${order.items[1].quantity}'
-                              : '',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: isDark ? AppColors.darkTextSecondary : const Color(0xFF374151),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        order.items.length > 1
-                            ? CurrencyFormatter.format(order.items[1].totalPrice)
-                            : '',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: isDark ? AppColors.darkTextPrimary : const Color(0xFF111827),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                );
+              }).toList(),
             ),
           ),
-          // ========== FOOTER ==========
           Container(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: Row(
@@ -336,7 +326,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '$totalQty item · Total',
+                      '$totalQty item \u00b7 Total',
                       style: TextStyle(
                         fontSize: 11,
                         color: isDark ? AppColors.darkTextTertiary : const Color(0xFF9CA3AF),
@@ -344,7 +334,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      CurrencyFormatter.format(order.total),
+                      CurrencyFormatter.format(order.totalAmount),
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -364,7 +354,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     ),
                     alignment: Alignment.center,
                     child: const Text(
-                      '✓ Selesai',
+                      '\u2713 Selesai',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -401,6 +391,54 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
+  _StatusInfo _getStatusInfo(String status, AppLocalizations l10n) {
+    switch (status) {
+      case 'pending':
+        return _StatusInfo(
+          label: l10n.paymentWaiting,
+          icon: Icons.access_time,
+          color: const Color(0xFFEA580C),
+          bgColor: const Color(0xFFFFF7ED),
+        );
+      case 'processing':
+      case 'confirmed':
+        return _StatusInfo(
+          label: l10n.processing,
+          icon: Icons.inventory_2,
+          color: Colors.blue,
+          bgColor: Colors.blue.withValues(alpha: 0.1),
+        );
+      case 'shipped':
+        return _StatusInfo(
+          label: l10n.shipped,
+          icon: Icons.local_shipping,
+          color: Colors.purple,
+          bgColor: Colors.purple.withValues(alpha: 0.1),
+        );
+      case 'done':
+        return _StatusInfo(
+          label: l10n.delivered,
+          icon: Icons.check_circle,
+          color: const Color(0xFF16A34A),
+          bgColor: const Color(0xFFF0FDF4),
+        );
+      case 'cancelled':
+        return _StatusInfo(
+          label: 'Dibatalkan',
+          icon: Icons.cancel,
+          color: AppColors.mitsubishiRed,
+          bgColor: AppColors.mitsubishiRed.withValues(alpha: 0.1),
+        );
+      default:
+        return _StatusInfo(
+          label: l10n.processing,
+          icon: Icons.inventory_2,
+          color: Colors.blue,
+          bgColor: Colors.blue.withValues(alpha: 0.1),
+        );
+    }
+  }
+
   String _formatDate(DateTime date) {
     const months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
@@ -408,4 +446,18 @@ class _OrdersScreenState extends State<OrdersScreen> {
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
+}
+
+class _StatusInfo {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final Color bgColor;
+
+  const _StatusInfo({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.bgColor,
+  });
 }

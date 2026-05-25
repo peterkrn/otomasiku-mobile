@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/router/app_router.dart';
-import '../../../core/utils/currency_formatter.dart';
-import '../../../core/widgets/app_toast.dart';
-import '../../../models/order.dart';
-import '../../../data/dummy/dummy_orders.dart';
+import '../../l10n/app_localizations.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/router/app_router.dart';
+import '../../core/utils/currency_formatter.dart';
+import '../../core/widgets/app_toast.dart';
+import '../../models/order.dart';
+import '../../providers/order_provider.dart';
 
-/// Order detail screen showing order status, items, and shipping info
 class OrderDetailScreen extends ConsumerWidget {
   final String orderId;
 
@@ -18,16 +17,23 @@ class OrderDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final order = _getOrder();
+    final orderAsync = ref.watch(orderDetailProvider(orderId));
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    if (order == null) {
-      return Scaffold(
+    return orderAsync.when(
+      data: (order) => _buildScreen(context, ref, l10n, order, isDark),
+      loading: () => Scaffold(
+        appBar: AppBar(title: Text(l10n.orderDetail)),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (_, _) => Scaffold(
         appBar: AppBar(title: Text(l10n.orderDetail)),
         body: Center(child: Text(l10n.orderNotFound)),
-      );
-    }
+      ),
+    );
+  }
 
+  Widget _buildScreen(BuildContext context, WidgetRef ref, AppLocalizations l10n, Order order, bool isDark) {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
@@ -72,7 +78,7 @@ class OrderDetailScreen extends ConsumerWidget {
             children: [
               _buildStatusBanner(order, l10n),
               const SizedBox(height: 16),
-              _buildTimelineSection(order, l10n, isDark),
+              _buildStatusHistorySection(context, ref, l10n, order.id, isDark),
               const SizedBox(height: 16),
               _buildItemsSection(order, l10n, isDark),
               const SizedBox(height: 16),
@@ -87,14 +93,6 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Order? _getOrder() {
-    try {
-      return dummyOrders.firstWhere((o) => o.id == orderId);
-    } catch (_) {
-      return dummyOrders.first;
-    }
-  }
-
   Widget _buildStatusBanner(Order order, AppLocalizations l10n) {
     final statusInfo = _getStatusInfo(order.status, l10n);
 
@@ -102,7 +100,7 @@ class OrderDetailScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: statusInfo.colors,
+          colors: statusInfo.gradientColors,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -165,7 +163,17 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTimelineSection(Order order, AppLocalizations l10n, bool isDark) {
+  Widget _buildStatusHistorySection(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    String orderId,
+    bool isDark,
+  ) {
+    final orderAsync = ref.watch(orderDetailProvider(orderId));
+    final historyAsync = ref.watch(orderStatusHistoryProvider(orderId));
+    final currentStatus = orderAsync.valueOrNull?.status ?? '';
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -185,53 +193,56 @@ class OrderDetailScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _buildTimelineItem(
-            icon: Icons.check,
-            label: l10n.paymentReceived,
-            subtitle: _formatDate(order.createdAt),
-            isCompleted: true,
-            isFirst: true,
-            isDark: isDark,
-          ),
-          _buildTimelineItem(
-            icon: Icons.inventory_2,
-            label: l10n.processing,
-            subtitle: order.status == OrderStatus.processing ||
-                order.status == OrderStatus.shipped ||
-                order.status == OrderStatus.delivered
-                ? _formatDate(order.createdAt.add(const Duration(hours: 2)))
-                : l10n.processingSubtitle,
-            isCompleted: order.status == OrderStatus.processing ||
-                order.status == OrderStatus.shipped ||
-                order.status == OrderStatus.delivered,
-            isCurrent: order.status == OrderStatus.processing,
-            isDark: isDark,
-          ),
-          _buildTimelineItem(
-            icon: Icons.local_shipping,
-            label: l10n.shipped,
-            subtitle: order.status == OrderStatus.shipped ||
-                order.status == OrderStatus.delivered
-                ? _formatDate(order.createdAt.add(const Duration(days: 1)))
-                : l10n.shippedSubtitle,
-            isCompleted: order.status == OrderStatus.shipped ||
-                order.status == OrderStatus.delivered,
-            isCurrent: order.status == OrderStatus.shipped,
-            isDark: isDark,
-          ),
-          _buildTimelineItem(
-            icon: Icons.check_circle,
-            label: l10n.delivered,
-            subtitle: order.status == OrderStatus.delivered
-                ? _formatDate(order.createdAt.add(const Duration(days: 3)))
-                : '',
-            isCompleted: order.status == OrderStatus.delivered,
-            isCurrent: order.status == OrderStatus.delivered,
-            isLast: true,
-            isDark: isDark,
+          historyAsync.when(
+            data: (history) {
+              if (history.isEmpty) {
+                return _buildStaticTimeline(currentStatus, l10n, isDark);
+              }
+              return Column(
+                children: history.asMap().entries.map((entry) {
+                  final isLast = entry.key == history.length - 1;
+                  return _buildTimelineItem(
+                    icon: Icons.check,
+                    label: _getStatusLabel(entry.value.status, l10n),
+                    subtitle: _formatDate(entry.value.changedAt),
+                    isCompleted: true,
+                    isLast: isLast,
+                    isDark: isDark,
+                  );
+                }).toList(),
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (_, _) => _buildStaticTimeline(currentStatus, l10n, isDark),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildStaticTimeline(String currentStatus, AppLocalizations l10n, bool isDark) {
+    final statuses = ['pending', 'confirmed', 'processing', 'shipped', 'done'];
+    final currentStatusIndex = statuses.indexOf(currentStatus);
+    if (currentStatusIndex < 0) return const SizedBox.shrink();
+
+    return Column(
+      children: statuses.asMap().entries.map((entry) {
+        final index = entry.key;
+        final status = entry.value;
+        final isCompleted = index <= currentStatusIndex;
+        final isCurrent = index == currentStatusIndex;
+        final isLast = index == statuses.length - 1;
+
+        return _buildTimelineItem(
+          icon: isCurrent ? Icons.circle : (isCompleted ? Icons.check : Icons.circle_outlined),
+          label: _getStatusLabel(status, l10n),
+          subtitle: '',
+          isCompleted: isCompleted,
+          isCurrent: isCurrent,
+          isLast: isLast,
+          isDark: isDark,
+        );
+      }).toList(),
     );
   }
 
@@ -241,7 +252,6 @@ class OrderDetailScreen extends ConsumerWidget {
     required String subtitle,
     bool isCompleted = false,
     bool isCurrent = false,
-    bool isFirst = false,
     bool isLast = false,
     bool isDark = false,
   }) {
@@ -352,7 +362,7 @@ class OrderDetailScreen extends ConsumerWidget {
                 ),
               ),
               Text(
-                CurrencyFormatter.format(order.total),
+                CurrencyFormatter.format(order.totalAmount),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -382,13 +392,9 @@ class OrderDetailScreen extends ConsumerWidget {
               width: 56,
               height: 56,
               color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-              child: Image.asset(
-                item.productImage,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Icon(
-                  Icons.inventory_2,
-                  color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
-                ),
+              child: Icon(
+                Icons.inventory_2,
+                color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
               ),
             ),
           ),
@@ -407,7 +413,7 @@ class OrderDetailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${item.quantity} unit × ${CurrencyFormatter.format(item.price)}',
+                  '${item.quantity} unit \u00d7 ${CurrencyFormatter.format(item.unitPrice)}',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
@@ -415,7 +421,7 @@ class OrderDetailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  CurrencyFormatter.format(item.totalPrice),
+                  CurrencyFormatter.format(item.subtotal),
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -469,7 +475,7 @@ class OrderDetailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${order.shippingAddressName}\n${order.shippingAddressFull}',
+                  '${order.shippingAddress.recipient}\n${order.shippingAddress.street}\n${order.shippingAddress.city}, ${order.shippingAddress.province} ${order.shippingAddress.postalCode}\n${order.shippingAddress.phone}',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
@@ -561,7 +567,7 @@ class OrderDetailScreen extends ConsumerWidget {
   }
 
   String _getEstimatedDelivery(Order order) {
-    if (order.status == OrderStatus.delivered) {
+    if (order.status == 'done') {
       return 'Selesai';
     }
     final deliveryDate = order.createdAt.add(const Duration(days: 3));
@@ -569,32 +575,51 @@ class OrderDetailScreen extends ConsumerWidget {
     return '${deliveryDate.day}-${deliveryDateEnd.day} ${_getMonthName(deliveryDate.month)} ${deliveryDate.year}';
   }
 
-  _StatusInfo _getStatusInfo(OrderStatus status, AppLocalizations l10n) {
+  _StatusInfo _getStatusInfo(String status, AppLocalizations l10n) {
     switch (status) {
-      case OrderStatus.processing:
+      case 'processing':
         return _StatusInfo(
           label: l10n.processing,
           icon: Icons.inventory_2,
-          colors: [Colors.blue.shade500, Colors.blue.shade600],
+          gradientColors: [Colors.blue.shade500, Colors.blue.shade600],
         );
-      case OrderStatus.shipped:
+      case 'shipped':
         return _StatusInfo(
           label: l10n.shipped,
           icon: Icons.local_shipping,
-          colors: [Colors.orange.shade500, Colors.orange.shade600],
+          gradientColors: [Colors.orange.shade500, Colors.orange.shade600],
         );
-      case OrderStatus.delivered:
+      case 'done':
         return _StatusInfo(
           label: l10n.delivered,
           icon: Icons.check_circle,
-          colors: [AppColors.success, AppColors.success.withGreen(180)],
+          gradientColors: [AppColors.success, AppColors.success.withGreen(180)],
         );
       default:
         return _StatusInfo(
           label: l10n.processing,
           icon: Icons.inventory_2,
-          colors: [Colors.blue.shade500, Colors.blue.shade600],
+          gradientColors: [Colors.blue.shade500, Colors.blue.shade600],
         );
+    }
+  }
+
+  String _getStatusLabel(String status, AppLocalizations l10n) {
+    switch (status) {
+      case 'pending':
+        return l10n.paymentWaiting;
+      case 'confirmed':
+        return l10n.processing;
+      case 'processing':
+        return l10n.processing;
+      case 'shipped':
+        return l10n.shipped;
+      case 'done':
+        return l10n.delivered;
+      case 'cancelled':
+        return 'Dibatalkan';
+      default:
+        return status;
     }
   }
 }
@@ -602,11 +627,11 @@ class OrderDetailScreen extends ConsumerWidget {
 class _StatusInfo {
   final String label;
   final IconData icon;
-  final List<Color> colors;
+  final List<Color> gradientColors;
 
   const _StatusInfo({
     required this.label,
     required this.icon,
-    required this.colors,
+    required this.gradientColors,
   });
 }

@@ -17,41 +17,39 @@ class RetryWidget extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Center(
-          child: Column(
-            children: [
-              Icon(
-                Icons.cloud_off,
-                size: 64,
-                color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+    return Padding(
+      padding: const EdgeInsets.all(32),
+      child: Center(
+        child: Column(
+          children: [
+            Icon(
+              Icons.cloud_off,
+              size: 64,
+              color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
               ),
-              const SizedBox(height: 16),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onRetry,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.mitsubishiRed,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: onRetry,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.mitsubishiRed,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(l10n.retry),
-              ),
-            ],
-          ),
+              child: Text(l10n.retry),
+            ),
+          ],
         ),
       ),
     );

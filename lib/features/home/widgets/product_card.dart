@@ -47,10 +47,10 @@ class _ProductCardState extends ConsumerState<ProductCard>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 final cart = ref.watch(cartProvider);
 final cartQuantity = cart.items
-    .where((i) => i.productId == widget.product.id)
+    .where((i) => i.productId == widget.product.idString)
     .fold(0, (sum, i) => sum + i.quantity);
 final isInCompare = ref.watch(
-  compareProvider.select((s) => s.isInCompare(widget.product.id)),
+  compareProvider.select((s) => s.isInCompare(widget.product.idString)),
 );
 
 final displayStock = widget.product.stock - cartQuantity;
@@ -58,7 +58,7 @@ final displayStock = widget.product.stock - cartQuantity;
     return GestureDetector(
       onTap: () => context.pushNamed(
         AppRoute.productDetail,
-        pathParameters: {'id': widget.product.id},
+        pathParameters: {'id': widget.product.idString},
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -239,7 +239,7 @@ child: product_image.ProductNetworkImage(
       _isAdding = true;
     });
 
-    ref.read(cartProvider.notifier).addItem(widget.product.id, 1);
+    ref.read(cartProvider.notifier).addItem(widget.product.idString, 1);
 
     AppToast.show(
       context,
@@ -260,7 +260,7 @@ child: product_image.ProductNetworkImage(
   }
 
   void _handleCompare() {
-    final result = ref.read(compareProvider.notifier).toggle(widget.product.id);
+    final result = ref.read(compareProvider.notifier).toggle(widget.product.idString);
     final l10n = AppLocalizations.of(context);
 
     if (!result) {

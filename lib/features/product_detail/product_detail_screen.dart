@@ -11,6 +11,8 @@ import '../../providers/cart_provider.dart';
 import '../../providers/compare_provider.dart';
 import '../../providers/product_provider.dart';
 import '../../shared/widgets/product_image.dart' as product_image;
+import 'widgets/product_bottom_bar.dart';
+import 'widgets/tiered_pricing_widget.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -124,10 +126,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   Widget _buildProductScreen(Product product, AppLocalizations l10n, bool isDark) {
     final cart = ref.watch(cartProvider);
     final cartQuantity = cart.items
-        .where((i) => i.productId == product.id)
+        .where((i) => i.productId == product.idString)
         .fold(0, (sum, i) => sum + i.quantity);
     final isInCompare = ref.watch(
-      compareProvider.select((s) => s.isInCompare(product.id)),
+      compareProvider.select((s) => s.isInCompare(product.idString)),
     );
     final displayStock = product.stock - cartQuantity;
 
@@ -163,12 +165,32 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
           children: [
             _buildImageSection(product, l10n, isDark),
             _buildProductInfo(product, l10n, displayStock, isDark),
-            _buildTieredPricing(product, l10n, isDark),
+            TieredPricingWidget(
+              product: product,
+              quantity: _quantity,
+              onTierSelected: (minQty) => setState(() {
+                _selectedTierMin = minQty;
+                _quantity = minQty;
+              }),
+              onRfqTap: () => _showRFQDialog(product, l10n),
+              isDark: isDark,
+            ),
             _buildTabs(product, l10n, isDark),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(product, l10n, displayStock, isDark),
+      bottomNavigationBar: ProductBottomBar(
+        quantity: _quantity,
+        displayStock: displayStock,
+        selectedTierMin: _selectedTierMin,
+        isAddingToCart: _isAddingToCart,
+        onDecrement: () => setState(() => _quantity--),
+        onIncrement: () => setState(() => _quantity++),
+        onSaveToProject: () => _saveToProject(product, l10n),
+        onAddToCart: () => _addToCart(product, l10n),
+        onBuyNow: () => _buyNow(product, l10n, displayStock),
+        isDark: isDark,
+      ),
     );
   }
 
@@ -339,188 +361,6 @@ child: product_image.ProductNetworkImage(
                 ),
               ],
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTieredPricing(Product product, AppLocalizations l10n, bool isDark) {
-    final tierPrice1 = product.price;
-    final tierPrice2 = product.hasDiscount ? product.price : (product.price * 0.92).round();
-    final savings = tierPrice1 - tierPrice2;
-
-    return Container(
-      color: isDark ? AppColors.darkSurface : Colors.white,
-      margin: const EdgeInsets.only(top: 12),
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.tieredPricing,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 12),
-          GestureDetector(
-            onTap: () => _selectTier(1, 1, l10n),
-            child: _buildPriceTier(
-              '1 - 5 Unit',
-              l10n.priceNormal,
-              tierPrice1,
-              isSelected: _quantity >= 1 && _quantity <= 5,
-              isDark: isDark,
-            ),
-          ),
-          const SizedBox(height: 8),
-          GestureDetector(
-            onTap: () => _selectTier(6, 6, l10n),
-            child: _buildPriceTier(
-              '6 - 10 Unit',
-              l10n.volumeDiscount(CurrencyFormatter.format(savings)),
-              tierPrice2,
-              isBestDeal: true,
-              isSelected: _quantity >= 6 && _quantity <= 10,
-              isDark: isDark,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '11+ Unit',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                      ),
-                    ),
-                    Text(
-                      l10n.contactSales,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-                TextButton(
-                  onPressed: () => _showRFQDialog(product, l10n),
-                  child: Text(
-                    l10n.rfq,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _selectTier(int minQty, int defaultQty, AppLocalizations l10n) {
-    setState(() {
-      _selectedTierMin = minQty;
-      _quantity = defaultQty;
-    });
-  }
-
-  Widget _buildPriceTier(
-    String range,
-    String subtitle,
-    int price, {
-    bool isBestDeal = false,
-    bool isSelected = false,
-    bool isDark = false,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isBestDeal
-            ? (isDark ? Colors.green.withValues(alpha: 0.15) : Colors.green.shade50)
-            : (isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant),
-        border: Border.all(
-          color: isSelected
-              ? AppColors.mitsubishiRed
-              : (isBestDeal
-                  ? (isDark ? Colors.green.withValues(alpha: 0.4) : Colors.green.shade200)
-                  : Colors.transparent),
-          width: isSelected ? 2 : 1,
-        ),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        range,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: isBestDeal ? Colors.green.shade800 : (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-                        ),
-                      ),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isBestDeal ? Colors.green.shade600 : (isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (isBestDeal)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Text(
-                      'Best Deal',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            CurrencyFormatter.format(price),
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isBestDeal ? Colors.green.shade700 : AppColors.mitsubishiRed,
-            ),
           ),
         ],
       ),
@@ -701,155 +541,8 @@ child: product_image.ProductNetworkImage(
     );
   }
 
-  Widget _buildBottomBar(
-    Product product,
-    AppLocalizations l10n,
-    int displayStock,
-    bool isDark,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.3) : const Color(0x1A000000),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          children: [
-            Container(
-              height: 48,
-              decoration: BoxDecoration(
-                border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      final minQty = _selectedTierMin ?? 1;
-                      if (_quantity > minQty) {
-                        setState(() => _quantity--);
-                      } else if (_quantity == minQty && minQty > 1) {
-                        AppToast.show(
-                          context,
-                          l10n.minQuantityTier(minQty),
-                          isError: true,
-                          bottomOffset: 100,
-                        );
-                      }
-                    },
-                    icon: Icon(Icons.remove, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
-                    iconSize: 18,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 40, minHeight: 48),
-                  ),
-                  SizedBox(
-                    width: 40,
-                    child: Text(
-                      '$_quantity',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      if (_quantity < displayStock) {
-                        setState(() => _quantity++);
-                      }
-                    },
-                    icon: Icon(Icons.add, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
-                    iconSize: 18,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 40, minHeight: 48),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 48,
-              height: 48,
-              child: OutlinedButton(
-                onPressed: () => _saveToProject(product, l10n),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: EdgeInsets.zero,
-                ),
-                child: Icon(Icons.bookmark_border, size: 20, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
-              ),
-            ),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 48,
-              height: 48,
-              child: OutlinedButton(
-                onPressed: _isAddingToCart ? null : () => _addToCart(product, l10n),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(
-                    color: _isAddingToCart ? Colors.green : AppColors.mitsubishiRed,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding: EdgeInsets.zero,
-                ),
-                child: Icon(
-                  _isAddingToCart ? Icons.check : Icons.shopping_cart_outlined,
-                  size: 20,
-                  color: _isAddingToCart ? Colors.green : AppColors.mitsubishiRed,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () => _buyNow(product, l10n, displayStock),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.mitsubishiRed,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      l10n.buy,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.arrow_forward, size: 16),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _handleCompare(Product product, AppLocalizations l10n) {
-    final result = ref.read(compareProvider.notifier).toggle(product.id);
+    final result = ref.read(compareProvider.notifier).toggle(product.idString);
     if (!result) {
       AppToast.show(context, l10n.compareMaxError, isError: true, bottomOffset: 160);
     } else {
@@ -860,7 +553,7 @@ child: product_image.ProductNetworkImage(
   void _addToCart(Product product, AppLocalizations l10n) {
     setState(() => _isAddingToCart = true);
 
-    ref.read(cartProvider.notifier).addItem(product.id, _quantity);
+    ref.read(cartProvider.notifier).addItem(product.idString, _quantity);
 
     AppToast.show(
       context,
@@ -887,7 +580,8 @@ child: product_image.ProductNetworkImage(
       return;
     }
 
-    ref.read(cartProvider.notifier).addItem(product.id, _quantity);
+    ref.read(cartProvider.notifier).addItem(product.idString, _quantity);
+    ref.read(selectedCartItemsProvider.notifier).state = {product.idString};
 
     context.pushNamed(AppRoute.checkout);
   }

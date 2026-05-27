@@ -5,23 +5,27 @@ import '../../core/router/app_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/order_provider.dart';
+import '../../providers/address_provider.dart';
 import '../../providers/theme_provider.dart';
-import '../../data/dummy/dummy_orders.dart';
-import '../../models/order.dart';
+import '../../providers/locale_provider.dart';
 
-/// Profile screen showing user info, stats, and menu options
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final ordersAsync = ref.watch(orderListProvider);
+    final addressesAsync = ref.watch(addressListProvider);
 
-    // Calculate order stats
-    final totalOrders = dummyOrders.length;
-    final completedOrders = dummyOrders.where((o) => o.status == OrderStatus.delivered).length;
-    final processingOrders = dummyOrders.where((o) =>
-      o.status == OrderStatus.processing || o.status == OrderStatus.shipped).length;
+    final orders = ordersAsync.valueOrNull ?? [];
+    final totalOrders = orders.length;
+    final completedOrders = orders.where((o) => o.status == 'delivered').length;
+    final processingOrders = orders.where((o) =>
+      o.status == 'processing' || o.status == 'shipped').length;
+
+    final addressCount = addressesAsync.valueOrNull?.length ?? 0;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -30,32 +34,17 @@ class ProfileScreen extends ConsumerWidget {
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: () {
-              // Settings placeholder
-            },
-            icon: const Icon(Icons.settings_outlined),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // User card
             _buildUserCard(l10n, ref),
             const SizedBox(height: 16),
-
-            // Stats grid
             _buildStatsGrid(context, l10n, totalOrders, completedOrders, processingOrders),
             const SizedBox(height: 16),
-
-            // Menu list
-            _buildMenuList(context, l10n),
+            _buildMenuList(context, l10n, addressCount, ref),
             const SizedBox(height: 24),
-
-            // Logout button
             _buildLogoutButton(context, l10n, ref),
           ],
         ),
@@ -65,6 +54,12 @@ class ProfileScreen extends ConsumerWidget {
 
   Widget _buildUserCard(AppLocalizations l10n, WidgetRef ref) {
     final isDark = ref.watch(themeProvider) == ThemeMode.dark;
+    final authState = ref.watch(authProvider);
+    final profile = authState.profile;
+
+    final displayName = profile?.fullName ?? authState.name ?? 'User';
+    final displayEmail = profile?.email ?? authState.email ?? '';
+    final avatarLetter = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U';
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -80,21 +75,15 @@ class ProfileScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
-                ),
-                child: ClipOval(
-                  child: Container(
-                    color: AppColors.surfaceVariant,
-                    child: const Icon(
-                      Icons.person,
-                      size: 32,
-                      color: AppColors.textTertiary,
-                    ),
+              CircleAvatar(
+                radius: 32,
+                backgroundColor: AppColors.surfaceVariant,
+                child: Text(
+                  avatarLetter,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textTertiary,
                   ),
                 ),
               ),
@@ -103,9 +92,9 @@ class ProfileScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'John Doe',
-                      style: TextStyle(
+                    Text(
+                      displayName,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -113,18 +102,27 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'johndoe@otomasiku.com',
+                      displayEmail,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.white.withValues(alpha: 0.7),
                       ),
                     ),
+                    if (profile?.companyName != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        profile!.companyName!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.white.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
             ],
           ),
-          // Dark mode toggle button
           Positioned(
             bottom: 0,
             right: 0,
@@ -229,7 +227,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMenuList(BuildContext context, AppLocalizations l10n) {
+  Widget _buildMenuList(BuildContext context, AppLocalizations l10n, int addressCount, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
@@ -240,6 +238,15 @@ class ProfileScreen extends ConsumerWidget {
       ),
       child: Column(
         children: [
+          _buildMenuItem(
+            context,
+            icon: Icons.edit,
+            iconColor: Colors.blue,
+            title: l10n.editProfile,
+            subtitle: l10n.fullName,
+            onTap: () => context.pushNamed(AppRoute.editProfile),
+          ),
+          _buildDivider(context),
           _buildMenuItem(
             context,
             icon: Icons.assignment,
@@ -254,7 +261,9 @@ class ProfileScreen extends ConsumerWidget {
             icon: Icons.location_on,
             iconColor: AppColors.mitsubishiRed,
             title: l10n.addressBook,
-            subtitle: '2 alamat tersimpan',
+            subtitle: addressCount > 0
+                ? '$addressCount alamat tersimpan'
+                : l10n.noAddressSaved,
             onTap: () => context.pushNamed(AppRoute.shipping),
           ),
           _buildDivider(context),
@@ -265,19 +274,98 @@ class ProfileScreen extends ConsumerWidget {
             title: l10n.paymentMethods,
             subtitle: l10n.bcaVirtualAccount,
             onTap: () => context.pushNamed(AppRoute.paymentMethods),
-          ),
-          _buildDivider(context),
-          _buildMenuItem(
-            context,
-            icon: Icons.headset_mic,
-            iconColor: Colors.purple,
-            title: l10n.helpCenter,
-            subtitle: 'Hubungi tim teknis',
-            onTap: () {},
             isLast: true,
           ),
+          _buildDivider(context),
+          _buildLocaleToggle(context, l10n, isDark, ref),
         ],
       ),
+    );
+  }
+
+  Widget _buildLocaleToggle(BuildContext context, AppLocalizations l10n, bool isDark, WidgetRef ref) {
+    final locale = l10n.localeName.startsWith('id') ? 'id' : 'en';
+    return InkWell(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.purple.withValues(alpha: isDark ? 0.2 : 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.language, color: Colors.purple, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    locale == 'id' ? 'Bahasa' : 'Language',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    locale == 'id' ? 'Indonesia' : 'English',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.purple.withValues(alpha: isDark ? 0.2 : 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'ID',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: locale == 'id' ? FontWeight.bold : FontWeight.normal,
+                      color: locale == 'id' ? Colors.purple : (isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '/',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'EN',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: locale == 'en' ? FontWeight.bold : FontWeight.normal,
+                      color: locale == 'en' ? Colors.purple : (isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      onTap: () {
+        ref.read(localeProvider.notifier).toggleLocale();
+      },
     );
   }
 

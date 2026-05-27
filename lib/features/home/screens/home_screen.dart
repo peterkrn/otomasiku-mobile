@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_router.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/product.dart';
+import '../../../providers/cart_provider.dart';
 import '../../../providers/product_provider.dart';
 import '../../../shared/widgets/retry_widget.dart';
 import '../../../shared/widgets/shimmer_grid.dart';
@@ -103,18 +104,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
         actions: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.shopping_cart_outlined,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                ),
-                onPressed: () => context.pushNamed(AppRoute.cart),
-              ),
-            ],
-          ),
+          _CartBadgeButton(),
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
@@ -325,6 +315,54 @@ class _Diamond extends StatelessWidget {
           shape: BoxShape.circle,
         ),
       ),
+    );
+  }
+}
+
+class _CartBadgeButton extends ConsumerWidget {
+  const _CartBadgeButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final totalItems = ref.watch(cartProvider.select((s) => s.totalItems));
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        IconButton(
+          icon: Icon(
+            Icons.shopping_cart_outlined,
+            color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+          ),
+          onPressed: () => context.pushNamed(AppRoute.cart),
+        ),
+        if (totalItems > 0)
+          Positioned(
+            top: 6,
+            right: 6,
+            child: IgnorePointer(
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: const BoxDecoration(
+                  color: AppColors.mitsubishiRed,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  totalItems > 99 ? '99+' : '$totalItems',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    height: 1,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

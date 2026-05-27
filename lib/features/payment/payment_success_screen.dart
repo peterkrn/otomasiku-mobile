@@ -21,17 +21,17 @@ class PaymentSuccessScreen extends ConsumerWidget {
 
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) {
-          context.goNamed(AppRoute.home);
-        }
-      },
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop) {
+              context.goNamed(AppRoute.orders);
+            }
+          },
       child: Scaffold(
         backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-            onPressed: () => context.goNamed(AppRoute.home),
+            onPressed: () => context.goNamed(AppRoute.orders),
           ),
           backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
           elevation: 0,

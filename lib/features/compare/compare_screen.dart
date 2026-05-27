@@ -23,7 +23,7 @@ class CompareScreen extends ConsumerWidget {
     final productsAsync = ref.watch(productListProvider);
     final products = productsAsync.valueOrNull ?? [];
     final compareProducts = products
-        .where((p) => compareState.productIds.contains(p.id))
+        .where((p) => compareState.productIds.contains(p.idString))
         .toList();
 
     return Scaffold(
@@ -253,7 +253,7 @@ child: product_image.ProductNetworkImage(
                     right: 0,
                     child: GestureDetector(
                       onTap: () {
-                        ref.read(compareProvider.notifier).toggle(product.id);
+                        ref.read(compareProvider.notifier).toggle(product.idString);
                         if (ref.read(compareProvider).productIds.isEmpty) {
                           context.pop();
                         }
@@ -452,7 +452,7 @@ child: product_image.ProductNetworkImage(
             child: ElevatedButton(
               onPressed: () => context.pushNamed(
                 AppRoute.productDetail,
-                pathParameters: {'id': product.id},
+                pathParameters: {'id': product.idString},
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.mitsubishiRed,

@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:uuid/uuid.dart';
 import '../../core/router/app_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/widgets/app_toast.dart';
 import '../../l10n/app_localizations.dart';
-import '../../data/dummy/dummy_projects.dart';
 import '../../models/project.dart';
 
+final projectsProvider = StateProvider<List<Project>>((ref) => []);
+
 /// Projects screen showing user's saved projects for B2B bulk purchases
-class ProjectsScreen extends StatefulWidget {
+class ProjectsScreen extends ConsumerStatefulWidget {
   const ProjectsScreen({super.key});
 
   @override
-  State<ProjectsScreen> createState() => _ProjectsScreenState();
+  ConsumerState<ProjectsScreen> createState() => _ProjectsScreenState();
 }
 
-class _ProjectsScreenState extends State<ProjectsScreen> {
+class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
   void _showCreateProjectDialog() {
     final controller = TextEditingController();
 
@@ -39,12 +42,25 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           TextButton(
             onPressed: () {
               if (controller.text.isNotEmpty) {
+                final name = controller.text.trim();
                 Navigator.pop(ctx);
+                final current = ref.read(projectsProvider);
+                ref.read(projectsProvider.notifier).state = [
+                  ...current,
+                  Project(
+                    id: const Uuid().v4(),
+                    name: name,
+                    items: const [],
+                    createdAt: DateTime.now(),
+                    status: ProjectStatus.planning,
+                  ),
+                ];
                 AppToast.show(
                   context,
-                  'Proyek "${controller.text}" berhasil dibuat!',
+                  'Proyek "$name" berhasil dibuat!',
                   isError: false,
                 );
+                setState(() {});
               }
             },
             child: Text(AppLocalizations.of(context).confirm),
@@ -58,11 +74,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    // Calculate stats
-    final activeProjects = dummyProjects.where((p) => p.status == ProjectStatus.active).length;
-    final totalItems = dummyProjects.fold(0, (sum, p) => sum + p.itemCount);
-    final totalEstimate = dummyProjects.fold(0, (sum, p) => sum + p.totalValue);
+    final projects = ref.watch(projectsProvider);
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
@@ -79,18 +91,75 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Stats grid
-            _buildStatsGrid(context, l10n, activeProjects, totalItems, totalEstimate),
-            const SizedBox(height: 16),
+      body: projects.isEmpty
+          ? _buildEmptyState(context, l10n, isDark)
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  _buildStatsGrid(context, l10n,
+                      projects.where((p) => p.status == ProjectStatus.active).length,
+                      projects.fold(0, (sum, p) => sum + p.itemCount),
+                      projects.fold(0, (sum, p) => sum + p.totalValue)),
+                  const SizedBox(height: 16),
+                  ...projects.map((project) =>
+                      _buildProjectCard(context, l10n, project, isDark)),
+                ],
+              ),
+            ),
+    );
+  }
 
-            // Project cards
-            ...dummyProjects.map((project) => _buildProjectCard(context, l10n, project, isDark)),
-          ],
-        ),
+  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n, bool isDark) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.folder_outlined,
+              size: 36,
+              color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            l10n.noProjects,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.createProjectHint,
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: _showCreateProjectDialog,
+            icon: const Icon(Icons.add, size: 18),
+            label: Text(l10n.createProject),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.mitsubishiRed,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

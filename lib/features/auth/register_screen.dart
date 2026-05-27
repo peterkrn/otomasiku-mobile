@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -150,6 +151,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           controller: _nameController,
                           hintText: l10n.nameHint,
                           prefixIcon: Icons.person_outline,
+                          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]'))],
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return l10n.fieldRequired(l10n.nameHint);
@@ -329,6 +331,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     required IconData prefixIcon,
     bool obscureText = false,
     TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
   }) {
     return Container(
@@ -341,6 +344,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         controller: controller,
         obscureText: obscureText,
         keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
         validator: validator,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(

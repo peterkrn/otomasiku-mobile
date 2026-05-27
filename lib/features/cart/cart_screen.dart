@@ -22,7 +22,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(cartProvider.notifier).loadCart();
+      final cartState = ref.read(cartProvider);
+      if (cartState.items.isEmpty && !cartState.isLoading) {
+        ref.read(cartProvider.notifier).loadCart();
+      }
     });
   }
 
@@ -226,14 +229,14 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${l10n.subtotal} (${l10n.itemCount(totalItems)})',
+                      "${l10n.subtotal} (${l10n.itemCount(totalItems)})",
                       style: TextStyle(
                         fontSize: 14,
                         color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                       ),
                     ),
                     Text(
-                      CurrencyFormatter.format(subtotal),
+                      totalItems == 0 ? '-' : CurrencyFormatter.format(subtotal),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

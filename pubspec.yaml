@@ -34,6 +34,9 @@ dependencies:
   # Supabase Auth
   supabase_flutter: ^2.8.4
 
+  # Environment variables (.env file)
+  flutter_dotenv: ^5.2.1
+
   # Secure storage (tokens)
   flutter_secure_storage: ^9.2.4
 
@@ -78,6 +81,7 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - .env
     - assets/images/profile/
     - assets/images/products/
     - assets/images/products/inverter/

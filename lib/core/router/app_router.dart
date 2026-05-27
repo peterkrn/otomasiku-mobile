@@ -8,6 +8,7 @@ import '../../features/home/screens/home_screen.dart';
 import '../../features/search/search_screen.dart';
 import '../../features/projects/projects_screen.dart';
 import '../../features/profile/profile_screen.dart';
+import '../../features/profile/edit_profile_screen.dart';
 import '../../features/product_detail/product_detail_screen.dart';
 import '../../features/checkout/checkout_screen.dart';
 import '../../features/cart/cart_screen.dart';
@@ -46,6 +47,7 @@ abstract class AppRoute {
   static const String editAddress = 'editAddress';
   static const String paymentMethods = 'paymentMethods';
   static const String orders = 'orders';
+  static const String editProfile = 'editProfile';
 }
 
 // GoRouter instance with StatefulShellRoute for bottom navigation
@@ -157,6 +159,13 @@ final GoRouter appRouter = GoRouter(
       ],
     ),
 
+    // Edit Profile (outside shell)
+    GoRoute(
+      path: '/edit-profile',
+      name: AppRoute.editProfile,
+      builder: (context, state) => const EditProfileScreen(),
+    ),
+
     // Product detail (outside shell - standalone route)
     GoRoute(
       path: '/product/:id',
@@ -233,8 +242,8 @@ final GoRouter appRouter = GoRouter(
       path: '/edit-address',
       name: AppRoute.editAddress,
       builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>?;
-        return EditAddressScreen(extra: extra);
+        final addressId = state.uri.queryParameters['addressId'];
+        return EditAddressScreen(addressId: addressId);
       },
     ),
 

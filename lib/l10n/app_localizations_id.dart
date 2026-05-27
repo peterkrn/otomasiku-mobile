@@ -273,7 +273,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get grandTotal => 'Total Keseluruhan';
 
   @override
-  String get processing => 'Diproses';
+  String get processing => 'Memproses';
 
   @override
   String get loading => 'Memuat';
@@ -927,4 +927,68 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get agreeTermsRequired =>
       'Anda harus setuju dengan Syarat & Ketentuan';
+
+  @override
+  String get editProfile => 'Edit Profil';
+
+  @override
+  String get fullName => 'Nama Lengkap';
+
+  @override
+  String get saveProfile => 'Simpan Profil';
+
+  @override
+  String get profileUpdated => 'Profil berhasil diperbarui';
+
+  @override
+  String get addressLabel => 'Label Alamat';
+
+  @override
+  String get recipient => 'Penerima';
+
+  @override
+  String get addAddress => 'Tambah Alamat';
+
+  @override
+  String get editAddress => 'Edit Alamat';
+
+  @override
+  String get deleteAddress => 'Hapus Alamat';
+
+  @override
+  String get deleteAddressConfirm => 'Hapus alamat ini?';
+
+  @override
+  String get addressDeleted => 'Alamat berhasil dihapus';
+
+  @override
+  String get noAddressSaved => 'Belum ada alamat tersimpan';
+
+  @override
+  String get setAsDefault => 'Jadikan alamat utama';
+
+  @override
+  String get saveChanges => 'Simpan Perubahan';
+
+  @override
+  String get noAddresses => 'Tidak ada alamat';
+
+  @override
+  String get notificationPermissionTitle => 'Aktifkan Notifikasi';
+
+  @override
+  String get notificationPermissionBody =>
+      'Dapatkan update status pesanan Anda secara real-time';
+
+  @override
+  String get notificationActivate => 'Aktifkan';
+
+  @override
+  String get notificationLater => 'Nanti';
+
+  @override
+  String get noProjects => 'Belum ada proyek';
+
+  @override
+  String get createProjectHint => 'Buat proyek untuk mengelola pembelian B2B';
 }

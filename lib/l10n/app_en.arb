@@ -220,9 +220,6 @@
       "count": { "type": "int" }
     }
   },
-  "orderSummary": "Order Summary",
-  "shippingAddress": "Shipping Address",
-  "paymentMethod": "Payment Method",
   "shipping": "Shipping",
   "paymentSummary": "Payment Summary",
   "volumeDiscountLabel": "Volume Discount",
@@ -275,7 +272,6 @@
   },
   "statusHistory": "Status History",
   "paymentReceived": "Payment Received",
-  "processing": "Processing",
   "processingSubtitle": "Stock verification and packaging",
   "shipped": "Shipped",
   "shippedSubtitle": "On the way to destination",
@@ -394,5 +390,26 @@
       "field": { "type": "String" }
     }
   },
-  "agreeTermsRequired": "You must agree to the Terms & Conditions"
+  "agreeTermsRequired": "You must agree to the Terms & Conditions",
+  "editProfile": "Edit Profile",
+  "fullName": "Full Name",
+  "saveProfile": "Save Profile",
+  "profileUpdated": "Profile updated successfully",
+  "addressLabel": "Address Label",
+  "recipient": "Recipient",
+  "addAddress": "Add Address",
+  "editAddress": "Edit Address",
+  "deleteAddress": "Delete Address",
+  "deleteAddressConfirm": "Delete this address?",
+  "addressDeleted": "Address deleted successfully",
+  "noAddressSaved": "No saved addresses",
+  "setAsDefault": "Set as default",
+  "saveChanges": "Save Changes",
+  "noAddresses": "No addresses",
+  "notificationPermissionTitle": "Enable Notifications",
+  "notificationPermissionBody": "Get real-time updates on your order status",
+  "notificationActivate": "Activate",
+  "notificationLater": "Later",
+  "noProjects": "No projects yet",
+  "createProjectHint": "Create a project to manage B2B purchases"
 }

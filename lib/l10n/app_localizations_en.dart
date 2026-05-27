@@ -926,4 +926,68 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get agreeTermsRequired => 'You must agree to the Terms & Conditions';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get saveProfile => 'Save Profile';
+
+  @override
+  String get profileUpdated => 'Profile updated successfully';
+
+  @override
+  String get addressLabel => 'Address Label';
+
+  @override
+  String get recipient => 'Recipient';
+
+  @override
+  String get addAddress => 'Add Address';
+
+  @override
+  String get editAddress => 'Edit Address';
+
+  @override
+  String get deleteAddress => 'Delete Address';
+
+  @override
+  String get deleteAddressConfirm => 'Delete this address?';
+
+  @override
+  String get addressDeleted => 'Address deleted successfully';
+
+  @override
+  String get noAddressSaved => 'No saved addresses';
+
+  @override
+  String get setAsDefault => 'Set as default';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get noAddresses => 'No addresses';
+
+  @override
+  String get notificationPermissionTitle => 'Enable Notifications';
+
+  @override
+  String get notificationPermissionBody =>
+      'Get real-time updates on your order status';
+
+  @override
+  String get notificationActivate => 'Activate';
+
+  @override
+  String get notificationLater => 'Later';
+
+  @override
+  String get noProjects => 'No projects yet';
+
+  @override
+  String get createProjectHint => 'Create a project to manage B2B purchases';
 }

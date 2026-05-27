@@ -617,7 +617,7 @@ abstract class AppLocalizations {
   /// No description provided for @processing.
   ///
   /// In id, this message translates to:
-  /// **'Diproses'**
+  /// **'Memproses'**
   String get processing;
 
   /// No description provided for @loading.
@@ -1855,6 +1855,132 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Anda harus setuju dengan Syarat & Ketentuan'**
   String get agreeTermsRequired;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In id, this message translates to:
+  /// **'Edit Profil'**
+  String get editProfile;
+
+  /// No description provided for @fullName.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Lengkap'**
+  String get fullName;
+
+  /// No description provided for @saveProfile.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Profil'**
+  String get saveProfile;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In id, this message translates to:
+  /// **'Profil berhasil diperbarui'**
+  String get profileUpdated;
+
+  /// No description provided for @addressLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Label Alamat'**
+  String get addressLabel;
+
+  /// No description provided for @recipient.
+  ///
+  /// In id, this message translates to:
+  /// **'Penerima'**
+  String get recipient;
+
+  /// No description provided for @addAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Alamat'**
+  String get addAddress;
+
+  /// No description provided for @editAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Edit Alamat'**
+  String get editAddress;
+
+  /// No description provided for @deleteAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Alamat'**
+  String get deleteAddress;
+
+  /// No description provided for @deleteAddressConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus alamat ini?'**
+  String get deleteAddressConfirm;
+
+  /// No description provided for @addressDeleted.
+  ///
+  /// In id, this message translates to:
+  /// **'Alamat berhasil dihapus'**
+  String get addressDeleted;
+
+  /// No description provided for @noAddressSaved.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada alamat tersimpan'**
+  String get noAddressSaved;
+
+  /// No description provided for @setAsDefault.
+  ///
+  /// In id, this message translates to:
+  /// **'Jadikan alamat utama'**
+  String get setAsDefault;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Perubahan'**
+  String get saveChanges;
+
+  /// No description provided for @noAddresses.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada alamat'**
+  String get noAddresses;
+
+  /// No description provided for @notificationPermissionTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Aktifkan Notifikasi'**
+  String get notificationPermissionTitle;
+
+  /// No description provided for @notificationPermissionBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Dapatkan update status pesanan Anda secara real-time'**
+  String get notificationPermissionBody;
+
+  /// No description provided for @notificationActivate.
+  ///
+  /// In id, this message translates to:
+  /// **'Aktifkan'**
+  String get notificationActivate;
+
+  /// No description provided for @notificationLater.
+  ///
+  /// In id, this message translates to:
+  /// **'Nanti'**
+  String get notificationLater;
+
+  /// No description provided for @noProjects.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada proyek'**
+  String get noProjects;
+
+  /// No description provided for @createProjectHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Buat proyek untuk mengelola pembelian B2B'**
+  String get createProjectHint;
 }
 
 class _AppLocalizationsDelegate

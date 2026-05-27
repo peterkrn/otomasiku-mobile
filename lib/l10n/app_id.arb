@@ -220,9 +220,6 @@
       "count": { "type": "int" }
     }
   },
-  "orderSummary": "Ringkasan Pesanan",
-  "shippingAddress": "Alamat Pengiriman",
-  "paymentMethod": "Metode Pembayaran",
   "shipping": "Pengiriman",
   "paymentSummary": "Ringkasan Pembayaran",
   "volumeDiscountLabel": "Diskon Volume",
@@ -275,7 +272,6 @@
   },
   "statusHistory": "Riwayat Status",
   "paymentReceived": "Pembayaran Diterima",
-  "processing": "Diproses",
   "processingSubtitle": "Verifikasi stok dan packaging",
   "shipped": "Dikirim",
   "shippedSubtitle": "Dalam perjalanan ke alamat tujuan",
@@ -394,5 +390,26 @@
       "field": { "type": "String" }
     }
   },
-  "agreeTermsRequired": "Anda harus setuju dengan Syarat & Ketentuan"
+  "agreeTermsRequired": "Anda harus setuju dengan Syarat & Ketentuan",
+  "editProfile": "Edit Profil",
+  "fullName": "Nama Lengkap",
+  "saveProfile": "Simpan Profil",
+  "profileUpdated": "Profil berhasil diperbarui",
+  "addressLabel": "Label Alamat",
+  "recipient": "Penerima",
+  "addAddress": "Tambah Alamat",
+  "editAddress": "Edit Alamat",
+  "deleteAddress": "Hapus Alamat",
+  "deleteAddressConfirm": "Hapus alamat ini?",
+  "addressDeleted": "Alamat berhasil dihapus",
+  "noAddressSaved": "Belum ada alamat tersimpan",
+  "setAsDefault": "Jadikan alamat utama",
+  "saveChanges": "Simpan Perubahan",
+  "noAddresses": "Tidak ada alamat",
+  "notificationPermissionTitle": "Aktifkan Notifikasi",
+  "notificationPermissionBody": "Dapatkan update status pesanan Anda secara real-time",
+  "notificationActivate": "Aktifkan",
+  "notificationLater": "Nanti",
+  "noProjects": "Belum ada proyek",
+  "createProjectHint": "Buat proyek untuk mengelola pembelian B2B"
 }

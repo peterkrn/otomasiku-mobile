@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../core/errors/app_exception.dart';
 import '../../core/network/api_response.dart';
+import '../../core/utils/bigint_converter.dart';
 import '../../models/order.dart';
 
 abstract class OrderRepository {
@@ -24,7 +25,7 @@ class OrderRepositoryImpl implements OrderRepository {
   Future<OrderListResponse> getOrders({int page = 1, int pageSize = 20}) async {
     final response = await _dio.get('/orders', queryParameters: {
       'page': page,
-      'limit': pageSize,
+      'pageSize': pageSize,
     });
     final apiResponse =
         ApiResponse<Map<String, dynamic>>.fromJson(
@@ -70,7 +71,7 @@ class OrderRepositoryImpl implements OrderRepository {
       );
     }
 
-    return Order.fromJson(apiResponse.data!['data'] as Map<String, dynamic>);
+    return Order.fromJson(apiResponse.data!);
   }
 
   @override
@@ -103,30 +104,26 @@ class OrderRepositoryImpl implements OrderRepository {
 
     final data = apiResponse.data!;
     return CreateOrderResult(
-      orderId: data['orderId'] as String,
+      orderId: data['orderId'].toString(),
       orderNumber: data['orderNumber'] as String,
-      totalAmount: int.parse(data['totalAmount'] as String),
+      totalAmount: const BigIntStringConverter().fromJson(data['totalAmount']),
     );
   }
 
   @override
   Future<List<OrderStatusHistory>> getStatusHistory(String orderId) async {
-    final response = await _dio.get('/orders/$orderId/status');
-    final apiResponse =
-        ApiResponse<Map<String, dynamic>>.fromJson(
-          response.data as Map<String, dynamic>,
-          null,
-        );
+    final response = await _dio.get('/orders/$orderId/status-history');
+    final json = response.data as Map<String, dynamic>;
+    final success = json['success'] as bool? ?? false;
 
-    if (!apiResponse.success || apiResponse.data == null) {
+    if (!success || json['data'] == null) {
       throw ApiException(
-        code: apiResponse.error?.code ?? 'UNKNOWN',
+        code: 'UNKNOWN',
         statusCode: response.statusCode ?? 200,
-        details: apiResponse.error?.details,
       );
     }
 
-    final items = apiResponse.data!['data'] as List;
+    final items = json['data'] as List;
     return items
         .map((e) => OrderStatusHistory.fromJson(e as Map<String, dynamic>))
         .toList();

@@ -7,6 +7,8 @@ import '../../models/product.dart';
 abstract class ProductRepository {
   Future<ProductListResponse> getProducts(ProductFilter filter);
   Future<Product> getProductById(String id);
+  Future<List<Brand>> getBrands();
+  Future<List<Category>> getCategories();
 }
 
 class ProductRepositoryImpl implements ProductRepository {
@@ -23,7 +25,7 @@ class ProductRepositoryImpl implements ProductRepository {
         if (filter.brand != null) 'brand': filter.brand,
         if (filter.category != null) 'category': filter.category,
         'page': filter.page,
-        'limit': filter.pageSize,
+        'pageSize': filter.pageSize,
       },
     );
 
@@ -71,7 +73,33 @@ class ProductRepositoryImpl implements ProductRepository {
       );
     }
 
-    return Product.fromJson(apiResponse.data!['data'] as Map<String, dynamic>);
+    return Product.fromJson(apiResponse.data!);
+  }
+
+  @override
+  Future<List<Brand>> getBrands() async {
+    final response = await _dio.get('/brands');
+    final json = response.data as Map<String, dynamic>;
+    final success = json['success'] as bool? ?? false;
+    if (!success || json['data'] == null) {
+      throw ApiException(code: 'UNKNOWN', statusCode: response.statusCode ?? 200);
+    }
+    return (json['data'] as List)
+        .map((e) => Brand.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<List<Category>> getCategories() async {
+    final response = await _dio.get('/categories');
+    final json = response.data as Map<String, dynamic>;
+    final success = json['success'] as bool? ?? false;
+    if (!success || json['data'] == null) {
+      throw ApiException(code: 'UNKNOWN', statusCode: response.statusCode ?? 200);
+    }
+    return (json['data'] as List)
+        .map((e) => Category.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }
 

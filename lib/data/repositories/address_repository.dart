@@ -20,21 +20,17 @@ class AddressRepositoryImpl implements AddressRepository {
   @override
   Future<List<Address>> getAddresses() async {
     final response = await _dio.get('/addresses');
-    final apiResponse =
-        ApiResponse<Map<String, dynamic>>.fromJson(
-          response.data as Map<String, dynamic>,
-          null,
-        );
+    final json = response.data as Map<String, dynamic>;
+    final success = json['success'] as bool? ?? false;
 
-    if (!apiResponse.success || apiResponse.data == null) {
+    if (!success || json['data'] == null) {
       throw ApiException(
-        code: apiResponse.error?.code ?? 'UNKNOWN',
+        code: 'UNKNOWN',
         statusCode: response.statusCode ?? 200,
-        details: apiResponse.error?.details,
       );
     }
 
-    final dataList = apiResponse.data!['data'] as List;
+    final dataList = json['data'] as List;
     return dataList
         .map((e) => Address.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -57,7 +53,7 @@ class AddressRepositoryImpl implements AddressRepository {
       );
     }
 
-    return Address.fromJson(apiResponse.data!['data'] as Map<String, dynamic>);
+    return Address.fromJson(apiResponse.data!);
   }
 
   @override
@@ -77,7 +73,7 @@ class AddressRepositoryImpl implements AddressRepository {
       );
     }
 
-    return Address.fromJson(apiResponse.data!['data'] as Map<String, dynamic>);
+    return Address.fromJson(apiResponse.data!);
   }
 
   @override
@@ -97,7 +93,7 @@ class AddressRepositoryImpl implements AddressRepository {
       );
     }
 
-    return Address.fromJson(apiResponse.data!['data'] as Map<String, dynamic>);
+    return Address.fromJson(apiResponse.data!);
   }
 
   @override

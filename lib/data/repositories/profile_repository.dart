@@ -36,14 +36,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
       );
     }
 
-    return UserProfile.fromJson(
-      apiResponse.data!['data'] as Map<String, dynamic>,
-    );
+    return UserProfile.fromJson(apiResponse.data!);
   }
 
   @override
   Future<UserProfile> updateProfile(ProfileInput input) async {
-    final response = await _dio.put('/me', data: input.toJson());
+    final response = await _dio.patch('/me', data: input.toJson());
     final apiResponse =
         ApiResponse<Map<String, dynamic>>.fromJson(
           response.data as Map<String, dynamic>,
@@ -58,9 +56,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       );
     }
 
-    return UserProfile.fromJson(
-      apiResponse.data!['data'] as Map<String, dynamic>,
-    );
+    return UserProfile.fromJson(apiResponse.data!);
   }
 
   @override

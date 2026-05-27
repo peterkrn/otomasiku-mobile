@@ -6,6 +6,7 @@ part 'order.g.dart';
 
 @JsonSerializable()
 class Order {
+  @_ToStringConverter()
   final String id;
   final String orderNumber;
   final String status;
@@ -46,6 +47,7 @@ class Order {
 
 @JsonSerializable()
 class OrderItem {
+  @_ToStringConverter()
   final String productId;
   final String productName;
   final int quantity;
@@ -100,4 +102,14 @@ enum OrderStatus {
   shipped,
   delivered,
   cancelled,
+}
+
+class _ToStringConverter implements JsonConverter<String, dynamic> {
+  const _ToStringConverter();
+
+  @override
+  String fromJson(dynamic value) => value.toString();
+
+  @override
+  dynamic toJson(String value) => value;
 }

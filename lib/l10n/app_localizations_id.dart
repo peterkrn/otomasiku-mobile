@@ -1006,4 +1006,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get compareCleared => 'Perbandingan dikosongkan';
+
+  @override
+  String get checkPaymentStatus => 'Cek Status Pembayaran';
 }

@@ -150,6 +150,22 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           _buildAmountCard(order, l10n, isDark),
           const SizedBox(height: 16),
           _buildInstructionsCard(l10n, isDark),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => ref.read(paymentPollingProvider(widget.orderId).notifier).checkNow(widget.orderId),
+              icon: const Icon(Icons.refresh),
+              label: Text(l10n.checkPaymentStatus),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.mitsubishiRed,
+                side: const BorderSide(color: AppColors.mitsubishiRed),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ),
+          const SizedBox(height: 96),
         ],
       ),
     );

@@ -416,5 +416,6 @@
   "chat": "Chat",
   "openingWhatsApp": "Membuka WhatsApp...",
   "clearCompareConfirm": "Hapus semua produk dari perbandingan?",
-  "compareCleared": "Perbandingan dikosongkan"
+  "compareCleared": "Perbandingan dikosongkan",
+  "checkPaymentStatus": "Cek Status Pembayaran"
 }

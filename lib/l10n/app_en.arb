@@ -416,5 +416,6 @@
   "chat": "Chat",
   "openingWhatsApp": "Opening WhatsApp...",
   "clearCompareConfirm": "Remove all products from comparison?",
-  "compareCleared": "Comparison cleared"
+  "compareCleared": "Comparison cleared",
+  "checkPaymentStatus": "Check Payment Status"
 }

@@ -1005,4 +1005,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get compareCleared => 'Comparison cleared';
+
+  @override
+  String get checkPaymentStatus => 'Check Payment Status';
 }

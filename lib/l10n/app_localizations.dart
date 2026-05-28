@@ -2011,6 +2011,9 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Perbandingan dikosongkan'**
   String get compareCleared;
+
+  /// No description provided for @checkPaymentStatus.
+  String get checkPaymentStatus;
 }
 
 class _AppLocalizationsDelegate

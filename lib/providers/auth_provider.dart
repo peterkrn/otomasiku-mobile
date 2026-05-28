@@ -159,8 +159,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final result = await _authService.register(email, password, name);
 
     if (result.isSuccess) {
-      _updateFromSession();
-      await _bootstrap();
+      final session = Supabase.instance.client.auth.currentSession;
+      if (session != null) {
+        // Email confirmation disabled — user is logged in immediately
+        _updateFromSession();
+        await _bootstrap();
+      } else {
+        // Email confirmation required — not authenticated yet
+        state = state.copyWith(isLoading: false);
+      }
     } else {
       state = state.copyWith(
         isLoading: false,
@@ -190,12 +197,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   void _updateFromSession() {
     final session = Supabase.instance.client.auth.currentSession;
+    if (session == null) return;
     state = state.copyWith(
       isAuthenticated: true,
       isLoading: false,
-      userId: session?.user.id,
-      email: session?.user.email,
-      name: session?.user.userMetadata?['full_name'] as String?,
+      userId: session.user.id,
+      email: session.user.email,
+      name: session.user.userMetadata?['full_name'] as String?,
     );
   }
 

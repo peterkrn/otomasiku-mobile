@@ -203,7 +203,10 @@ final GoRouter appRouter = GoRouter(
       name: AppRoute.payment,
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
-        return PaymentScreen(orderId: orderId);
+        final totalAmount = int.tryParse(
+          state.uri.queryParameters['totalAmount'] ?? '0',
+        ) ?? 0;
+        return PaymentScreen(orderId: orderId, totalAmount: totalAmount);
       },
     ),
     GoRoute(
@@ -211,7 +214,10 @@ final GoRouter appRouter = GoRouter(
       name: AppRoute.paymentSuccess,
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
-        return PaymentSuccessScreen(orderId: orderId);
+        final totalAmount = int.tryParse(
+          state.uri.queryParameters['totalAmount'] ?? '0',
+        ) ?? 0;
+        return PaymentSuccessScreen(orderId: orderId, totalAmount: totalAmount);
       },
     ),
 

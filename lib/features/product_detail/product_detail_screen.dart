@@ -124,14 +124,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   }
 
   Widget _buildProductScreen(Product product, AppLocalizations l10n, bool isDark) {
-    final cart = ref.watch(cartProvider);
-    final cartQuantity = cart.items
-        .where((i) => i.productId == product.idString)
-        .fold(0, (sum, i) => sum + i.quantity);
     final isInCompare = ref.watch(
       compareProvider.select((s) => s.isInCompare(product.idString)),
     );
-    final displayStock = product.stock - cartQuantity;
+    final displayStock = product.stock;
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,

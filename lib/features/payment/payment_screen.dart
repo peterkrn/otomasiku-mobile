@@ -13,8 +13,9 @@ import '../../providers/payment_provider.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
   final String orderId;
+  final int totalAmount;
 
-  const PaymentScreen({super.key, required this.orderId});
+  const PaymentScreen({super.key, required this.orderId, this.totalAmount = 0});
 
   @override
   ConsumerState<PaymentScreen> createState() => _PaymentScreenState();
@@ -77,9 +78,11 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         if (order.paymentStatus == 'paid' && !_navigatedToSuccess && mounted) {
           _navigatedToSuccess = true;
           _countdownTimer?.cancel();
+          final displayTotal = order.totalAmount > 0 ? order.totalAmount : widget.totalAmount;
           context.goNamed(
             AppRoute.paymentSuccess,
             pathParameters: {'orderId': widget.orderId},
+            queryParameters: {'totalAmount': displayTotal.toString()},
           );
         }
       });

@@ -272,10 +272,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           );
 
       if (!context.mounted) return;
-      await ref.read(cartProvider.notifier).clearCart();
-      ref.read(selectedCartItemsProvider.notifier).state = {};
       router.pushNamed(AppRoute.payment,
-          pathParameters: {'orderId': result.orderId});
+          pathParameters: {'orderId': result.orderId},
+          queryParameters: {'totalAmount': result.totalAmount.toString()});
+      // Clear cart after navigation to avoid empty cart flash
+      ref.read(cartProvider.notifier).clearCart();
+      ref.read(selectedCartItemsProvider.notifier).state = {};
     } on Exception catch (e) {
       messenger.showSnackBar(SnackBar(
         content: Text(

@@ -10,8 +10,13 @@ import '../../providers/order_provider.dart';
 
 class PaymentSuccessScreen extends ConsumerWidget {
   final String orderId;
+  final int totalAmount;
 
-  const PaymentSuccessScreen({super.key, required this.orderId});
+  const PaymentSuccessScreen({
+    super.key,
+    required this.orderId,
+    this.totalAmount = 0,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -76,12 +81,17 @@ class PaymentSuccessScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 32),
                 orderAsync.when(
-                  data: (order) => _buildOrderInfoCard(context, l10n, order, isDark),
+                  data: (order) => _buildOrderInfoCard(
+                    context, l10n, order,
+                    // Use API total if non-zero, else use totalAmount passed from checkout
+                    order.totalAmount > 0 ? order.totalAmount : totalAmount,
+                    isDark,
+                  ),
                   loading: () => const SizedBox(
                     height: 100,
                     child: Center(child: CircularProgressIndicator()),
                   ),
-                  error: (_, _) => _buildOrderInfoCardSimple(l10n, isDark),
+                  error: (_, _) => _buildOrderInfoCardSimple(l10n, totalAmount, isDark),
                 ),
                 const Spacer(),
                 _buildActionButtons(context, l10n, isDark),
@@ -93,7 +103,7 @@ class PaymentSuccessScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildOrderInfoCard(BuildContext context, AppLocalizations l10n, Order order, bool isDark) {
+  Widget _buildOrderInfoCard(BuildContext context, AppLocalizations l10n, Order order, int displayTotal, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -109,7 +119,7 @@ class PaymentSuccessScreen extends ConsumerWidget {
           Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.border),
           _buildInfoRow(
             l10n.total,
-            CurrencyFormatter.format(order.totalAmount),
+            CurrencyFormatter.format(displayTotal),
             isDark,
             valueColor: AppColors.mitsubishiRed,
           ),
@@ -118,7 +128,7 @@ class PaymentSuccessScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildOrderInfoCardSimple(AppLocalizations l10n, bool isDark) {
+  Widget _buildOrderInfoCardSimple(AppLocalizations l10n, int displayTotal, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -131,6 +141,15 @@ class PaymentSuccessScreen extends ConsumerWidget {
           _buildInfoRow(l10n.orderNumber, orderId, isDark),
           Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.border),
           _buildInfoRow(l10n.orderDate, _formatDate(DateTime.now()), isDark),
+          if (displayTotal > 0) ...[
+            Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.border),
+            _buildInfoRow(
+              l10n.total,
+              CurrencyFormatter.format(displayTotal),
+              isDark,
+              valueColor: AppColors.mitsubishiRed,
+            ),
+          ],
         ],
       ),
     );

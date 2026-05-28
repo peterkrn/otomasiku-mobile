@@ -45,15 +45,9 @@ class _ProductCardState extends ConsumerState<ProductCard>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-final cart = ref.watch(cartProvider);
-final cartQuantity = cart.items
-    .where((i) => i.productId == widget.product.idString)
-    .fold(0, (sum, i) => sum + i.quantity);
 final isInCompare = ref.watch(
   compareProvider.select((s) => s.isInCompare(widget.product.idString)),
 );
-
-final displayStock = widget.product.stock - cartQuantity;
 
     return GestureDetector(
       onTap: () => context.pushNamed(
@@ -96,7 +90,7 @@ child: product_image.ProductNetworkImage(
                   top: 8,
                   left: 8,
                   child: StockBadge(
-                    stock: displayStock,
+                    stock: widget.product.stock,
                     isOutOfStock: widget.product.isOutOfStock,
                     isLowStock: widget.product.isLowStock,
                   ),

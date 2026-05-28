@@ -411,5 +411,9 @@
   "notificationActivate": "Aktifkan",
   "notificationLater": "Nanti",
   "noProjects": "Belum ada proyek",
-  "createProjectHint": "Buat proyek untuk mengelola pembelian B2B"
+  "createProjectHint": "Buat proyek untuk mengelola pembelian B2B",
+  "chat": "Chat",
+  "openingWhatsApp": "Membuka WhatsApp...",
+  "clearCompareConfirm": "Hapus semua produk dari perbandingan?",
+  "compareCleared": "Perbandingan dikosongkan"
 }

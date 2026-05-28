@@ -411,5 +411,9 @@
   "notificationActivate": "Activate",
   "notificationLater": "Later",
   "noProjects": "No projects yet",
-  "createProjectHint": "Create a project to manage B2B purchases"
+  "createProjectHint": "Create a project to manage B2B purchases",
+  "chat": "Chat",
+  "openingWhatsApp": "Opening WhatsApp...",
+  "clearCompareConfirm": "Remove all products from comparison?",
+  "compareCleared": "Comparison cleared"
 }

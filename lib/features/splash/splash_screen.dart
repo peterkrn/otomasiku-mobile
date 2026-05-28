@@ -35,13 +35,6 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _controller.forward();
-
-    // Auto navigate to login after delay
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        context.goNamed(AppRoute.login);
-      }
-    });
   }
 
   @override

@@ -21,7 +21,8 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
 
   void _copyVaNumber() {
     Clipboard.setData(ClipboardData(text: _vaNumber.replaceAll(' ', '')));
-    AppToast.show(context, 'Nomor VA berhasil disalin!', isError: false);
+    final l10n = AppLocalizations.of(context);
+    AppToast.show(context, l10n.vaCopied, isError: false);
   }
 
   @override
@@ -176,7 +177,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                       ElevatedButton.icon(
                         onPressed: _copyVaNumber,
                         icon: const Icon(Icons.copy, size: 14),
-                        label: const Text('Salin'),
+                        label: Text(l10n.paymentCopy),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.bcaBlue,
                           foregroundColor: Colors.white,
@@ -466,10 +467,10 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
           ),
           ElevatedButton.icon(
             onPressed: () {
-              AppToast.show(context, 'Membuka WhatsApp...', isError: false);
+              AppToast.show(context, l10n.openingWhatsApp, isError: false);
             },
             icon: const Icon(Icons.chat, size: 14),
-            label: const Text('Chat'),
+            label: Text(l10n.chat),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.success,
               foregroundColor: Colors.white,

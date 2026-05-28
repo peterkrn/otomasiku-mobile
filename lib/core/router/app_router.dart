@@ -22,6 +22,7 @@ import '../../features/home/widgets/compare_bar.dart';
 import '../../features/address/edit_address_screen.dart';
 import '../../features/shipping/shipping_screen.dart';
 import '../../features/payment_methods/payment_methods_screen.dart';
+import '../../features/profile/settings_screen.dart';
 import '../../providers/auth_provider.dart';
 
 /// GoRouter configuration for Otomasiku Marketplace
@@ -48,6 +49,7 @@ abstract class AppRoute {
   static const String paymentMethods = 'paymentMethods';
   static const String orders = 'orders';
   static const String editProfile = 'editProfile';
+  static const String settings = 'settings';
 }
 
 // GoRouter instance with StatefulShellRoute for bottom navigation
@@ -252,6 +254,13 @@ final GoRouter appRouter = GoRouter(
       path: '/payment-methods',
       name: AppRoute.paymentMethods,
       builder: (context, state) => const PaymentMethodsScreen(),
+    ),
+
+    // Settings
+    GoRoute(
+      path: '/settings',
+      name: AppRoute.settings,
+      builder: (context, state) => const SettingsScreen(),
     ),
   ],
 );

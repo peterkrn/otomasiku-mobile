@@ -34,6 +34,12 @@ class ProfileScreen extends ConsumerWidget {
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
         elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () => context.pushNamed(AppRoute.settings),
+            icon: const Icon(Icons.settings_outlined),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

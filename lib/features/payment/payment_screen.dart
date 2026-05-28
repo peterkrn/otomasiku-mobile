@@ -85,11 +85,18 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       });
     });
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          context.goNamed(AppRoute.home);
+        }
+      },
+      child: Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
         leading: BackButton(
-          onPressed: () => context.pop(),
+          onPressed: () => context.goNamed(AppRoute.home),
         ),
         title: Text(l10n.payment),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
@@ -120,6 +127,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: _buildBottomBar(l10n, isDark),
+    ),
     );
   }
 

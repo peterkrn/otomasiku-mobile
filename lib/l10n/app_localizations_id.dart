@@ -991,4 +991,16 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get createProjectHint => 'Buat proyek untuk mengelola pembelian B2B';
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String get openingWhatsApp => 'Membuka WhatsApp...';
+
+  @override
+  String get clearCompareConfirm => 'Hapus semua produk dari perbandingan?';
+
+  @override
+  String get compareCleared => 'Perbandingan dikosongkan';
 }

@@ -514,7 +514,7 @@ child: product_image.ProductNetworkImage(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context).clear),
-        content: const Text('Hapus semua produk dari perbandingan?'),
+        content: Text(AppLocalizations.of(context).clearCompareConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -524,7 +524,7 @@ child: product_image.ProductNetworkImage(
             onPressed: () {
               ref.read(compareProvider.notifier).clear();
               Navigator.pop(ctx);
-              AppToast.show(context, 'Perbandingan dikosongkan', isError: false);
+              AppToast.show(context, AppLocalizations.of(context).compareCleared, isError: false);
             },
             style: TextButton.styleFrom(
               foregroundColor: AppColors.mitsubishiRed,

@@ -990,4 +990,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createProjectHint => 'Create a project to manage B2B purchases';
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String get openingWhatsApp => 'Opening WhatsApp...';
+
+  @override
+  String get clearCompareConfirm => 'Remove all products from comparison?';
+
+  @override
+  String get compareCleared => 'Comparison cleared';
 }

@@ -1981,6 +1981,30 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Buat proyek untuk mengelola pembelian B2B'**
   String get createProjectHint;
+
+  /// No description provided for @chat.
+  ///
+  /// In id, this message translates to:
+  /// **'Chat'**
+  String get chat;
+
+  /// No description provided for @openingWhatsApp.
+  ///
+  /// In id, this message translates to:
+  /// **'Membuka WhatsApp...'**
+  String get openingWhatsApp;
+
+  /// No description provided for @clearCompareConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus semua produk dari perbandingan?'**
+  String get clearCompareConfirm;
+
+  /// No description provided for @compareCleared.
+  ///
+  /// In id, this message translates to:
+  /// **'Perbandingan dikosongkan'**
+  String get compareCleared;
 }
 
 class _AppLocalizationsDelegate

@@ -348,7 +348,7 @@ class OrderDetailScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
-          ...order.items.map((item) => _buildOrderItem(item, isDark)),
+          ...?order.items?.map((item) => _buildOrderItem(item, isDark)),
           Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.divider),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -475,7 +475,7 @@ class OrderDetailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${order.shippingAddress.recipient}\n${order.shippingAddress.street}\n${order.shippingAddress.city}, ${order.shippingAddress.province} ${order.shippingAddress.postalCode}\n${order.shippingAddress.phone}',
+                  '${order.shippingAddress?.recipient ?? ''}\n${order.shippingAddress?.street ?? ''}\n${order.shippingAddress?.city ?? ''}, ${order.shippingAddress?.province ?? ''} ${order.shippingAddress?.postalCode ?? ''}\n${order.shippingAddress?.phone ?? ''}',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,

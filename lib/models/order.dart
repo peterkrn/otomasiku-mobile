@@ -17,8 +17,8 @@ class Order {
 
   final String? vaNumber;
   final DateTime? vaExpiresAt;
-  final OrderAddress shippingAddress;
-  final List<OrderItem> items;
+  final OrderAddress? shippingAddress;
+  final List<OrderItem>? items;
   final String? notes;
   final String? resiNumber;
   final DateTime createdAt;
@@ -32,8 +32,8 @@ class Order {
     required this.totalAmount,
     this.vaNumber,
     this.vaExpiresAt,
-    required this.shippingAddress,
-    required this.items,
+    this.shippingAddress,
+    this.items,
     this.notes,
     this.resiNumber,
     required this.createdAt,

@@ -44,12 +44,12 @@ void main() {
       expect(order.totalAmount, 15000000);
       expect(order.vaNumber, '1234567890');
       expect(order.notes, 'Tolong dikirim pagi hari');
-      expect(order.items.length, 1);
-      expect(order.items.first.productName, 'FR-A840-2.2K-1 Inverter');
-      expect(order.items.first.unitPrice, 15000000);
-      expect(order.items.first.subtotal, 15000000);
-      expect(order.shippingAddress.recipient, 'Peter');
-      expect(order.shippingAddress.city, 'Jakarta');
+      expect(order.items!.length, 1);
+      expect(order.items!.first.productName, 'FR-A840-2.2K-1 Inverter');
+      expect(order.items!.first.unitPrice, 15000000);
+      expect(order.items!.first.subtotal, 15000000);
+      expect(order.shippingAddress!.recipient, 'Peter');
+      expect(order.shippingAddress!.city, 'Jakarta');
     });
   });
 }

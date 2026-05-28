@@ -16,11 +16,11 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
   vaExpiresAt: json['vaExpiresAt'] == null
       ? null
       : DateTime.parse(json['vaExpiresAt'] as String),
-  shippingAddress: OrderAddress.fromJson(
-    json['shippingAddress'] as Map<String, dynamic>,
-  ),
-  items: (json['items'] as List<dynamic>)
-      .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
+  shippingAddress: json['shippingAddress'] == null
+      ? null
+      : OrderAddress.fromJson(json['shippingAddress'] as Map<String, dynamic>),
+  items: (json['items'] as List<dynamic>?)
+      ?.map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
       .toList(),
   notes: json['notes'] as String?,
   resiNumber: json['resiNumber'] as String?,

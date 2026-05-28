@@ -5,11 +5,9 @@ import '../../../l10n/app_localizations.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/widgets/app_toast.dart';
-import '../../../data/repositories/address_repository.dart';
 import '../../../providers/address_provider.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/order_provider.dart';
-import '../../../providers/repository_providers.dart';
 import 'widgets/address_selector.dart';
 import 'widgets/checkout_bottom_bar.dart';
 import 'widgets/checkout_order_item.dart';
@@ -54,22 +52,6 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           : addresses.firstOrNull;
       if (defaultAddr != null && mounted) {
         setState(() => _selectedAddressId = defaultAddr.id);
-      } else if (addresses.isEmpty && mounted) {
-        // Auto-create a default address for the user
-        final repo = ref.read(addressRepositoryProvider);
-        final newAddr = await repo.createAddress(const AddressInput(
-          label: 'Kantor',
-          recipient: 'Customer',
-          phone: '08123456789',
-          street: 'Jl. Industri No. 1',
-          city: 'Jakarta',
-          province: 'DKI Jakarta',
-          postalCode: '12345',
-          isDefault: true,
-        ));
-        if (mounted) {
-          setState(() => _selectedAddressId = newAddr.id);
-        }
       }
     } catch (_) {}
   }

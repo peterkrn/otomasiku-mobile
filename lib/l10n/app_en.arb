@@ -71,6 +71,7 @@
   "paymentMethod": "Payment Method",
   "shippingAddress": "Shipping Address",
   "selectAddress": "Select Address",
+  "changeAddress": "Change Address",
   "noAddress": "No address yet",
   "addressName": "Address Name",
   "addressFull": "Full Address",

@@ -446,6 +446,12 @@ abstract class AppLocalizations {
   /// **'Pilih Alamat'**
   String get selectAddress;
 
+  /// No description provided for @changeAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Ganti Alamat'**
+  String get changeAddress;
+
   /// No description provided for @noAddress.
   ///
   /// In id, this message translates to:

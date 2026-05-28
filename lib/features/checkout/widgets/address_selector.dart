@@ -18,6 +18,44 @@ class AddressSelector extends ConsumerWidget {
     required this.isDark,
   });
 
+  void _showAddressPicker(BuildContext context, List addresses) {
+    final l10n = AppLocalizations.of(context);
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              l10n.selectAddress,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const Divider(height: 1),
+          ...addresses.map((addr) => ListTile(
+            leading: Icon(
+              addr.id == selectedAddressId
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
+              color: AppColors.mitsubishiRed,
+            ),
+            title: Text('${addr.recipient} (${addr.label})'),
+            subtitle: Text('${addr.street}, ${addr.city}'),
+            onTap: () {
+              onAddressSelected(addr.id);
+              Navigator.pop(ctx);
+            },
+          )),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -114,32 +152,33 @@ class AddressSelector extends ConsumerWidget {
                       height: 1.4,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: l10n.deliveryNotes,
-                      hintStyle: TextStyle(
-                          color: isDark
-                              ? AppColors.darkTextTertiary
-                              : AppColors.textTertiary),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                            color: isDark ? AppColors.darkBorder : AppColors.border),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      TextButton.icon(
+                        onPressed: () => _showAddressPicker(context, addresses),
+                        icon: const Icon(Icons.swap_horiz, size: 16),
+                        label: Text(l10n.changeAddress),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.mitsubishiRed,
+                          padding: EdgeInsets.zero,
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                            color: isDark ? AppColors.darkBorder : AppColors.border),
+                      const SizedBox(width: 12),
+                      TextButton.icon(
+                        onPressed: () => context.pushNamed(AppRoute.editAddress),
+                        icon: const Icon(Icons.add, size: 16),
+                        label: Text(l10n.addAddress),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.mitsubishiRed,
+                          padding: EdgeInsets.zero,
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide:
-                            const BorderSide(color: AppColors.mitsubishiRed),
-                      ),
-                    ),
+                    ],
                   ),
                 ],
               ),

@@ -187,6 +187,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get selectAddress => 'Pilih Alamat';
 
   @override
+  String get changeAddress => 'Ganti Alamat';
+
+  @override
   String get noAddress => 'Belum ada alamat';
 
   @override

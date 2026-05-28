@@ -71,6 +71,7 @@
   "paymentMethod": "Metode Pembayaran",
   "shippingAddress": "Alamat Pengiriman",
   "selectAddress": "Pilih Alamat",
+  "changeAddress": "Ganti Alamat",
   "noAddress": "Belum ada alamat",
   "addressName": "Nama Alamat",
   "addressFull": "Alamat Lengkap",

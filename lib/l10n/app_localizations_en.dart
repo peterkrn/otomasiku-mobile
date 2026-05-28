@@ -187,6 +187,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectAddress => 'Select Address';
 
   @override
+  String get changeAddress => 'Change Address';
+
+  @override
   String get noAddress => 'No address yet';
 
   @override

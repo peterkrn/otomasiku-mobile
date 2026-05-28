@@ -41,6 +41,7 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
 class AuthState {
   final bool isAuthenticated;
   final bool isLoading;
+  final bool isBootstrapped;
   final String? errorCode;
   final String? userId;
   final String? email;
@@ -50,6 +51,7 @@ class AuthState {
   const AuthState({
     this.isAuthenticated = false,
     this.isLoading = false,
+    this.isBootstrapped = false,
     this.errorCode,
     this.userId,
     this.email,
@@ -60,6 +62,7 @@ class AuthState {
   AuthState copyWith({
     bool? isAuthenticated,
     bool? isLoading,
+    bool? isBootstrapped,
     String? errorCode,
     String? userId,
     String? email,
@@ -69,6 +72,7 @@ class AuthState {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       isLoading: isLoading ?? this.isLoading,
+      isBootstrapped: isBootstrapped ?? this.isBootstrapped,
       errorCode: errorCode,
       userId: userId ?? this.userId,
       email: email ?? this.email,
@@ -107,6 +111,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
       Future.microtask(() async {
         await _bootstrap();
+        state = state.copyWith(isBootstrapped: true);
         await _loadProfile();
         _onAuthenticated?.call();
       });
@@ -130,6 +135,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (result.isSuccess) {
       _updateFromSession();
       await _bootstrap();
+      state = state.copyWith(isBootstrapped: true);
       // Sync fullName from Supabase metadata to profile if not set
       final metaName = Supabase.instance.client.auth.currentUser
           ?.userMetadata?['full_name'] as String?;
@@ -179,6 +185,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         // Email confirmation disabled — user is logged in immediately
         _updateFromSession();
         await _bootstrap();
+        state = state.copyWith(isBootstrapped: true);
         // Sync fullName from registration to profile
         if (name.isNotEmpty) {
           try {

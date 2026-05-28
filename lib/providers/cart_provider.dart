@@ -133,6 +133,18 @@ class CartNotifier extends StateNotifier<CartState> {
         );
         return;
       }
+      // USER_NOT_FOUND means bootstrap hasn't completed yet — retry once after delay
+      if (e.code == 'USER_NOT_FOUND') {
+        await Future.delayed(const Duration(seconds: 2));
+        try {
+          await _repository.addItem(
+            productId: productId,
+            quantity: quantity,
+            idempotencyKey: const Uuid().v4(),
+          );
+          return;
+        } catch (_) {}
+      }
       state = previousState;
       state = state.copyWith(error: e.code);
     } catch (e) {

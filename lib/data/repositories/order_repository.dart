@@ -84,7 +84,7 @@ class OrderRepositoryImpl implements OrderRepository {
       '/orders',
       data: {
         'addressId': addressId,
-        'notes': ?notes,
+        if (notes != null) 'notes': notes,
       },
       options: Options(headers: {'X-Idempotency-Key': idempotencyKey}),
     );

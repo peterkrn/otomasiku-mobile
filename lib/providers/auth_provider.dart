@@ -105,8 +105,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
         email: session?.user.email,
         name: session?.user.userMetadata?['full_name'] as String?,
       );
-      _loadProfile();
-      Future.microtask(() => _onAuthenticated?.call());
+      Future.microtask(() async {
+        await _bootstrap();
+        await _loadProfile();
+        _onAuthenticated?.call();
+      });
     }
   }
 

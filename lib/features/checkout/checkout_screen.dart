@@ -74,6 +74,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     } catch (_) {}
   }
 
+  bool _isNavigating = false;
+
   @override
   void dispose() {
     _notesController.dispose();
@@ -92,9 +94,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final discount = _calculateDiscount(cartItems);
-    final afterDiscount = subtotal - discount;
-    final tax = (afterDiscount * 0.11).round();
-    final total = afterDiscount + tax;
+    final total = subtotal - discount; // Tax calculated server-side
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
@@ -106,11 +106,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
       ),
-      body: cartItems.isEmpty
+      body: cartItems.isEmpty && !_isNavigating
           ? _buildEmptyCart(l10n, isDark)
           : _buildBody(context, l10n, cartItems, totalItems, subtotal,
-              discount, tax, total, isDark),
-      bottomNavigationBar: cartItems.isEmpty
+              discount, total, isDark),
+      bottomNavigationBar: cartItems.isEmpty && !_isNavigating
           ? null
           : CheckoutBottomBar(
               total: total,
@@ -157,7 +157,6 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     int totalItems,
     int subtotal,
     int discount,
-    int tax,
     int total,
     bool isDark,
   ) {
@@ -220,7 +219,6 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               totalItems: totalItems,
               subtotal: subtotal,
               discount: discount,
-              tax: tax,
               total: total,
               termsAccepted: _termsAccepted,
               onTermsChanged: (v) => setState(() => _termsAccepted = v),
@@ -272,6 +270,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           );
 
       if (!context.mounted) return;
+      setState(() => _isNavigating = true);
       router.pushNamed(AppRoute.payment,
           pathParameters: {'orderId': result.orderId},
           queryParameters: {'totalAmount': result.totalAmount.toString()});

@@ -7,7 +7,6 @@ class CheckoutPaymentSummary extends StatefulWidget {
   final int totalItems;
   final int subtotal;
   final int discount;
-  final int tax;
   final int total;
   final bool termsAccepted;
   final ValueChanged<bool> onTermsChanged;
@@ -18,7 +17,6 @@ class CheckoutPaymentSummary extends StatefulWidget {
     required this.totalItems,
     required this.subtotal,
     required this.discount,
-    required this.tax,
     required this.total,
     required this.termsAccepted,
     required this.onTermsChanged,
@@ -54,11 +52,6 @@ class _CheckoutPaymentSummaryState extends State<CheckoutPaymentSummary> {
           label: l10n.shippingCost,
           value: l10n.freeShipping,
           valueColor: AppColors.success,
-          isDark: isDark,
-        ),
-        _SummaryRow(
-          label: l10n.taxLabel,
-          value: CurrencyFormatter.format(widget.tax),
           isDark: isDark,
         ),
         Divider(

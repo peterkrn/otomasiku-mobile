@@ -8,7 +8,6 @@ import '../../providers/auth_provider.dart';
 import '../../providers/order_provider.dart';
 import '../../providers/address_provider.dart';
 import '../../providers/theme_provider.dart';
-import '../../providers/locale_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -246,15 +245,6 @@ class ProfileScreen extends ConsumerWidget {
         children: [
           _buildMenuItem(
             context,
-            icon: Icons.edit,
-            iconColor: Colors.blue,
-            title: l10n.editProfile,
-            subtitle: l10n.fullName,
-            onTap: () => context.pushNamed(AppRoute.editProfile),
-          ),
-          _buildDivider(context),
-          _buildMenuItem(
-            context,
             icon: Icons.assignment,
             iconColor: Colors.blue,
             title: l10n.myOrders,
@@ -282,96 +272,8 @@ class ProfileScreen extends ConsumerWidget {
             onTap: () => context.pushNamed(AppRoute.paymentMethods),
             isLast: true,
           ),
-          _buildDivider(context),
-          _buildLocaleToggle(context, l10n, isDark, ref),
         ],
       ),
-    );
-  }
-
-  Widget _buildLocaleToggle(BuildContext context, AppLocalizations l10n, bool isDark, WidgetRef ref) {
-    final locale = l10n.localeName.startsWith('id') ? 'id' : 'en';
-    return InkWell(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.purple.withValues(alpha: isDark ? 0.2 : 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.language, color: Colors.purple, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    locale == 'id' ? 'Bahasa' : 'Language',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    locale == 'id' ? 'Indonesia' : 'English',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.purple.withValues(alpha: isDark ? 0.2 : 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'ID',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: locale == 'id' ? FontWeight.bold : FontWeight.normal,
-                      color: locale == 'id' ? Colors.purple : (isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '/',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'EN',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: locale == 'en' ? FontWeight.bold : FontWeight.normal,
-                      color: locale == 'en' ? Colors.purple : (isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      onTap: () {
-        ref.read(localeProvider.notifier).toggleLocale();
-      },
     );
   }
 

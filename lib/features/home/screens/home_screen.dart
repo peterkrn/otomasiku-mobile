@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_router.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../models/product.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/product_provider.dart';
@@ -109,18 +110,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
               onTap: () => context.goNamed(AppRoute.profile),
-              child: CircleAvatar(
-                radius: 16,
-                backgroundColor: AppColors.mitsubishiRed,
-                child: const Text(
-                  'JD',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              child: _ProfileAvatar(),
             ),
           ),
         ],
@@ -364,5 +354,37 @@ class _CartBadgeButton extends ConsumerWidget {
           ),
       ],
     );
+  }
+}
+
+class _ProfileAvatar extends ConsumerWidget {
+  const _ProfileAvatar();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final name = authState.profile?.fullName ?? authState.name ?? '';
+    final initials = _getInitials(name);
+    return CircleAvatar(
+      radius: 16,
+      backgroundColor: AppColors.mitsubishiRed,
+      child: Text(
+        initials,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  String _getInitials(String name) {
+    if (name.isEmpty) return '?';
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return name[0].toUpperCase();
   }
 }

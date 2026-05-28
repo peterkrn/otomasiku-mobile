@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -97,9 +98,9 @@ class ApiService {
           'X-Idempotency-Key': 'cart-$productId-${DateTime.now().millisecondsSinceEpoch}',
         }),
       );
-      print('=== CART API: ${response.statusCode} ${response.data}');
+      if (kDebugMode) debugPrint('=== CART API: ${response.statusCode} ${response.data}');
     } on DioException catch (e) {
-      print('=== CART API ERROR: ${e.response?.statusCode} ${e.response?.data}');
+      if (kDebugMode) debugPrint('=== CART API ERROR: ${e.response?.statusCode} ${e.response?.data}');
     }
   }
 
@@ -121,10 +122,10 @@ class ApiService {
           'X-Idempotency-Key': 'order-${DateTime.now().millisecondsSinceEpoch}',
         }),
       );
-      print('=== ORDER API: ${response.statusCode} ${response.data}');
+      if (kDebugMode) debugPrint('=== ORDER API: ${response.statusCode} ${response.data}');
       return response.data['data'] ?? response.data;
     } on DioException catch (e) {
-      print('=== ORDER API ERROR: ${e.response?.statusCode} ${e.response?.data}');
+      if (kDebugMode) debugPrint('=== ORDER API ERROR: ${e.response?.statusCode} ${e.response?.data}');
       final data = e.response?.data;
       final errorMsg = data?['error']?['message'] ?? data?['error']?['code'] ?? 'Order failed';
       throw Exception(errorMsg);

@@ -260,6 +260,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     }
 
     final errorMsg = l10n.errorGeneric;
+    final router = GoRouter.of(context);
+    final messenger = ScaffoldMessenger.of(context);
 
     try {
       final result = await ref.read(orderCreateProvider.notifier).createOrder(
@@ -272,18 +274,17 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       if (!context.mounted) return;
       await ref.read(cartProvider.notifier).clearCart();
       ref.read(selectedCartItemsProvider.notifier).state = {};
-      context.pushNamed(AppRoute.payment,
+      router.pushNamed(AppRoute.payment,
           pathParameters: {'orderId': result.orderId});
     } on Exception catch (e) {
-      if (!context.mounted) return;
-      AppToast.show(
-        context,
-        e.toString().contains('INSUFFICIENT_STOCK')
-            ? 'Stok tidak mencukupi. Silakan periksa kembali keranjang Anda.'
-            : errorMsg,
-        isError: true,
-        bottomOffset: 100,
-      );
+      messenger.showSnackBar(SnackBar(
+        content: Text(
+          e.toString().contains('INSUFFICIENT_STOCK')
+              ? 'Stok tidak mencukupi. Silakan periksa kembali keranjang Anda.'
+              : errorMsg,
+        ),
+        backgroundColor: AppColors.mitsubishiRed,
+      ));
     }
   }
 }

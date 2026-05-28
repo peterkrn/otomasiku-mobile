@@ -127,7 +127,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(l10n, isDark),
+      bottomNavigationBar: null,
     ),
     );
   }

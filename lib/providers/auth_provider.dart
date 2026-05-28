@@ -127,6 +127,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (result.isSuccess) {
       _updateFromSession();
       await _bootstrap();
+      // Sync fullName from Supabase metadata to profile if not set
+      final metaName = Supabase.instance.client.auth.currentUser
+          ?.userMetadata?['full_name'] as String?;
+      if (metaName != null && metaName.isNotEmpty) {
+        try {
+          final profile = await _profileRepository.getProfile();
+          if (profile.fullName == null || profile.fullName!.isEmpty) {
+            await _profileRepository.updateProfile(ProfileInput(fullName: metaName));
+          }
+        } catch (_) {}
+      }
+      await _loadProfile();
       await _registerFcmToken();
       _onAuthenticated?.call();
     } else {
@@ -164,6 +176,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
         // Email confirmation disabled — user is logged in immediately
         _updateFromSession();
         await _bootstrap();
+        // Sync fullName from registration to profile
+        if (name.isNotEmpty) {
+          try {
+            await _profileRepository.updateProfile(ProfileInput(fullName: name));
+          } catch (_) {}
+        }
+        await _loadProfile();
+        _onAuthenticated?.call();
       } else {
         // Email confirmation required — not authenticated yet
         state = state.copyWith(isLoading: false);

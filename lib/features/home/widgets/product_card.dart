@@ -7,6 +7,7 @@ import '../../../core/utils/currency_formatter.dart';
 import '../../../core/widgets/app_toast.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/product.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/compare_provider.dart';
 import '../../../shared/widgets/product_image.dart' as product_image;
@@ -229,6 +230,14 @@ child: product_image.ProductNetworkImage(
   }
 
   void _handleAddToCart() {
+    if (!ref.read(authProvider).isAuthenticated) {
+      AppToast.show(
+        context,
+        'Anda belum login. Silakan login terlebih dahulu.',
+        isError: true,
+      );
+      return;
+    }
     setState(() {
       _isAdding = true;
     });

@@ -7,6 +7,7 @@ import '../../core/utils/currency_formatter.dart';
 import '../../core/widgets/app_toast.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/product.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/compare_provider.dart';
 import '../../providers/product_provider.dart';
@@ -547,6 +548,10 @@ child: product_image.ProductNetworkImage(
   }
 
   void _addToCart(Product product, AppLocalizations l10n) {
+    if (!ref.read(authProvider).isAuthenticated) {
+      AppToast.show(context, 'Anda belum login. Silakan login terlebih dahulu.', isError: true, bottomOffset: 100);
+      return;
+    }
     setState(() => _isAddingToCart = true);
 
     ref.read(cartProvider.notifier).addItem(product.idString, _quantity);
@@ -566,6 +571,10 @@ child: product_image.ProductNetworkImage(
   }
 
   void _buyNow(Product product, AppLocalizations l10n, int displayStock) {
+    if (!ref.read(authProvider).isAuthenticated) {
+      AppToast.show(context, 'Anda belum login. Silakan login terlebih dahulu.', isError: true, bottomOffset: 100);
+      return;
+    }
     if (_quantity > displayStock) {
       AppToast.show(
         context,

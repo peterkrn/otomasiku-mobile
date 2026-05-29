@@ -387,8 +387,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     if (authState.errorCode != null) {
+      // Generic message for security — don't reveal which field is wrong
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(authState.errorCode!), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(
+            authState.errorCode == 'RATE_LIMIT_EXCEEDED'
+                ? 'Terlalu banyak percobaan. Coba lagi nanti.'
+                : 'Email atau password salah.',
+          ),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }

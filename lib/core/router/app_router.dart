@@ -59,10 +59,14 @@ final GoRouter appRouter = GoRouter(
     final container = ProviderScope.containerOf(context, listen: false);
     final authState = container.read(authProvider);
     final isAuthenticated = authState.isAuthenticated;
+    final isSplash = state.matchedLocation == '/';
 
-    final isAuthRoute = state.matchedLocation == '/' ||
+    final isAuthRoute = isSplash ||
         state.matchedLocation == '/login' ||
         state.matchedLocation == '/register';
+
+    // Never auto-redirect away from splash — user must tap the button
+    if (isSplash && !isAuthenticated) return null;
 
     if (!isAuthenticated && !isAuthRoute) {
       return '/login';

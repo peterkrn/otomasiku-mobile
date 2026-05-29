@@ -20,6 +20,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _rememberMe = false;
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -147,7 +148,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           controller: _passwordController,
                           hintText: 'Password',
                           prefixIcon: Icons.lock_outline,
-                          obscureText: true,
+                          obscureText: _obscurePassword,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.white70,
+                              size: 20,
+                            ),
+                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Password harus diisi';
@@ -321,6 +330,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     required String hintText,
     required IconData prefixIcon,
     bool obscureText = false,
+    Widget? suffixIcon,
     TextInputType? keyboardType,
     String? Function(String?)? validator,
   }) {
@@ -344,6 +354,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             fontWeight: FontWeight.w400,
           ),
           prefixIcon: Icon(prefixIcon, color: Colors.white70, size: 20),
+          suffixIcon: suffixIcon,
           border: InputBorder.none,
           fillColor: Colors.transparent,
           filled: true,

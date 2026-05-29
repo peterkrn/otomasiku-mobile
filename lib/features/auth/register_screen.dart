@@ -22,6 +22,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _agreeToTerms = false;
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
 
   @override
   void dispose() {
@@ -168,7 +170,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           controller: _passwordController,
                           hintText: 'Password',
                           prefixIcon: Icons.lock_outline,
-                          obscureText: true,
+                          obscureText: _obscurePassword,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.white70,
+                              size: 20,
+                            ),
+                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Password harus diisi';
@@ -187,7 +197,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           controller: _confirmPasswordController,
                           hintText: 'Konfirmasi Password',
                           prefixIcon: Icons.lock_outline,
-                          obscureText: true,
+                          obscureText: _obscureConfirm,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.white70,
+                              size: 20,
+                            ),
+                            onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Konfirmasi password harus diisi';
@@ -353,6 +371,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     required String hintText,
     required IconData prefixIcon,
     bool obscureText = false,
+    Widget? suffixIcon,
     TextInputType? keyboardType,
     String? Function(String?)? validator,
   }) {
@@ -376,6 +395,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             fontWeight: FontWeight.w400,
           ),
           prefixIcon: Icon(prefixIcon, color: Colors.white70, size: 20),
+          suffixIcon: suffixIcon,
           border: InputBorder.none,
           fillColor: Colors.transparent,
           filled: true,

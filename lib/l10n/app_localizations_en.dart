@@ -600,8 +600,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get atmStep1 => 'Insert ATM card and PIN';
 
   @override
-  String get atmStep2 =>
-      'Select Other Transactions > Transfer > BCA Virtual Account';
+  String get atmStep2 => 'Select Other Transactions > Transfer > BCA Virtual Account';
 
   @override
   String get atmStep3 => 'Enter VA number and press Correct';
@@ -613,8 +612,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ibankingStep1 => 'Login to KlikBCA (internetbanking.klikbca.com)';
 
   @override
-  String get ibankingStep2 =>
-      'Select Fund Transfer > Transfer to BCA Virtual Account';
+  String get ibankingStep2 => 'Select Fund Transfer > Transfer to BCA Virtual Account';
 
   @override
   String get ibankingStep3 => 'Enter VA number and click Continue';
@@ -979,8 +977,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationPermissionTitle => 'Enable Notifications';
 
   @override
-  String get notificationPermissionBody =>
-      'Get real-time updates on your order status';
+  String get notificationPermissionBody => 'Get real-time updates on your order status';
 
   @override
   String get notificationActivate => 'Activate';

@@ -16,6 +16,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
   vaExpiresAt: json['vaExpiresAt'] == null
       ? null
       : DateTime.parse(json['vaExpiresAt'] as String),
+  addressId: json['addressId'] as String?,
   shippingAddress: json['shippingAddress'] == null
       ? null
       : OrderAddress.fromJson(json['shippingAddress'] as Map<String, dynamic>),

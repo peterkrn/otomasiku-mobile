@@ -6,7 +6,9 @@ import '../../core/constants/app_colors.dart';
 import '../../core/router/app_router.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/widgets/app_toast.dart';
+import '../../models/address.dart';
 import '../../models/order.dart';
+import '../../providers/address_provider.dart';
 import '../../providers/order_provider.dart';
 
 class OrderDetailScreen extends ConsumerWidget {
@@ -82,7 +84,7 @@ class OrderDetailScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               _buildItemsSection(order, l10n, isDark),
               const SizedBox(height: 16),
-              _buildShippingInfoSection(order, l10n, isDark),
+              _buildShippingInfoSection(order, l10n, isDark, ref),
               const SizedBox(height: 16),
               _buildActionButtons(context, l10n, isDark),
               const SizedBox(height: 24),
@@ -436,7 +438,21 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildShippingInfoSection(Order order, AppLocalizations l10n, bool isDark) {
+  Widget _buildShippingInfoSection(Order order, AppLocalizations l10n, bool isDark, WidgetRef ref) {
+    // Use shippingAddress from order if available, else look up from addressListProvider by addressId
+    Address? address;
+    if (order.shippingAddress == null && order.addressId != null) {
+      final addresses = ref.watch(addressListProvider).valueOrNull ?? [];
+      try {
+        address = addresses.firstWhere((a) => a.id == order.addressId);
+      } catch (_) {}
+    }
+
+    final addressText = order.shippingAddress != null
+        ? '${order.shippingAddress!.recipient}\n${order.shippingAddress!.street}\n${order.shippingAddress!.city}, ${order.shippingAddress!.province} ${order.shippingAddress!.postalCode}\n${order.shippingAddress!.phone}'
+        : address != null
+            ? '${address.recipient}\n${address.street}\n${address.city}, ${address.province} ${address.postalCode}\n${address.phone}'
+            : '-';
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -475,7 +491,7 @@ class OrderDetailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${order.shippingAddress?.recipient ?? ''}\n${order.shippingAddress?.street ?? ''}\n${order.shippingAddress?.city ?? ''}, ${order.shippingAddress?.province ?? ''} ${order.shippingAddress?.postalCode ?? ''}\n${order.shippingAddress?.phone ?? ''}',
+                  addressText,
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,

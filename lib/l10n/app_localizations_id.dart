@@ -600,8 +600,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get atmStep1 => 'Masukkan kartu ATM dan PIN';
 
   @override
-  String get atmStep2 =>
-      'Pilih Transaksi Lainnya > Transfer > BCA Virtual Account';
+  String get atmStep2 => 'Pilih Transaksi Lainnya > Transfer > BCA Virtual Account';
 
   @override
   String get atmStep3 => 'Masukkan nomor VA dan tekan Benar';
@@ -613,8 +612,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get ibankingStep1 => 'Login ke KlikBCA (internetbanking.klikbca.com)';
 
   @override
-  String get ibankingStep2 =>
-      'Pilih Transfer Dana > Transfer ke BCA Virtual Account';
+  String get ibankingStep2 => 'Pilih Transfer Dana > Transfer ke BCA Virtual Account';
 
   @override
   String get ibankingStep3 => 'Masukkan nomor VA dan klik Lanjutkan';
@@ -928,8 +926,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get agreeTermsRequired =>
-      'Anda harus setuju dengan Syarat & Ketentuan';
+  String get agreeTermsRequired => 'Anda harus setuju dengan Syarat & Ketentuan';
 
   @override
   String get editProfile => 'Edit Profil';
@@ -980,8 +977,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get notificationPermissionTitle => 'Aktifkan Notifikasi';
 
   @override
-  String get notificationPermissionBody =>
-      'Dapatkan update status pesanan Anda secara real-time';
+  String get notificationPermissionBody => 'Dapatkan update status pesanan Anda secara real-time';
 
   @override
   String get notificationActivate => 'Aktifkan';

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -165,6 +166,30 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               ),
             ),
           ),
+          if (kDebugMode) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  final displayTotal = order.totalAmount > 0 ? order.totalAmount : widget.totalAmount;
+                  context.goNamed(
+                    AppRoute.paymentSuccess,
+                    pathParameters: {'orderId': widget.orderId},
+                    queryParameters: {'totalAmount': displayTotal.toString()},
+                  );
+                },
+                icon: const Icon(Icons.check_circle_outline),
+                label: const Text('[DEBUG] Simulasi Pembayaran Berhasil'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 96),
         ],
       ),
@@ -336,19 +361,30 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               ],
             )
           else
-            Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Sedang membuat nomor VA...',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.schedule, color: Colors.orange, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Nomor VA sedang diproses. Tekan "Cek Status Pembayaran" di bawah untuk memperbarui.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

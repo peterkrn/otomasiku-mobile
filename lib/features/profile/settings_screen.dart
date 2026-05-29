@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import '../../core/constants/app_colors.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/theme_provider.dart';
@@ -59,6 +60,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             _buildSectionTitle('Tampilan', isDark),
             const SizedBox(height: 8),
             _buildAppearanceSection(isDark, currentLocale),
+            const SizedBox(height: 24),
+
+            // Password Section
+            _buildSectionTitle('Keamanan', isDark),
+            const SizedBox(height: 8),
+            _buildPasswordSection(authState, isDark),
+            const SizedBox(height: 96),
           ],
         ),
       ),
@@ -189,6 +197,191 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildPasswordSection(AuthState authState, bool isDark) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            leading: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: isDark ? 0.2 : 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.lock_outline, color: Colors.orange, size: 20),
+            ),
+            title: Text(
+              'Ganti Password',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+              ),
+            ),
+            subtitle: Text(
+              'Ubah password akun Anda',
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+              ),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _showChangePasswordDialog(isDark),
+          ),
+          Divider(height: 1, indent: 72, color: isDark ? AppColors.darkBorder : AppColors.border),
+          ListTile(
+            leading: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: isDark ? 0.2 : 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.email_outlined, color: Colors.red, size: 20),
+            ),
+            title: Text(
+              'Reset Password via Email',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+              ),
+            ),
+            subtitle: Text(
+              'Kirim link reset ke ${authState.email ?? ''}',
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+              ),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _sendResetEmail(authState.email),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showChangePasswordDialog(bool isDark) {
+    final newPassController = TextEditingController();
+    final confirmPassController = TextEditingController();
+    bool obscureNew = true;
+    bool obscureConfirm = true;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: const Text('Ganti Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: newPassController,
+                obscureText: obscureNew,
+                decoration: InputDecoration(
+                  labelText: 'Password Baru',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(obscureNew ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () => setDialogState(() => obscureNew = !obscureNew),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: confirmPassController,
+                obscureText: obscureConfirm,
+                decoration: InputDecoration(
+                  labelText: 'Konfirmasi Password',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(obscureConfirm ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () => setDialogState(() => obscureConfirm = !obscureConfirm),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final newPass = newPassController.text;
+                final confirmPass = confirmPassController.text;
+                if (newPass.length < 8) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Password minimal 8 karakter')),
+                  );
+                  return;
+                }
+                if (newPass != confirmPass) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Password tidak cocok')),
+                  );
+                  return;
+                }
+                Navigator.pop(ctx);
+                try {
+                  await Supabase.instance.client.auth.updateUser(
+                    UserAttributes(password: newPass),
+                  );
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Password berhasil diubah'),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                  }
+                } on AuthException catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(e.message), backgroundColor: AppColors.mitsubishiRed),
+                    );
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.mitsubishiRed,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Simpan'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _sendResetEmail(String? email) async {
+    if (email == null || email.isEmpty) return;
+    try {
+      await Supabase.instance.client.auth.resetPasswordForEmail(email);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Link reset password dikirim ke $email'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message), backgroundColor: AppColors.mitsubishiRed),
+        );
+      }
+    }
   }
 
   Widget _buildAppearanceSection(bool isDark, Locale currentLocale) {

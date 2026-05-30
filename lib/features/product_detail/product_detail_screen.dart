@@ -4,13 +4,17 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/router/app_router.dart';
 import '../../core/utils/currency_formatter.dart';
+import '../../core/utils/whatsapp_helper.dart';
 import '../../core/widgets/app_toast.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/product.dart';
+import '../../models/cart_item.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/compare_provider.dart';
 import '../../providers/product_provider.dart';
+import '../../providers/project_provider.dart';
+import '../../models/project.dart';
 import '../../shared/widgets/product_image.dart' as product_image;
 import 'widgets/product_bottom_bar.dart';
 import 'widgets/tiered_pricing_widget.dart';
@@ -554,7 +558,15 @@ child: product_image.ProductNetworkImage(
     }
     setState(() => _isAddingToCart = true);
 
-    ref.read(cartProvider.notifier).addItem(product.idString, _quantity);
+    ref.read(cartProvider.notifier).addItem(
+      product.idString,
+      _quantity,
+      snapshot: CartProductSnapshot(
+        name: product.name,
+        price: product.price,
+        primaryImageUrl: product.primaryImageUrl,
+      ),
+    );
 
     AppToast.show(
       context,
@@ -585,119 +597,218 @@ child: product_image.ProductNetworkImage(
       return;
     }
 
-    ref.read(cartProvider.notifier).addItem(product.idString, _quantity);
+    ref.read(cartProvider.notifier).addItem(
+      product.idString,
+      _quantity,
+      snapshot: CartProductSnapshot(
+        name: product.name,
+        price: product.price,
+        primaryImageUrl: product.primaryImageUrl,
+      ),
+    );
     ref.read(selectedCartItemsProvider.notifier).state = {product.idString};
 
     context.pushNamed(AppRoute.checkout);
   }
 
   void _saveToProject(Product product, AppLocalizations l10n) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.saveToProject),
-        content: TextField(
-          decoration: InputDecoration(
-            hintText: l10n.project,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              AppToast.show(
-                context,
-                l10n.savedToProject('Project 1'),
-                isError: false,
-                bottomOffset: 100,
-              );
-            },
-            child: Text(l10n.save),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showRFQDialog(Product product, AppLocalizations l10n) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          24,
-          24,
-          24,
-          MediaQuery.of(ctx).viewInsets.bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.rfqTitle,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+      builder: (ctx) => _SaveToProjectSheet(
+        product: product,
+        quantity: _quantity,
+        ref: ref,
+      ),
+    );
+  }
+
+  void _showRFQDialog(Product product, AppLocalizations l10n) {
+    WhatsAppHelper.openRfq(productName: product.name, quantity: '$_quantity');
+  }
+}
+
+class _SaveToProjectSheet extends ConsumerStatefulWidget {
+  final Product product;
+  final int quantity;
+  final WidgetRef ref;
+
+  const _SaveToProjectSheet({
+    required this.product,
+    required this.quantity,
+    required this.ref,
+  });
+
+  @override
+  ConsumerState<_SaveToProjectSheet> createState() => _SaveToProjectSheetState();
+}
+
+class _SaveToProjectSheetState extends ConsumerState<_SaveToProjectSheet> {
+  final _newProjectController = TextEditingController();
+  bool _showNewProjectField = false;
+
+  @override
+  void dispose() {
+    _newProjectController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final projects = ref.watch(projectProvider).projects;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.saveToProject,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                 ),
-                IconButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
+              ),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (projects.isEmpty && !_showNewProjectField)
+            Center(
+              child: Column(
+                children: [
+                  Icon(Icons.folder_outlined, size: 48, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+                  const SizedBox(height: 8),
+                  Text(l10n.noProjects, style: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary)),
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
+          if (!_showNewProjectField && projects.isNotEmpty)
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 240),
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: projects.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
+                itemBuilder: (_, index) {
+                  final project = projects[index];
+                  return ListTile(
+                    onTap: () => _addToProject(project, l10n),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    tileColor: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+                    leading: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: AppColors.mitsubishiRed.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.folder, color: AppColors.mitsubishiRed, size: 20),
+                    ),
+                    title: Text(
+                      project.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                      ),
+                    ),
+                    subtitle: Text(
+                      '${project.itemCount} item',
+                      style: TextStyle(fontSize: 12, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
+                    ),
+                    trailing: const Icon(Icons.add_circle_outline, color: AppColors.mitsubishiRed),
+                  );
+                },
+              ),
+            ),
+          if (_showNewProjectField) ...[
             TextField(
-              keyboardType: TextInputType.number,
+              controller: _newProjectController,
+              autofocus: true,
               decoration: InputDecoration(
-                labelText: l10n.rfqQuantity,
-                hintText: l10n.rfqMinQuantity(11),
+                labelText: l10n.projectName,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppColors.mitsubishiRed, width: 1.5),
+                ),
               ),
             ),
             const SizedBox(height: 12),
-            TextField(
-              decoration: InputDecoration(
-                labelText: l10n.rfqCompanyName,
-              ),
-            ),
-            const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(ctx);
-                  AppToast.show(context, l10n.rfqSent, isError: false, bottomOffset: 160);
+                  final name = _newProjectController.text.trim();
+                  if (name.isEmpty) return;
+                  ref.read(projectProvider.notifier).createProject(name);
+                  final newProject = ref.read(projectProvider).projects.last;
+                  _addToProject(newProject, l10n);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.mitsubishiRed,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Text(
-                  l10n.rfqSubmit,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Text(l10n.createProject, style: const TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+          if (!_showNewProjectField) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => setState(() => _showNewProjectField = true),
+                icon: const Icon(Icons.add, size: 18),
+                label: Text(l10n.createProject),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.mitsubishiRed,
+                  side: const BorderSide(color: AppColors.mitsubishiRed),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ),
           ],
-        ),
+        ],
       ),
+    );
+  }
+
+  void _addToProject(Project project, AppLocalizations l10n) {
+    final item = ProjectItem(
+      id: 'item-${DateTime.now().millisecondsSinceEpoch}',
+      productId: widget.product.idString,
+      productName: widget.product.name,
+      productImage: widget.product.primaryImageUrl,
+      price: widget.product.price,
+      quantity: widget.quantity,
+    );
+    ref.read(projectProvider.notifier).addItemToProject(project.id, item);
+    Navigator.pop(context);
+    AppToast.show(
+      context,
+      l10n.savedToProject(project.name),
+      isError: false,
+      bottomOffset: 100,
     );
   }
 }

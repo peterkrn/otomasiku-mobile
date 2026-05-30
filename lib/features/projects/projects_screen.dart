@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import '../../core/router/app_router.dart';
+import '../../core/utils/whatsapp_helper.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/widgets/app_toast.dart';
@@ -350,11 +351,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () => AppToast.show(
-                          context,
-                          'RFQ dikirim',
-                          isError: false,
-                        ),
+                        onPressed: () => WhatsAppHelper.openRfq(),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                           side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),

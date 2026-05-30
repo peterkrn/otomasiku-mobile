@@ -25,7 +25,7 @@ class CartItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final snapshot = item.productSnapshot;
-    final totalPrice = snapshot.price * item.quantity;
+    final unitPrice = snapshot.price;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -162,7 +162,7 @@ class CartItemCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          CurrencyFormatter.format(totalPrice),
+                          CurrencyFormatter.format(unitPrice),
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,

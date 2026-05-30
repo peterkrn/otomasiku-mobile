@@ -187,6 +187,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get selectAddress => 'Pilih Alamat';
 
   @override
+  String get changeAddress => 'Ganti Alamat';
+
+  @override
   String get noAddress => 'Belum ada alamat';
 
   @override
@@ -273,7 +276,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get grandTotal => 'Total Keseluruhan';
 
   @override
-  String get processing => 'Diproses';
+  String get processing => 'Memproses';
 
   @override
   String get loading => 'Memuat';
@@ -927,4 +930,145 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get agreeTermsRequired =>
       'Anda harus setuju dengan Syarat & Ketentuan';
+
+  @override
+  String get editProfile => 'Edit Profil';
+
+  @override
+  String get fullName => 'Nama Lengkap';
+
+  @override
+  String get saveProfile => 'Simpan Profil';
+
+  @override
+  String get profileUpdated => 'Profil berhasil diperbarui';
+
+  @override
+  String get addressLabel => 'Label Alamat';
+
+  @override
+  String get recipient => 'Penerima';
+
+  @override
+  String get addAddress => 'Tambah Alamat';
+
+  @override
+  String get editAddress => 'Edit Alamat';
+
+  @override
+  String get deleteAddress => 'Hapus Alamat';
+
+  @override
+  String get deleteAddressConfirm => 'Hapus alamat ini?';
+
+  @override
+  String get addressDeleted => 'Alamat berhasil dihapus';
+
+  @override
+  String get noAddressSaved => 'Belum ada alamat tersimpan';
+
+  @override
+  String get setAsDefault => 'Jadikan alamat utama';
+
+  @override
+  String get saveChanges => 'Simpan Perubahan';
+
+  @override
+  String get noAddresses => 'Tidak ada alamat';
+
+  @override
+  String get notificationPermissionTitle => 'Aktifkan Notifikasi';
+
+  @override
+  String get notificationPermissionBody =>
+      'Dapatkan update status pesanan Anda secara real-time';
+
+  @override
+  String get notificationActivate => 'Aktifkan';
+
+  @override
+  String get notificationLater => 'Nanti';
+
+  @override
+  String get noProjects => 'Belum ada proyek';
+
+  @override
+  String get createProjectHint => 'Buat proyek untuk mengelola pembelian B2B';
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String get openingWhatsApp => 'Membuka WhatsApp...';
+
+  @override
+  String get clearCompareConfirm => 'Hapus semua produk dari perbandingan?';
+
+  @override
+  String get compareCleared => 'Perbandingan dikosongkan';
+
+  @override
+  String get checkPaymentStatus => 'Cek Status Pembayaran';
+
+  @override
+  String get settings => 'Pengaturan';
+
+  @override
+  String get appearance => 'Tampilan';
+
+  @override
+  String get security => 'Keamanan';
+
+  @override
+  String get darkMode => 'Mode Gelap';
+
+  @override
+  String get name => 'Nama';
+
+  @override
+  String get changePassword => 'Ganti Password';
+
+  @override
+  String get changePasswordSubtitle => 'Ubah password akun Anda';
+
+  @override
+  String get resetPasswordViaEmail => 'Reset Password via Email';
+
+  @override
+  String resetPasswordSubtitle(String email) {
+    return 'Kirim link reset ke $email';
+  }
+
+  @override
+  String get newPassword => 'Password Baru';
+
+  @override
+  String get confirmPassword => 'Konfirmasi Password';
+
+  @override
+  String get passwordMinChars => 'Password minimal 8 karakter';
+
+  @override
+  String get passwordMismatch => 'Password tidak cocok';
+
+  @override
+  String get passwordChanged => 'Password berhasil diubah';
+
+  @override
+  String resetLinkSent(String email) {
+    return 'Link reset password dikirim ke $email';
+  }
+
+  @override
+  String get profileSaved => 'Profil berhasil disimpan';
+
+  @override
+  String get uploadPhotoSoon => 'Fitur upload foto segera hadir';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'Masukkan email Anda dan kami akan mengirim link untuk reset password';
+
+  @override
+  String get sendResetLink => 'Kirim Link Reset';
 }

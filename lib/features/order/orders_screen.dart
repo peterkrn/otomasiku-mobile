@@ -210,7 +210,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
     bool isDark,
   ) {
     final statusInfo = _getStatusInfo(order.status, l10n);
-    final totalQty = order.items.fold(0, (sum, item) => sum + item.quantity);
+    final totalQty = order.items?.fold(0, (sum, item) => sum + item.quantity) ?? 0;
     final isProcessing = order.status == 'processing' || order.status == 'pending';
 
     return Container(
@@ -288,7 +288,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
-              children: order.items.take(2).toList().asMap().entries.map((entry) {
+              children: (order.items ?? []).take(2).toList().asMap().entries.map((entry) {
                 final item = entry.value;
                 return SizedBox(
                   height: 24,

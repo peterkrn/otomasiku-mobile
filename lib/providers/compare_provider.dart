@@ -19,8 +19,8 @@ class CompareState {
   /// Count of products in compare list
   int get count => productIds.length;
 
-  /// Check if can add more products (max 2)
-  bool get canAddMore => productIds.length < 2;
+  /// No limit on compare products
+  bool get canAddMore => true;
 
   CompareState copyWith({
     List<String>? productIds,
@@ -37,21 +37,14 @@ class CompareNotifier extends StateNotifier<CompareState> {
 
   /// Toggle product in compare list
   /// - If already in list → remove
-  /// - If not in list AND count < 2 → add
-  /// - If count == 2 and trying to add → return false (caller shows error toast)
+  /// - If not in list → add
   bool toggle(String productId) {
     if (state.productIds.contains(productId)) {
-      // Remove from list
       state = state.copyWith(
         productIds: state.productIds.where((id) => id != productId).toList(),
       );
       return true;
     } else {
-      if (state.productIds.length >= 2) {
-        // Max reached
-        return false;
-      }
-      // Add to list
       state = state.copyWith(
         productIds: [...state.productIds, productId],
       );

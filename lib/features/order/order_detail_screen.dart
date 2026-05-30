@@ -6,7 +6,9 @@ import '../../core/constants/app_colors.dart';
 import '../../core/router/app_router.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/widgets/app_toast.dart';
+import '../../models/address.dart';
 import '../../models/order.dart';
+import '../../providers/address_provider.dart';
 import '../../providers/order_provider.dart';
 
 class OrderDetailScreen extends ConsumerWidget {
@@ -82,7 +84,7 @@ class OrderDetailScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               _buildItemsSection(order, l10n, isDark),
               const SizedBox(height: 16),
-              _buildShippingInfoSection(order, l10n, isDark),
+              _buildShippingInfoSection(order, l10n, isDark, ref),
               const SizedBox(height: 16),
               _buildActionButtons(context, l10n, isDark),
               const SizedBox(height: 24),
@@ -348,7 +350,7 @@ class OrderDetailScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 12),
-          ...order.items.map((item) => _buildOrderItem(item, isDark)),
+          ...?order.items?.map((item) => _buildOrderItem(item, isDark)),
           Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.divider),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -436,7 +438,40 @@ class OrderDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildShippingInfoSection(Order order, AppLocalizations l10n, bool isDark) {
+  Widget _buildShippingInfoSection(Order order, AppLocalizations l10n, bool isDark, WidgetRef ref) {
+    Address? address;
+    if (order.shippingAddress == null && order.addressId != null) {
+      final addresses = ref.watch(addressListProvider).valueOrNull ?? [];
+      try {
+        address = addresses.firstWhere((a) => a.id == order.addressId);
+      } catch (_) {}
+    }
+
+    final orderAddr = order.shippingAddress;
+    final String recipient;
+    final String street;
+    final String cityLine;
+    final String phone;
+
+    if (orderAddr != null) {
+      recipient = orderAddr.recipient;
+      street = orderAddr.street;
+      cityLine = '${orderAddr.city}, ${orderAddr.province} ${orderAddr.postalCode}';
+      phone = orderAddr.phone;
+    } else if (address != null) {
+      recipient = address.recipient;
+      street = address.street;
+      cityLine = '${address.city}, ${address.province} ${address.postalCode}';
+      phone = address.phone;
+    } else {
+      recipient = '';
+      street = '';
+      cityLine = '';
+      phone = '';
+    }
+
+    final hasAddress = recipient.isNotEmpty;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -447,44 +482,48 @@ class OrderDetailScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.shippingInfo,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-            ),
+          Row(
+            children: [
+              Icon(Icons.local_shipping_outlined, size: 20, color: AppColors.mitsubishiRed),
+              const SizedBox(width: 8),
+              Text(
+                l10n.shippingInfo,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 16),
+          if (hasAddress) ...[
+            _buildShippingRow(
+              Icons.person_outline,
+              recipient,
+              isDark,
+            ),
+            const SizedBox(height: 12),
+            _buildShippingRow(
+              Icons.location_on_outlined,
+              '$street\n$cityLine',
+              isDark,
+            ),
+            const SizedBox(height: 12),
+            _buildShippingRow(
+              Icons.phone_outlined,
+              phone,
+              isDark,
+            ),
+          ] else
+            Text(
+              '-',
+              style: TextStyle(
+                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+              ),
+            ),
           const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.shippingAddress,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '${order.shippingAddress.recipient}\n${order.shippingAddress.street}\n${order.shippingAddress.city}, ${order.shippingAddress.province} ${order.shippingAddress.postalCode}\n${order.shippingAddress.phone}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.divider),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -507,6 +546,37 @@ class OrderDetailScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildShippingRow(IconData icon, String text, bool isDark) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: AppColors.mitsubishiRed.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 16, color: AppColors.mitsubishiRed),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 13,
+                height: 1.4,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

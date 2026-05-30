@@ -6,7 +6,9 @@ part 'cart_item.g.dart';
 
 @JsonSerializable()
 class CartItem {
+  @_ToStringConverter()
   final String id;
+  @_ToStringConverter()
   final String productId;
   final int quantity;
   final CartProductSnapshot productSnapshot;
@@ -33,6 +35,7 @@ class CartProductSnapshot {
   @BigIntStringConverter()
   final int price;
 
+  @JsonKey(defaultValue: '')
   final String primaryImageUrl;
 
   const CartProductSnapshot({
@@ -45,4 +48,14 @@ class CartProductSnapshot {
       _$CartProductSnapshotFromJson(json);
 
   Map<String, dynamic> toJson() => _$CartProductSnapshotToJson(this);
+}
+
+class _ToStringConverter implements JsonConverter<String, dynamic> {
+  const _ToStringConverter();
+
+  @override
+  String fromJson(dynamic value) => value.toString();
+
+  @override
+  dynamic toJson(String value) => value;
 }

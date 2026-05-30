@@ -7,6 +7,8 @@ import '../../../core/utils/currency_formatter.dart';
 import '../../../core/widgets/app_toast.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/product.dart';
+import '../../../models/cart_item.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/compare_provider.dart';
 import '../../../shared/widgets/product_image.dart' as product_image;
@@ -45,20 +47,14 @@ class _ProductCardState extends ConsumerState<ProductCard>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-final cart = ref.watch(cartProvider);
-final cartQuantity = cart.items
-    .where((i) => i.productId == widget.product.id)
-    .fold(0, (sum, i) => sum + i.quantity);
 final isInCompare = ref.watch(
-  compareProvider.select((s) => s.isInCompare(widget.product.id)),
+  compareProvider.select((s) => s.isInCompare(widget.product.idString)),
 );
-
-final displayStock = widget.product.stock - cartQuantity;
 
     return GestureDetector(
       onTap: () => context.pushNamed(
         AppRoute.productDetail,
-        pathParameters: {'id': widget.product.id},
+        pathParameters: {'id': widget.product.idString},
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -96,7 +92,7 @@ child: product_image.ProductNetworkImage(
                   top: 8,
                   left: 8,
                   child: StockBadge(
-                    stock: displayStock,
+                    stock: widget.product.stock,
                     isOutOfStock: widget.product.isOutOfStock,
                     isLowStock: widget.product.isLowStock,
                   ),
@@ -235,11 +231,27 @@ child: product_image.ProductNetworkImage(
   }
 
   void _handleAddToCart() {
+    if (!ref.read(authProvider).isAuthenticated) {
+      AppToast.show(
+        context,
+        'Anda belum login. Silakan login terlebih dahulu.',
+        isError: true,
+      );
+      return;
+    }
     setState(() {
       _isAdding = true;
     });
 
-    ref.read(cartProvider.notifier).addItem(widget.product.id, 1);
+    ref.read(cartProvider.notifier).addItem(
+      widget.product.idString,
+      1,
+      snapshot: CartProductSnapshot(
+        name: widget.product.name,
+        price: widget.product.price,
+        primaryImageUrl: widget.product.primaryImageUrl,
+      ),
+    );
 
     AppToast.show(
       context,
@@ -260,7 +272,7 @@ child: product_image.ProductNetworkImage(
   }
 
   void _handleCompare() {
-    final result = ref.read(compareProvider.notifier).toggle(widget.product.id);
+    final result = ref.read(compareProvider.notifier).toggle(widget.product.idString);
     final l10n = AppLocalizations.of(context);
 
     if (!result) {

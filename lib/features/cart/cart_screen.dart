@@ -9,6 +9,7 @@ import '../../core/widgets/app_toast.dart';
 import '../../models/cart_item.dart';
 import '../../providers/cart_provider.dart';
 import 'widgets/cart_item_card.dart';
+import 'widgets/cart_item_shimmer.dart';
 
 class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({super.key});
@@ -22,7 +23,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(cartProvider.notifier).loadCart();
+      final cartState = ref.read(cartProvider);
+      if (cartState.items.isEmpty && !cartState.isLoading) {
+        ref.read(cartProvider.notifier).loadCart();
+      }
     });
   }
 
@@ -49,7 +53,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         scrolledUnderElevation: 1,
       ),
       body: cartState.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const CartItemShimmer()
           : cartItems.isEmpty
               ? _buildEmptyState(context, l10n, isDark)
               : _buildCartList(
@@ -226,14 +230,14 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${l10n.subtotal} (${l10n.itemCount(totalItems)})',
+                      "${l10n.subtotal} (${l10n.itemCount(totalItems)})",
                       style: TextStyle(
                         fontSize: 14,
                         color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                       ),
                     ),
                     Text(
-                      CurrencyFormatter.format(subtotal),
+                      totalItems == 0 ? '-' : CurrencyFormatter.format(subtotal),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

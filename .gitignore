@@ -1,3 +1,6 @@
+# Environment variables (actual secrets)
+.env
+
 # Miscellaneous
 *.class
 *.log
@@ -8,6 +11,9 @@
 .build/
 .buildlog/
 .history
+
+# Environment
+.env
 .svn/
 .swiftpm/
 migrate_working_dir/

@@ -7,7 +7,7 @@ part of 'address.dart';
 // **************************************************************************
 
 Address _$AddressFromJson(Map<String, dynamic> json) => Address(
-  id: json['id'] as String,
+  id: const _ToStringConverter().fromJson(json['id']),
   label: json['label'] as String,
   recipient: json['recipient'] as String,
   phone: json['phone'] as String,
@@ -20,7 +20,7 @@ Address _$AddressFromJson(Map<String, dynamic> json) => Address(
 );
 
 Map<String, dynamic> _$AddressToJson(Address instance) => <String, dynamic>{
-  'id': instance.id,
+  'id': const _ToStringConverter().toJson(instance.id),
   'label': instance.label,
   'recipient': instance.recipient,
   'phone': instance.phone,

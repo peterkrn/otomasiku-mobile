@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../config/env_config.dart';
 import 'api_interceptor.dart';
 
 class ApiClient {
@@ -21,7 +22,7 @@ class ApiClient {
     _initialized = true;
 
     dio = Dio(BaseOptions(
-      baseUrl: '', // set per-request or via env_config
+      baseUrl: EnvConfig.apiBaseUrl,
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 30),
       headers: {

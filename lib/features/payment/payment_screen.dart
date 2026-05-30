@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,8 +14,9 @@ import '../../providers/payment_provider.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
   final String orderId;
+  final int totalAmount;
 
-  const PaymentScreen({super.key, required this.orderId});
+  const PaymentScreen({super.key, required this.orderId, this.totalAmount = 0});
 
   @override
   ConsumerState<PaymentScreen> createState() => _PaymentScreenState();
@@ -77,19 +79,28 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         if (order.paymentStatus == 'paid' && !_navigatedToSuccess && mounted) {
           _navigatedToSuccess = true;
           _countdownTimer?.cancel();
+          final displayTotal = order.totalAmount > 0 ? order.totalAmount : widget.totalAmount;
           context.goNamed(
             AppRoute.paymentSuccess,
             pathParameters: {'orderId': widget.orderId},
+            queryParameters: {'totalAmount': displayTotal.toString()},
           );
         }
       });
     });
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          context.goNamed(AppRoute.home);
+        }
+      },
+      child: Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
         leading: BackButton(
-          onPressed: () => context.pop(),
+          onPressed: () => context.goNamed(AppRoute.home),
         ),
         title: Text(l10n.payment),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
@@ -120,6 +131,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: null,
+    ),
     );
   }
 
@@ -138,6 +151,46 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           _buildAmountCard(order, l10n, isDark),
           const SizedBox(height: 16),
           _buildInstructionsCard(l10n, isDark),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => ref.read(paymentPollingProvider(widget.orderId).notifier).checkNow(widget.orderId),
+              icon: const Icon(Icons.refresh),
+              label: Text(l10n.checkPaymentStatus),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.mitsubishiRed,
+                side: const BorderSide(color: AppColors.mitsubishiRed),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ),
+          if (kDebugMode) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  final displayTotal = order.totalAmount > 0 ? order.totalAmount : widget.totalAmount;
+                  context.goNamed(
+                    AppRoute.paymentSuccess,
+                    pathParameters: {'orderId': widget.orderId},
+                    queryParameters: {'totalAmount': displayTotal.toString()},
+                  );
+                },
+                icon: const Icon(Icons.check_circle_outline),
+                label: const Text('[DEBUG] Simulasi Pembayaran Berhasil'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 96),
         ],
       ),
     );
@@ -308,19 +361,30 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               ],
             )
           else
-            Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Sedang membuat nomor VA...',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.schedule, color: Colors.orange, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Nomor VA sedang diproses. Tekan "Cek Status Pembayaran" di bawah untuk memperbarui.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -331,6 +395,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   Widget _buildAmountCard(Order order, AppLocalizations l10n, bool isDark) {
+    final displayTotal = order.totalAmount > 0 ? order.totalAmount : widget.totalAmount;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -349,13 +415,57 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          Text(
-            CurrencyFormatter.format(order.totalAmount),
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: AppColors.mitsubishiRed,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+            decoration: BoxDecoration(
+              color: AppColors.mitsubishiRed.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.mitsubishiRed.withValues(alpha: 0.2)),
             ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  CurrencyFormatter.format(displayTotal),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.mitsubishiRed,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: displayTotal.toString()));
+                    AppToast.show(context, 'Nominal disalin', isError: false, bottomOffset: 160);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.mitsubishiRed.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.copy, size: 16, color: AppColors.mitsubishiRed),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Icon(Icons.info_outline, size: 14, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'Transfer sesuai nominal agar pembayaran terverifikasi otomatis',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

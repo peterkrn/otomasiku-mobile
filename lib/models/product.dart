@@ -6,12 +6,12 @@ part 'product.g.dart';
 
 @JsonSerializable()
 class Product {
-  final String id;
+  final int id;
   final String name;
   final String slug;
   final String? sku;
-  final Brand brand;
-  final Category category;
+  final int brandId;
+  final int categoryId;
   final String? series;
   final String? subSeries;
   final String? variant;
@@ -28,18 +28,25 @@ class Product {
   final int minOrder;
   final String? descriptionId;
   final String? descriptionEn;
-  final List<ProductImage> images;
   final bool isPublished;
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  // Optional nested objects (returned by some endpoints)
+  @JsonKey(name: 'brand')
+  final Brand? brandObj;
+  @JsonKey(name: 'category')
+  final Category? categoryObj;
+  @JsonKey(defaultValue: [])
+  final List<ProductImage> images;
 
   const Product({
     required this.id,
     required this.name,
     required this.slug,
     this.sku,
-    required this.brand,
-    required this.category,
+    required this.brandId,
+    required this.categoryId,
     this.series,
     this.subSeries,
     this.variant,
@@ -51,10 +58,12 @@ class Product {
     required this.minOrder,
     this.descriptionId,
     this.descriptionEn,
-    required this.images,
     required this.isPublished,
     required this.createdAt,
     required this.updatedAt,
+    this.brandObj,
+    this.categoryObj,
+    this.images = const [],
   });
 
   factory Product.fromJson(Map<String, dynamic> json) =>
@@ -62,8 +71,16 @@ class Product {
 
   Map<String, dynamic> toJson() => _$ProductToJson(this);
 
+  /// UI-compatible getters
+  String get idString => id.toString();
+
   String get primaryImageUrl =>
-      images.firstWhere((i) => i.isPrimary, orElse: () => images.first).url;
+      images.isNotEmpty
+          ? images.firstWhere((i) => i.isPrimary, orElse: () => images.first).url
+          : '';
+
+  Brand get brand => brandObj ?? Brand(id: brandId, name: '', slug: '');
+  Category get category => categoryObj ?? Category(id: categoryId, name: '', slug: '');
 
   bool get isOutOfStock => stock == 0;
   bool get isLowStock => stock > 0 && stock <= 5;
@@ -79,12 +96,17 @@ class Product {
 class Brand {
   final int id;
   final String name;
+  @JsonKey(defaultValue: '')
   final String slug;
+  final String? description;
+  final String? logoUrl;
 
   const Brand({
     required this.id,
     required this.name,
-    required this.slug,
+    this.slug = '',
+    this.description,
+    this.logoUrl,
   });
 
   factory Brand.fromJson(Map<String, dynamic> json) => _$BrandFromJson(json);
@@ -96,12 +118,17 @@ class Brand {
 class Category {
   final int id;
   final String name;
+  @JsonKey(defaultValue: '')
   final String slug;
+  final String? description;
+  final String? iconUrl;
 
   const Category({
     required this.id,
     required this.name,
-    required this.slug,
+    this.slug = '',
+    this.description,
+    this.iconUrl,
   });
 
   factory Category.fromJson(Map<String, dynamic> json) =>
@@ -124,23 +151,4 @@ class ProductImage {
       _$ProductImageFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProductImageToJson(this);
-}
-
-enum ProductCategory {
-  inverter,
-  plc,
-  hmi,
-  servo,
-}
-
-enum ProductBrand {
-  mitsubishi,
-  danfoss,
-}
-
-enum StockStatus {
-  inStock,
-  lowStock,
-  outOfStock,
-  leadTime,
 }

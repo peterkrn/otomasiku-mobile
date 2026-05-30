@@ -1,26 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/router/app_router.dart';
-import '../../../core/widgets/app_toast.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../data/dummy/dummy_addresses.dart';
-import '../../../models/address.dart';
 
-/// State provider for addresses
-final addressesProvider = StateProvider<List<Address>>((ref) {
-  return List.from(dummyAddresses);
-});
+import '../../core/constants/app_colors.dart';
+import '../../core/router/app_router.dart';
+import '../../l10n/app_localizations.dart';
+import '../../models/address.dart';
+import '../../providers/address_provider.dart';
 
-/// Selected address index provider
-final selectedAddressProvider = StateProvider<int>((ref) {
-  final addresses = ref.watch(addressesProvider);
-  final defaultIndex = addresses.indexWhere((a) => a.isDefault);
-  return defaultIndex >= 0 ? defaultIndex : 0;
-});
-
-/// Shipping Address Screen - Select, add, or edit addresses
 class ShippingScreen extends ConsumerStatefulWidget {
   final bool isSelectable;
 
@@ -31,134 +18,43 @@ class ShippingScreen extends ConsumerStatefulWidget {
 }
 
 class _ShippingScreenState extends ConsumerState<ShippingScreen> {
-  // Form controllers
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _addressController = TextEditingController();
-  final _cityController = TextEditingController();
-  final _postalCodeController = TextEditingController();
-  final _kecamatanController = TextEditingController();
-  final _kelurahanController = TextEditingController();
-  final _notesController = TextEditingController();
+  String? _selectedAddressId;
 
-  bool _showFormError = false;
-
-  @override
-  void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _phoneController.dispose();
-    _addressController.dispose();
-    _cityController.dispose();
-    _postalCodeController.dispose();
-    _kecamatanController.dispose();
-    _kelurahanController.dispose();
-    _notesController.dispose();
-    super.dispose();
+  void _selectAddress(Address address) {
+    if (!widget.isSelectable) return;
+    setState(() => _selectedAddressId = address.id);
   }
 
-  void _selectAddress(int index) {
-    ref.read(selectedAddressProvider.notifier).state = index;
+  void _goToEdit(String? addressId) {
+    final params = <String, String>{};
+    if (addressId != null) params['addressId'] = addressId;
+    context.pushNamed(AppRoute.editAddress, queryParameters: params);
   }
 
-  void _goToEdit(int index) {
-    final addresses = ref.read(addressesProvider);
-    if (index >= 0 && index < addresses.length) {
-      context.pushNamed(
-        AppRoute.editAddress,
-        extra: {'address': addresses[index], 'index': index},
-      );
-    }
-  }
-
-  void _saveNewAddress() {
-    final firstName = _firstNameController.text.trim();
-    final lastName = _lastNameController.text.trim();
-    final phone = _phoneController.text.trim();
-    final address = _addressController.text.trim();
-    final city = _cityController.text.trim();
-    final postalCode = _postalCodeController.text.trim();
-    final kecamatan = _kecamatanController.text.trim();
-    final kelurahan = _kelurahanController.text.trim();
-    final notes = _notesController.text.trim();
-
-    // Check if form has any data
-    if (firstName.isEmpty && phone.isEmpty && address.isEmpty && city.isEmpty) {
-      return;
-    }
-
-    // Validate required fields
-    if (firstName.isEmpty || phone.isEmpty || address.isEmpty || city.isEmpty) {
-      setState(() => _showFormError = true);
-      return;
-    }
-
-    setState(() => _showFormError = false);
-
-    // Create new address
-    final fullName = [firstName, lastName].where((s) => s.isNotEmpty).join(' ');
-    final newAddress = Address(
-      id: 'addr-${DateTime.now().millisecondsSinceEpoch}',
-      name: 'Alamat Baru',
-      fullName: fullName,
-      phone: '+62 $phone',
-      address: address,
-      city: city,
-      province: 'DKI Jakarta',
-      postalCode: postalCode,
-      kecamatan: kecamatan.isNotEmpty ? kecamatan : null,
-      kelurahan: kelurahan.isNotEmpty ? kelurahan : null,
-      notes: notes.isNotEmpty ? notes : null,
-      isDefault: false,
-    );
-
-    // Add to list
-    final addresses = ref.read(addressesProvider.notifier);
-    addresses.state = [...addresses.state, newAddress];
-
-    // Select new address
-    ref.read(selectedAddressProvider.notifier).state = addresses.state.length - 1;
-
-    // Clear form
-    _clearForm();
-
-    AppToast.show(context, 'Alamat berhasil ditambahkan', isError: false, bottomOffset: 160);
-  }
-
-  void _clearForm() {
-    _firstNameController.clear();
-    _lastNameController.clear();
-    _phoneController.clear();
-    _addressController.clear();
-    _cityController.clear();
-    _postalCodeController.clear();
-    _kecamatanController.clear();
-    _kelurahanController.clear();
-    _notesController.clear();
-    setState(() => _showFormError = false);
-  }
-
-  void _useSelectedAddress() {
-    final selected = ref.read(selectedAddressProvider);
-    final addresses = ref.read(addressesProvider);
-    if (selected >= 0 && selected < addresses.length) {
-      // Pop with selected address info
-      context.pop(addresses[selected]);
+  void _useSelected() {
+    final addresses = ref.read(addressListProvider).valueOrNull ?? [];
+    final selected = addresses.where((a) => a.id == _selectedAddressId).firstOrNull;
+    if (selected != null) {
+      context.pop(selected);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final addresses = ref.watch(addressesProvider);
-    final selectedIndex = ref.watch(selectedAddressProvider);
+    final addressesAsync = ref.watch(addressListProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : const Color(0xFFF3F4F6),
       appBar: AppBar(
-        leading: BackButton(onPressed: () => context.pop()),
+        leading: BackButton(onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.goNamed(AppRoute.home);
+          }
+        }),
         title: Text(
           l10n.shippingAddress,
           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -167,211 +63,160 @@ class _ShippingScreenState extends ConsumerState<ShippingScreen> {
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Saved addresses section
-            Text(
-              l10n.selectAddress,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            ...addresses.asMap().entries.map((entry) {
-              final index = entry.key;
-              final address = entry.value;
-              final isSelected = index == selectedIndex;
-              return _buildAddressCard(address, index, isSelected, l10n, isDark);
-            }),
-
-            const SizedBox(height: 24),
-
-            // Divider
-            Row(
+      body: addressesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(child: Divider(color: isDark ? AppColors.darkBorder : AppColors.border)),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'ATAU TAMBAH BARU',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
-                    ),
-                  ),
+                Icon(Icons.error_outline, size: 48, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.errorGeneric,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
                 ),
-                Expanded(child: Divider(color: isDark ? AppColors.darkBorder : AppColors.border)),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => ref.invalidate(addressListProvider),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.mitsubishiRed,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: Text(l10n.retry),
+                ),
               ],
             ),
-
-            const SizedBox(height: 24),
-
-            // Add new address form
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurface : Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.addNewAddress,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Name row
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildTextField(
-                          label: l10n.firstName,
-                          controller: _firstNameController,
-                          placeholder: 'Contoh: John',
-                          isDark: isDark,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildTextField(
-                          label: l10n.lastName,
-                          controller: _lastNameController,
-                          placeholder: 'Contoh: Doe',
-                          isDark: isDark,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Phone
-                  _buildPhoneField(l10n, isDark),
-                  const SizedBox(height: 16),
-
-                  // Address
-                  _buildTextAreaField(
-                    label: l10n.addressFull,
-                    controller: _addressController,
-                    placeholder: 'Jl. Sudirman Kav. 28-30',
-                    isDark: isDark,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // City & Postal Code
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildTextField(
-                          label: l10n.city,
-                          controller: _cityController,
-                          placeholder: 'Jakarta Selatan',
-                          isDark: isDark,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildTextField(
-                          label: l10n.postalCode,
-                          controller: _postalCodeController,
-                          placeholder: '12920',
-                          keyboardType: TextInputType.number,
-                          isDark: isDark,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Kecamatan & Kelurahan
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildTextField(
-                          label: l10n.kecamatan,
-                          controller: _kecamatanController,
-                          placeholder: 'Setiabudi',
-                          isDark: isDark,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildTextField(
-                          label: l10n.kelurahan,
-                          controller: _kelurahanController,
-                          placeholder: 'Karet',
-                          isDark: isDark,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Notes
-                  _buildTextField(
-                    label: l10n.deliveryNotes,
-                    controller: _notesController,
-                    placeholder: 'Contoh: Titip di pos satpam',
-                    isOptional: true,
-                    optionalLabel: l10n.optional,
-                    isDark: isDark,
-                  ),
-
-                  // Error message
-                  if (_showFormError) ...[
+          ),
+        ),
+        data: (addresses) {
+          if (addresses.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.location_off, size: 48, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
                     const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.mitsubishiRed.withValues(alpha: isDark ? 0.2 : 0.1),
-                        borderRadius: BorderRadius.circular(8),
+                    Text(
+                      l10n.noAddressSaved,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                       ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.error_outline, size: 16, color: AppColors.mitsubishiRed),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              l10n.fillRequiredFields,
-                              style: TextStyle(fontSize: 12, color: AppColors.mitsubishiRed),
-                            ),
-                          ),
-                        ],
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () => _goToEdit(null),
+                      icon: const Icon(Icons.add, size: 18),
+                      label: Text(l10n.addAddress),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.mitsubishiRed,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                     ),
                   ],
+                ),
+              ),
+            );
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (widget.isSelectable)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Text(
+                      l10n.selectAddress,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ...addresses.map((address) => _buildAddressCard(address, l10n, isDark)),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _goToEdit(null),
+                    icon: const Icon(Icons.add, size: 18),
+                    label: Text(l10n.addAddress),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                      side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 100),
+              ],
+            ),
+          );
+        },
+      ),
+      bottomNavigationBar: widget.isSelectable
+          ? Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.darkSurface : Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark ? Colors.black.withValues(alpha: 0.3) : const Color(0x1A000000),
+                    blurRadius: 8,
+                    offset: const Offset(0, -2),
+                  ),
                 ],
               ),
-            ),
-            const SizedBox(height: 100), // Space for bottom bar
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomBar(l10n, isDark),
+              child: SafeArea(
+                top: false,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _selectedAddressId != null ? _useSelected : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.mitsubishiRed,
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: isDark ? AppColors.darkSurfaceVariant : const Color(0xFFE5E7EB),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.check, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.useAddress,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : null,
     );
   }
 
-  Widget _buildAddressCard(
-    Address address,
-    int index,
-    bool isSelected,
-    AppLocalizations l10n,
-    bool isDark,
-  ) {
+  Widget _buildAddressCard(Address address, AppLocalizations l10n, bool isDark) {
+    final isSelected = address.id == _selectedAddressId;
+
     return GestureDetector(
-      onTap: () => _selectAddress(index),
+      onTap: widget.isSelectable ? () => _selectAddress(address) : () => _goToEdit(address.id),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
@@ -386,21 +231,20 @@ class _ShippingScreenState extends ConsumerState<ShippingScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Radio circle
-            Container(
-              width: 20,
-              height: 20,
-              margin: const EdgeInsets.only(top: 2),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected ? AppColors.mitsubishiRed : (isDark ? AppColors.darkBorder : AppColors.border),
-                  width: isSelected ? 5 : 2,
+            if (widget.isSelectable)
+              Container(
+                width: 20,
+                height: 20,
+                margin: const EdgeInsets.only(top: 2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isSelected ? AppColors.mitsubishiRed : (isDark ? AppColors.darkBorder : AppColors.border),
+                    width: isSelected ? 5 : 2,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            // Address info
+            if (widget.isSelectable) const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -408,7 +252,7 @@ class _ShippingScreenState extends ConsumerState<ShippingScreen> {
                   Row(
                     children: [
                       Text(
-                        address.fullName,
+                        address.recipient,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -435,7 +279,7 @@ class _ShippingScreenState extends ConsumerState<ShippingScreen> {
                       ],
                       const Spacer(),
                       GestureDetector(
-                        onTap: () => _goToEdit(index),
+                        onTap: () => _goToEdit(address.id),
                         child: Text(
                           l10n.edit,
                           style: const TextStyle(
@@ -457,7 +301,7 @@ class _ShippingScreenState extends ConsumerState<ShippingScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${address.company ?? ''}\n${address.address}, ${address.city}, ${address.postalCode}',
+                    '${address.street}, ${address.city}, ${address.province} ${address.postalCode}',
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
@@ -469,288 +313,6 @@ class _ShippingScreenState extends ConsumerState<ShippingScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    required String placeholder,
-    TextInputType keyboardType = TextInputType.text,
-    bool isOptional = false,
-    String optionalLabel = 'opsional',
-    bool isDark = false,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          isOptional ? '$label ($optionalLabel)' : label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextField(
-          controller: controller,
-          keyboardType: keyboardType,
-          style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-          decoration: InputDecoration(
-            hintText: placeholder,
-            hintStyle: TextStyle(color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary, fontSize: 14),
-            filled: true,
-            fillColor: isDark ? AppColors.darkSurfaceVariant : Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.mitsubishiRed, width: 1),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPhoneField(AppLocalizations l10n, bool isDark) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.phone,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.darkSurfaceVariant : const Color(0xFFF9FAFB),
-                border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  bottomLeft: Radius.circular(8),
-                ),
-              ),
-              child: Text(
-                '+62',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                ),
-              ),
-            ),
-            Expanded(
-              child: TextField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-                decoration: InputDecoration(
-                  hintText: '812 3456 7890',
-                  hintStyle: TextStyle(color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary, fontSize: 14),
-                  filled: true,
-                  fillColor: isDark ? AppColors.darkSurfaceVariant : Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  border: OutlineInputBorder(
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(8),
-                      bottomRight: Radius.circular(8),
-                    ),
-                    borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(8),
-                      bottomRight: Radius.circular(8),
-                    ),
-                    borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(8),
-                      bottomRight: Radius.circular(8),
-                    ),
-                    borderSide: const BorderSide(color: AppColors.mitsubishiRed, width: 1),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTextAreaField({
-    required String label,
-    required TextEditingController controller,
-    required String placeholder,
-    bool isDark = false,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextField(
-          controller: controller,
-          maxLines: 3,
-          style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-          decoration: InputDecoration(
-            hintText: placeholder,
-            hintStyle: TextStyle(color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary, fontSize: 14),
-            filled: true,
-            fillColor: isDark ? AppColors.darkSurfaceVariant : Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.mitsubishiRed, width: 1),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBottomBar(AppLocalizations l10n, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: isDark ? Colors.black.withValues(alpha: 0.3) : const Color(0x1A000000),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: widget.isSelectable
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Button to use selected address
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _useSelectedAddress,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.mitsubishiRed,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.check, size: 18),
-                          const SizedBox(width: 8),
-                          Text(
-                            l10n.useAddress,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  // Button to save new address
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: _saveNewAddress,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                        side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.add_location_alt, size: 18),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Simpan Alamat Baru',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            : SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _saveNewAddress,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.mitsubishiRed,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.check, size: 18),
-                      const SizedBox(width: 8),
-                      Text(
-                        l10n.saveAddress,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
       ),
     );
   }

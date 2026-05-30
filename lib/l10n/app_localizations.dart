@@ -446,6 +446,12 @@ abstract class AppLocalizations {
   /// **'Pilih Alamat'**
   String get selectAddress;
 
+  /// No description provided for @changeAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Ganti Alamat'**
+  String get changeAddress;
+
   /// No description provided for @noAddress.
   ///
   /// In id, this message translates to:
@@ -617,7 +623,7 @@ abstract class AppLocalizations {
   /// No description provided for @processing.
   ///
   /// In id, this message translates to:
-  /// **'Diproses'**
+  /// **'Memproses'**
   String get processing;
 
   /// No description provided for @loading.
@@ -1855,6 +1861,276 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Anda harus setuju dengan Syarat & Ketentuan'**
   String get agreeTermsRequired;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In id, this message translates to:
+  /// **'Edit Profil'**
+  String get editProfile;
+
+  /// No description provided for @fullName.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Lengkap'**
+  String get fullName;
+
+  /// No description provided for @saveProfile.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Profil'**
+  String get saveProfile;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In id, this message translates to:
+  /// **'Profil berhasil diperbarui'**
+  String get profileUpdated;
+
+  /// No description provided for @addressLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Label Alamat'**
+  String get addressLabel;
+
+  /// No description provided for @recipient.
+  ///
+  /// In id, this message translates to:
+  /// **'Penerima'**
+  String get recipient;
+
+  /// No description provided for @addAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Alamat'**
+  String get addAddress;
+
+  /// No description provided for @editAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Edit Alamat'**
+  String get editAddress;
+
+  /// No description provided for @deleteAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Alamat'**
+  String get deleteAddress;
+
+  /// No description provided for @deleteAddressConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus alamat ini?'**
+  String get deleteAddressConfirm;
+
+  /// No description provided for @addressDeleted.
+  ///
+  /// In id, this message translates to:
+  /// **'Alamat berhasil dihapus'**
+  String get addressDeleted;
+
+  /// No description provided for @noAddressSaved.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada alamat tersimpan'**
+  String get noAddressSaved;
+
+  /// No description provided for @setAsDefault.
+  ///
+  /// In id, this message translates to:
+  /// **'Jadikan alamat utama'**
+  String get setAsDefault;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In id, this message translates to:
+  /// **'Simpan Perubahan'**
+  String get saveChanges;
+
+  /// No description provided for @noAddresses.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada alamat'**
+  String get noAddresses;
+
+  /// No description provided for @notificationPermissionTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Aktifkan Notifikasi'**
+  String get notificationPermissionTitle;
+
+  /// No description provided for @notificationPermissionBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Dapatkan update status pesanan Anda secara real-time'**
+  String get notificationPermissionBody;
+
+  /// No description provided for @notificationActivate.
+  ///
+  /// In id, this message translates to:
+  /// **'Aktifkan'**
+  String get notificationActivate;
+
+  /// No description provided for @notificationLater.
+  ///
+  /// In id, this message translates to:
+  /// **'Nanti'**
+  String get notificationLater;
+
+  /// No description provided for @noProjects.
+  ///
+  /// In id, this message translates to:
+  /// **'Belum ada proyek'**
+  String get noProjects;
+
+  /// No description provided for @createProjectHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Buat proyek untuk mengelola pembelian B2B'**
+  String get createProjectHint;
+
+  /// No description provided for @chat.
+  ///
+  /// In id, this message translates to:
+  /// **'Chat'**
+  String get chat;
+
+  /// No description provided for @openingWhatsApp.
+  ///
+  /// In id, this message translates to:
+  /// **'Membuka WhatsApp...'**
+  String get openingWhatsApp;
+
+  /// No description provided for @clearCompareConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus semua produk dari perbandingan?'**
+  String get clearCompareConfirm;
+
+  /// No description provided for @compareCleared.
+  ///
+  /// In id, this message translates to:
+  /// **'Perbandingan dikosongkan'**
+  String get compareCleared;
+
+  /// No description provided for @checkPaymentStatus.
+  ///
+  /// In id, this message translates to:
+  /// **'Cek Status Pembayaran'**
+  String get checkPaymentStatus;
+
+  /// No description provided for @settings.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengaturan'**
+  String get settings;
+
+  /// No description provided for @appearance.
+  ///
+  /// In id, this message translates to:
+  /// **'Tampilan'**
+  String get appearance;
+
+  /// No description provided for @security.
+  ///
+  /// In id, this message translates to:
+  /// **'Keamanan'**
+  String get security;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In id, this message translates to:
+  /// **'Mode Gelap'**
+  String get darkMode;
+
+  /// No description provided for @name.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama'**
+  String get name;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Ganti Password'**
+  String get changePassword;
+
+  /// No description provided for @changePasswordSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Ubah password akun Anda'**
+  String get changePasswordSubtitle;
+
+  /// No description provided for @resetPasswordViaEmail.
+  ///
+  /// In id, this message translates to:
+  /// **'Reset Password via Email'**
+  String get resetPasswordViaEmail;
+
+  /// No description provided for @resetPasswordSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim link reset ke {email}'**
+  String resetPasswordSubtitle(String email);
+
+  /// No description provided for @newPassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Password Baru'**
+  String get newPassword;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi Password'**
+  String get confirmPassword;
+
+  /// No description provided for @passwordMinChars.
+  ///
+  /// In id, this message translates to:
+  /// **'Password minimal 8 karakter'**
+  String get passwordMinChars;
+
+  /// No description provided for @passwordMismatch.
+  ///
+  /// In id, this message translates to:
+  /// **'Password tidak cocok'**
+  String get passwordMismatch;
+
+  /// No description provided for @passwordChanged.
+  ///
+  /// In id, this message translates to:
+  /// **'Password berhasil diubah'**
+  String get passwordChanged;
+
+  /// No description provided for @resetLinkSent.
+  ///
+  /// In id, this message translates to:
+  /// **'Link reset password dikirim ke {email}'**
+  String resetLinkSent(String email);
+
+  /// No description provided for @profileSaved.
+  ///
+  /// In id, this message translates to:
+  /// **'Profil berhasil disimpan'**
+  String get profileSaved;
+
+  /// No description provided for @uploadPhotoSoon.
+  ///
+  /// In id, this message translates to:
+  /// **'Fitur upload foto segera hadir'**
+  String get uploadPhotoSoon;
+
+  /// No description provided for @forgotPasswordSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan email Anda dan kami akan mengirim link untuk reset password'**
+  String get forgotPasswordSubtitle;
+
+  /// No description provided for @sendResetLink.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim Link Reset'**
+  String get sendResetLink;
 }
 
 class _AppLocalizationsDelegate

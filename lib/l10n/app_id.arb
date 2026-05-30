@@ -71,6 +71,7 @@
   "paymentMethod": "Metode Pembayaran",
   "shippingAddress": "Alamat Pengiriman",
   "selectAddress": "Pilih Alamat",
+  "changeAddress": "Ganti Alamat",
   "noAddress": "Belum ada alamat",
   "addressName": "Nama Alamat",
   "addressFull": "Alamat Lengkap",
@@ -220,9 +221,6 @@
       "count": { "type": "int" }
     }
   },
-  "orderSummary": "Ringkasan Pesanan",
-  "shippingAddress": "Alamat Pengiriman",
-  "paymentMethod": "Metode Pembayaran",
   "shipping": "Pengiriman",
   "paymentSummary": "Ringkasan Pembayaran",
   "volumeDiscountLabel": "Diskon Volume",
@@ -275,7 +273,6 @@
   },
   "statusHistory": "Riwayat Status",
   "paymentReceived": "Pembayaran Diterima",
-  "processing": "Diproses",
   "processingSubtitle": "Verifikasi stok dan packaging",
   "shipped": "Dikirim",
   "shippedSubtitle": "Dalam perjalanan ke alamat tujuan",
@@ -394,5 +391,60 @@
       "field": { "type": "String" }
     }
   },
-  "agreeTermsRequired": "Anda harus setuju dengan Syarat & Ketentuan"
+  "agreeTermsRequired": "Anda harus setuju dengan Syarat & Ketentuan",
+  "editProfile": "Edit Profil",
+  "fullName": "Nama Lengkap",
+  "saveProfile": "Simpan Profil",
+  "profileUpdated": "Profil berhasil diperbarui",
+  "addressLabel": "Label Alamat",
+  "recipient": "Penerima",
+  "addAddress": "Tambah Alamat",
+  "editAddress": "Edit Alamat",
+  "deleteAddress": "Hapus Alamat",
+  "deleteAddressConfirm": "Hapus alamat ini?",
+  "addressDeleted": "Alamat berhasil dihapus",
+  "noAddressSaved": "Belum ada alamat tersimpan",
+  "setAsDefault": "Jadikan alamat utama",
+  "saveChanges": "Simpan Perubahan",
+  "noAddresses": "Tidak ada alamat",
+  "notificationPermissionTitle": "Aktifkan Notifikasi",
+  "notificationPermissionBody": "Dapatkan update status pesanan Anda secara real-time",
+  "notificationActivate": "Aktifkan",
+  "notificationLater": "Nanti",
+  "noProjects": "Belum ada proyek",
+  "createProjectHint": "Buat proyek untuk mengelola pembelian B2B",
+  "chat": "Chat",
+  "openingWhatsApp": "Membuka WhatsApp...",
+  "clearCompareConfirm": "Hapus semua produk dari perbandingan?",
+  "compareCleared": "Perbandingan dikosongkan",
+  "checkPaymentStatus": "Cek Status Pembayaran",
+  "settings": "Pengaturan",
+  "appearance": "Tampilan",
+  "security": "Keamanan",
+  "darkMode": "Mode Gelap",
+  "name": "Nama",
+  "changePassword": "Ganti Password",
+  "changePasswordSubtitle": "Ubah password akun Anda",
+  "resetPasswordViaEmail": "Reset Password via Email",
+  "resetPasswordSubtitle": "Kirim link reset ke {email}",
+  "@resetPasswordSubtitle": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "newPassword": "Password Baru",
+  "confirmPassword": "Konfirmasi Password",
+  "passwordMinChars": "Password minimal 8 karakter",
+  "passwordMismatch": "Password tidak cocok",
+  "passwordChanged": "Password berhasil diubah",
+  "resetLinkSent": "Link reset password dikirim ke {email}",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "profileSaved": "Profil berhasil disimpan",
+  "uploadPhotoSoon": "Fitur upload foto segera hadir",
+  "forgotPasswordSubtitle": "Masukkan email Anda dan kami akan mengirim link untuk reset password",
+  "sendResetLink": "Kirim Link Reset"
 }

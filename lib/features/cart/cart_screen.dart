@@ -9,6 +9,7 @@ import '../../core/widgets/app_toast.dart';
 import '../../models/cart_item.dart';
 import '../../providers/cart_provider.dart';
 import 'widgets/cart_item_card.dart';
+import 'widgets/cart_item_shimmer.dart';
 
 class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({super.key});
@@ -52,7 +53,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         scrolledUnderElevation: 1,
       ),
       body: cartState.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const CartItemShimmer()
           : cartItems.isEmpty
               ? _buildEmptyState(context, l10n, isDark)
               : _buildCartList(

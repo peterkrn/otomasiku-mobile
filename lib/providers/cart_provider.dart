@@ -58,14 +58,14 @@ class CartNotifier extends StateNotifier<CartState> {
     }
   }
 
-  Future<void> addItem(String productId, int quantity) async {
+  Future<void> addItem(String productId, int quantity, {CartProductSnapshot? snapshot}) async {
     final previousState = state;
 
     final optimisticItem = CartItem(
       id: _generateLocalId(),
       productId: productId,
       quantity: quantity,
-      productSnapshot: const CartProductSnapshot(
+      productSnapshot: snapshot ?? const CartProductSnapshot(
         name: '',
         price: 0,
         primaryImageUrl: '',

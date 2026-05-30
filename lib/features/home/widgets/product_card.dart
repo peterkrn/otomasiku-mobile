@@ -7,6 +7,7 @@ import '../../../core/utils/currency_formatter.dart';
 import '../../../core/widgets/app_toast.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../models/product.dart';
+import '../../../models/cart_item.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/compare_provider.dart';
@@ -242,7 +243,15 @@ child: product_image.ProductNetworkImage(
       _isAdding = true;
     });
 
-    ref.read(cartProvider.notifier).addItem(widget.product.idString, 1);
+    ref.read(cartProvider.notifier).addItem(
+      widget.product.idString,
+      1,
+      snapshot: CartProductSnapshot(
+        name: widget.product.name,
+        price: widget.product.price,
+        primaryImageUrl: widget.product.primaryImageUrl,
+      ),
+    );
 
     AppToast.show(
       context,

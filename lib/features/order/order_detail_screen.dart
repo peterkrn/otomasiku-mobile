@@ -439,7 +439,6 @@ class OrderDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildShippingInfoSection(Order order, AppLocalizations l10n, bool isDark, WidgetRef ref) {
-    // Use shippingAddress from order if available, else look up from addressListProvider by addressId
     Address? address;
     if (order.shippingAddress == null && order.addressId != null) {
       final addresses = ref.watch(addressListProvider).valueOrNull ?? [];
@@ -448,11 +447,31 @@ class OrderDetailScreen extends ConsumerWidget {
       } catch (_) {}
     }
 
-    final addressText = order.shippingAddress != null
-        ? '${order.shippingAddress!.recipient}\n${order.shippingAddress!.street}\n${order.shippingAddress!.city}, ${order.shippingAddress!.province} ${order.shippingAddress!.postalCode}\n${order.shippingAddress!.phone}'
-        : address != null
-            ? '${address.recipient}\n${address.street}\n${address.city}, ${address.province} ${address.postalCode}\n${address.phone}'
-            : '-';
+    final orderAddr = order.shippingAddress;
+    final String recipient;
+    final String street;
+    final String cityLine;
+    final String phone;
+
+    if (orderAddr != null) {
+      recipient = orderAddr.recipient;
+      street = orderAddr.street;
+      cityLine = '${orderAddr.city}, ${orderAddr.province} ${orderAddr.postalCode}';
+      phone = orderAddr.phone;
+    } else if (address != null) {
+      recipient = address.recipient;
+      street = address.street;
+      cityLine = '${address.city}, ${address.province} ${address.postalCode}';
+      phone = address.phone;
+    } else {
+      recipient = '';
+      street = '';
+      cityLine = '';
+      phone = '';
+    }
+
+    final hasAddress = recipient.isNotEmpty;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -463,44 +482,48 @@ class OrderDetailScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.shippingInfo,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-            ),
+          Row(
+            children: [
+              Icon(Icons.local_shipping_outlined, size: 20, color: AppColors.mitsubishiRed),
+              const SizedBox(width: 8),
+              Text(
+                l10n.shippingInfo,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 16),
+          if (hasAddress) ...[
+            _buildShippingRow(
+              Icons.person_outline,
+              recipient,
+              isDark,
+            ),
+            const SizedBox(height: 12),
+            _buildShippingRow(
+              Icons.location_on_outlined,
+              '$street\n$cityLine',
+              isDark,
+            ),
+            const SizedBox(height: 12),
+            _buildShippingRow(
+              Icons.phone_outlined,
+              phone,
+              isDark,
+            ),
+          ] else
+            Text(
+              '-',
+              style: TextStyle(
+                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+              ),
+            ),
           const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.shippingAddress,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  addressText,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.divider),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -523,6 +546,37 @@ class OrderDetailScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildShippingRow(IconData icon, String text, bool isDark) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: AppColors.mitsubishiRed.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 16, color: AppColors.mitsubishiRed),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 13,
+                height: 1.4,
+                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

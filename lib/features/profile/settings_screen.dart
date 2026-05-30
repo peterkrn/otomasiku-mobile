@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import '../../core/constants/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/theme_provider.dart';
 import '../../providers/locale_provider.dart';
@@ -36,11 +37,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentLocale = ref.watch(localeProvider);
     final authState = ref.watch(authProvider);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(l10n.settings),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
@@ -50,22 +52,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Edit Profile Section
-            _buildSectionTitle('Edit Profile', isDark),
+            _buildSectionTitle(l10n.editProfile, isDark),
             const SizedBox(height: 8),
-            _buildProfileSection(authState, isDark),
+            _buildProfileSection(authState, isDark, l10n),
             const SizedBox(height: 24),
 
-            // Appearance Section
-            _buildSectionTitle('Tampilan', isDark),
+            _buildSectionTitle(l10n.appearance, isDark),
             const SizedBox(height: 8),
-            _buildAppearanceSection(isDark, currentLocale),
+            _buildAppearanceSection(isDark, currentLocale, l10n),
             const SizedBox(height: 24),
 
-            // Password Section
-            _buildSectionTitle('Keamanan', isDark),
+            _buildSectionTitle(l10n.security, isDark),
             const SizedBox(height: 8),
-            _buildPasswordSection(authState, isDark),
+            _buildPasswordSection(authState, isDark, l10n),
             const SizedBox(height: 96),
           ],
         ),
@@ -84,7 +83,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _buildProfileSection(AuthState authState, bool isDark) {
+  Widget _buildProfileSection(AuthState authState, bool isDark, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -115,9 +114,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   right: 0,
                   child: GestureDetector(
                     onTap: () {
-                      // Photo upload placeholder
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Fitur upload foto segera hadir')),
+                        SnackBar(content: Text(l10n.uploadPhotoSoon)),
                       );
                     },
                     child: Container(
@@ -143,7 +141,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             enabled: _isEditingProfile,
             style: TextStyle(color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
             decoration: InputDecoration(
-              labelText: 'Nama',
+              labelText: l10n.name,
               labelStyle: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               enabledBorder: OutlineInputBorder(
@@ -160,7 +158,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             enabled: false,
             style: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
             decoration: InputDecoration(
-              labelText: 'Email',
+              labelText: l10n.email,
               labelStyle: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               disabledBorder: OutlineInputBorder(
@@ -177,15 +175,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: ElevatedButton.icon(
               onPressed: () {
                 if (_isEditingProfile) {
-                  // Save profile (placeholder)
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Profil berhasil disimpan')),
+                    SnackBar(content: Text(l10n.profileSaved)),
                   );
                 }
                 setState(() => _isEditingProfile = !_isEditingProfile);
               },
               icon: Icon(_isEditingProfile ? Icons.save : Icons.edit, size: 16),
-              label: Text(_isEditingProfile ? 'Simpan' : 'Edit Profil'),
+              label: Text(_isEditingProfile ? l10n.save : l10n.editProfile),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _isEditingProfile ? AppColors.success : AppColors.mitsubishiRed,
                 foregroundColor: Colors.white,
@@ -199,7 +196,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _buildPasswordSection(AuthState authState, bool isDark) {
+  Widget _buildPasswordSection(AuthState authState, bool isDark, AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
@@ -219,21 +216,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: const Icon(Icons.lock_outline, color: Colors.orange, size: 20),
             ),
             title: Text(
-              'Ganti Password',
+              l10n.changePassword,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
               ),
             ),
             subtitle: Text(
-              'Ubah password akun Anda',
+              l10n.changePasswordSubtitle,
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
               ),
             ),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _showChangePasswordDialog(isDark),
+            onTap: () => _showChangePasswordDialog(isDark, l10n),
           ),
           Divider(height: 1, indent: 72, color: isDark ? AppColors.darkBorder : AppColors.border),
           ListTile(
@@ -247,28 +244,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: const Icon(Icons.email_outlined, color: Colors.red, size: 20),
             ),
             title: Text(
-              'Reset Password via Email',
+              l10n.resetPasswordViaEmail,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
               ),
             ),
             subtitle: Text(
-              'Kirim link reset ke ${authState.email ?? ''}',
+              l10n.resetPasswordSubtitle(authState.email ?? ''),
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
               ),
             ),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _sendResetEmail(authState.email),
+            onTap: () => _sendResetEmail(authState.email, l10n),
           ),
         ],
       ),
     );
   }
 
-  void _showChangePasswordDialog(bool isDark) {
+  void _showChangePasswordDialog(bool isDark, AppLocalizations l10n) {
     final newPassController = TextEditingController();
     final confirmPassController = TextEditingController();
     bool obscureNew = true;
@@ -277,100 +274,176 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('Ganti Password'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: newPassController,
-                obscureText: obscureNew,
-                decoration: InputDecoration(
-                  labelText: 'Password Baru',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(obscureNew ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () => setDialogState(() => obscureNew = !obscureNew),
+        builder: (ctx, setDialogState) => Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.mitsubishiRed.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.lock_outline, color: AppColors.mitsubishiRed, size: 24),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.changePassword,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: confirmPassController,
-                obscureText: obscureConfirm,
-                decoration: InputDecoration(
-                  labelText: 'Konfirmasi Password',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(obscureConfirm ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () => setDialogState(() => obscureConfirm = !obscureConfirm),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final newPass = newPassController.text;
-                final confirmPass = confirmPassController.text;
-                if (newPass.length < 8) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Password minimal 8 karakter')),
-                  );
-                  return;
-                }
-                if (newPass != confirmPass) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Password tidak cocok')),
-                  );
-                  return;
-                }
-                Navigator.pop(ctx);
-                try {
-                  await Supabase.instance.client.auth.updateUser(
-                    UserAttributes(password: newPass),
-                  );
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Password berhasil diubah'),
-                        backgroundColor: AppColors.success,
+                const SizedBox(height: 24),
+                TextField(
+                  controller: newPassController,
+                  obscureText: obscureNew,
+                  decoration: InputDecoration(
+                    labelText: l10n.newPassword,
+                    labelStyle: TextStyle(
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.mitsubishiRed, width: 1.5),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        obscureNew ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                        color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                        size: 20,
                       ),
-                    );
-                  }
-                } on AuthException catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(e.message), backgroundColor: AppColors.mitsubishiRed),
-                    );
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.mitsubishiRed,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Simpan'),
+                      onPressed: () => setDialogState(() => obscureNew = !obscureNew),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: confirmPassController,
+                  obscureText: obscureConfirm,
+                  decoration: InputDecoration(
+                    labelText: l10n.confirmPassword,
+                    labelStyle: TextStyle(
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.mitsubishiRed, width: 1.5),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                        color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                        size: 20,
+                      ),
+                      onPressed: () => setDialogState(() => obscureConfirm = !obscureConfirm),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
+                        ),
+                        child: Text(l10n.cancel),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final newPass = newPassController.text;
+                          final confirmPass = confirmPassController.text;
+                          if (newPass.length < 8) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l10n.passwordMinChars)),
+                            );
+                            return;
+                          }
+                          if (newPass != confirmPass) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l10n.passwordMismatch)),
+                            );
+                            return;
+                          }
+                          Navigator.pop(ctx);
+                          try {
+                            await Supabase.instance.client.auth.updateUser(
+                              UserAttributes(password: newPass),
+                            );
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(l10n.passwordChanged),
+                                  backgroundColor: AppColors.success,
+                                ),
+                              );
+                            }
+                          } on AuthException catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.message), backgroundColor: AppColors.mitsubishiRed),
+                              );
+                            }
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.mitsubishiRed,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          elevation: 0,
+                        ),
+                        child: Text(l10n.save, style: const TextStyle(fontWeight: FontWeight.w600)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Future<void> _sendResetEmail(String? email) async {
+  Future<void> _sendResetEmail(String? email, AppLocalizations l10n) async {
     if (email == null || email.isEmpty) return;
     try {
-      await Supabase.instance.client.auth.resetPasswordForEmail(email);
+      await Supabase.instance.client.auth.resetPasswordForEmail(
+        email,
+        redirectTo: 'io.otomasiku.app://login-callback',
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Link reset password dikirim ke $email'),
+            content: Text(l10n.resetLinkSent(email)),
             backgroundColor: AppColors.success,
           ),
         );
@@ -384,7 +457,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Widget _buildAppearanceSection(bool isDark, Locale currentLocale) {
+  Widget _buildAppearanceSection(bool isDark, Locale currentLocale, AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
@@ -405,7 +478,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: Icon(isDark ? Icons.dark_mode : Icons.light_mode, color: Colors.indigo, size: 20),
             ),
             title: Text(
-              'Dark Mode',
+              l10n.darkMode,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
@@ -430,7 +503,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: const Icon(Icons.language, color: Colors.teal, size: 20),
             ),
             title: Text(
-              'Bahasa',
+              l10n.language,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,

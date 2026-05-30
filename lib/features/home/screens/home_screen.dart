@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_router.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../models/product.dart';
+import '../../../providers/cart_provider.dart';
 import '../../../providers/product_provider.dart';
 import '../../../shared/widgets/retry_widget.dart';
 import '../../../shared/widgets/shimmer_grid.dart';
@@ -103,34 +105,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
         actions: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              IconButton(
-                icon: Icon(
-                  Icons.shopping_cart_outlined,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                ),
-                onPressed: () => context.pushNamed(AppRoute.cart),
-              ),
-            ],
-          ),
+          _CartBadgeButton(),
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
               onTap: () => context.goNamed(AppRoute.profile),
-              child: CircleAvatar(
-                radius: 16,
-                backgroundColor: AppColors.mitsubishiRed,
-                child: const Text(
-                  'JD',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              child: _ProfileAvatar(),
             ),
           ),
         ],
@@ -326,5 +306,85 @@ class _Diamond extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _CartBadgeButton extends ConsumerWidget {
+  const _CartBadgeButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final totalItems = ref.watch(cartProvider.select((s) => s.totalItems));
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        IconButton(
+          icon: Icon(
+            Icons.shopping_cart_outlined,
+            color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+          ),
+          onPressed: () => context.pushNamed(AppRoute.cart),
+        ),
+        if (totalItems > 0)
+          Positioned(
+            top: 6,
+            right: 6,
+            child: IgnorePointer(
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: const BoxDecoration(
+                  color: AppColors.mitsubishiRed,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  totalItems > 99 ? '99+' : '$totalItems',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    height: 1,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _ProfileAvatar extends ConsumerWidget {
+  const _ProfileAvatar();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final name = authState.profile?.fullName ?? authState.name ?? '';
+    final initials = _getInitials(name);
+    return CircleAvatar(
+      radius: 16,
+      backgroundColor: AppColors.mitsubishiRed,
+      child: Text(
+        initials,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  String _getInitials(String name) {
+    if (name.isEmpty) return '?';
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return name[0].toUpperCase();
   }
 }

@@ -23,14 +23,20 @@ class CompareScreen extends ConsumerWidget {
     final productsAsync = ref.watch(productListProvider);
     final products = productsAsync.valueOrNull ?? [];
     final compareProducts = products
-        .where((p) => compareState.productIds.contains(p.id))
+        .where((p) => compareState.productIds.contains(p.idString))
         .toList();
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
         leading: BackButton(
-          onPressed: () => context.pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.goNamed(AppRoute.home);
+            }
+          },
         ),
         title: Text(l10n.compareProducts),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
@@ -55,14 +61,7 @@ class CompareScreen extends ConsumerWidget {
           ? const Center(child: CircularProgressIndicator())
           : compareProducts.isEmpty
               ? _buildEmptyState(context, l10n, isDark)
-              : OverflowBox(
-                  maxWidth: double.infinity,
-                  maxHeight: double.infinity,
-                  alignment: Alignment.topLeft,
-                  child: ClipRect(
-                    child: _buildCompareTable(context, l10n, ref, compareProducts, isDark),
-                  ),
-                ),
+              : _buildCompareTable(context, l10n, ref, compareProducts, isDark),
     );
   }
 
@@ -120,17 +119,16 @@ class CompareScreen extends ConsumerWidget {
     const labelColumnWidth = 80.0;
     const productColumnWidth = 140.0;
 
-    final showAddColumn = products.length < 2;
-    final totalColumns = products.length + (showAddColumn ? 1 : 0);
+    final totalColumns = products.length + 1;
 
     final attributeKeys = ['series', 'variant', 'unit', 'minOrder', 'stock', 'price'];
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      scrollDirection: Axis.horizontal,
-      child: ClipRect(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        scrollDirection: Axis.horizontal,
         child: Container(
-          width: labelColumnWidth + totalColumns * productColumnWidth + 2,
+          width: labelColumnWidth + totalColumns * productColumnWidth,
           decoration: BoxDecoration(
             color: isDark ? AppColors.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(16),
@@ -141,9 +139,9 @@ class CompareScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildProductRow(context, l10n, ref, products, labelColumnWidth, productColumnWidth, isDark, showAddColumn),
-              ...attributeKeys.map((key) => _buildAttributeRow(key, products, labelColumnWidth, productColumnWidth, isDark, showAddColumn)),
-              _buildBuyButtonRow(context, l10n, products, labelColumnWidth, productColumnWidth, isDark, showAddColumn),
+              _buildProductRow(context, l10n, ref, products, labelColumnWidth, productColumnWidth, isDark, true),
+              ...attributeKeys.map((key) => _buildAttributeRow(key, products, labelColumnWidth, productColumnWidth, isDark, true)),
+              _buildBuyButtonRow(context, l10n, products, labelColumnWidth, productColumnWidth, isDark, true),
             ],
           ),
         ),
@@ -172,7 +170,7 @@ class CompareScreen extends ConsumerWidget {
         children: [
           Container(
             width: labelWidth,
-            height: 250,
+            height: 270,
             padding: const EdgeInsets.all(16),
             color: isDark ? AppColors.darkSurfaceVariant : const Color(0xFFF9FAFB),
             child: const Align(
@@ -189,7 +187,7 @@ class CompareScreen extends ConsumerWidget {
           ),
           ...products.map((product) => SizedBox(
             width: columnWidth,
-            height: 250,
+            height: 270,
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -253,9 +251,13 @@ child: product_image.ProductNetworkImage(
                     right: 0,
                     child: GestureDetector(
                       onTap: () {
-                        ref.read(compareProvider.notifier).toggle(product.id);
+                        ref.read(compareProvider.notifier).toggle(product.idString);
                         if (ref.read(compareProvider).productIds.isEmpty) {
-                          context.pop();
+                          if (context.canPop()) {
+                            context.pop();
+                          } else {
+                            context.goNamed(AppRoute.home);
+                          }
                         }
                       },
                       child: Container(
@@ -280,7 +282,7 @@ child: product_image.ProductNetworkImage(
           if (showAddColumn)
             Container(
               width: columnWidth,
-              height: 250,
+              height: 270,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 border: Border(
@@ -452,7 +454,7 @@ child: product_image.ProductNetworkImage(
             child: ElevatedButton(
               onPressed: () => context.pushNamed(
                 AppRoute.productDetail,
-                pathParameters: {'id': product.id},
+                pathParameters: {'id': product.idString},
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.mitsubishiRed,
@@ -514,7 +516,7 @@ child: product_image.ProductNetworkImage(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context).clear),
-        content: const Text('Hapus semua produk dari perbandingan?'),
+        content: Text(AppLocalizations.of(context).clearCompareConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -524,7 +526,7 @@ child: product_image.ProductNetworkImage(
             onPressed: () {
               ref.read(compareProvider.notifier).clear();
               Navigator.pop(ctx);
-              AppToast.show(context, 'Perbandingan dikosongkan', isError: false);
+              AppToast.show(context, AppLocalizations.of(context).compareCleared, isError: false);
             },
             style: TextButton.styleFrom(
               foregroundColor: AppColors.mitsubishiRed,

@@ -71,6 +71,7 @@
   "paymentMethod": "Payment Method",
   "shippingAddress": "Shipping Address",
   "selectAddress": "Select Address",
+  "changeAddress": "Change Address",
   "noAddress": "No address yet",
   "addressName": "Address Name",
   "addressFull": "Full Address",
@@ -220,9 +221,6 @@
       "count": { "type": "int" }
     }
   },
-  "orderSummary": "Order Summary",
-  "shippingAddress": "Shipping Address",
-  "paymentMethod": "Payment Method",
   "shipping": "Shipping",
   "paymentSummary": "Payment Summary",
   "volumeDiscountLabel": "Volume Discount",
@@ -275,7 +273,6 @@
   },
   "statusHistory": "Status History",
   "paymentReceived": "Payment Received",
-  "processing": "Processing",
   "processingSubtitle": "Stock verification and packaging",
   "shipped": "Shipped",
   "shippedSubtitle": "On the way to destination",
@@ -394,5 +391,60 @@
       "field": { "type": "String" }
     }
   },
-  "agreeTermsRequired": "You must agree to the Terms & Conditions"
+  "agreeTermsRequired": "You must agree to the Terms & Conditions",
+  "editProfile": "Edit Profile",
+  "fullName": "Full Name",
+  "saveProfile": "Save Profile",
+  "profileUpdated": "Profile updated successfully",
+  "addressLabel": "Address Label",
+  "recipient": "Recipient",
+  "addAddress": "Add Address",
+  "editAddress": "Edit Address",
+  "deleteAddress": "Delete Address",
+  "deleteAddressConfirm": "Delete this address?",
+  "addressDeleted": "Address deleted successfully",
+  "noAddressSaved": "No saved addresses",
+  "setAsDefault": "Set as default",
+  "saveChanges": "Save Changes",
+  "noAddresses": "No addresses",
+  "notificationPermissionTitle": "Enable Notifications",
+  "notificationPermissionBody": "Get real-time updates on your order status",
+  "notificationActivate": "Activate",
+  "notificationLater": "Later",
+  "noProjects": "No projects yet",
+  "createProjectHint": "Create a project to manage B2B purchases",
+  "chat": "Chat",
+  "openingWhatsApp": "Opening WhatsApp...",
+  "clearCompareConfirm": "Remove all products from comparison?",
+  "compareCleared": "Comparison cleared",
+  "checkPaymentStatus": "Check Payment Status",
+  "settings": "Settings",
+  "appearance": "Appearance",
+  "security": "Security",
+  "darkMode": "Dark Mode",
+  "name": "Name",
+  "changePassword": "Change Password",
+  "changePasswordSubtitle": "Change your account password",
+  "resetPasswordViaEmail": "Reset Password via Email",
+  "resetPasswordSubtitle": "Send reset link to {email}",
+  "@resetPasswordSubtitle": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm Password",
+  "passwordMinChars": "Password must be at least 8 characters",
+  "passwordMismatch": "Passwords do not match",
+  "passwordChanged": "Password changed successfully",
+  "resetLinkSent": "Reset password link sent to {email}",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "profileSaved": "Profile saved successfully",
+  "uploadPhotoSoon": "Photo upload feature coming soon",
+  "forgotPasswordSubtitle": "Enter your email and we'll send you a link to reset your password",
+  "sendResetLink": "Send Reset Link"
 }

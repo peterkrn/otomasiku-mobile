@@ -61,7 +61,7 @@ class CartRepositoryImpl implements CartRepository {
     final response = await _dio.post(
       '/cart',
       data: {
-        'productId': productId,
+        'productId': int.parse(productId),
         'quantity': quantity,
       },
       options: Options(headers: {'X-Idempotency-Key': idempotencyKey}),
@@ -80,7 +80,7 @@ class CartRepositoryImpl implements CartRepository {
       );
     }
 
-    return CartItem.fromJson(apiResponse.data!['data'] as Map<String, dynamic>);
+    return CartItem.fromJson(apiResponse.data!);
   }
 
   @override
@@ -106,7 +106,7 @@ class CartRepositoryImpl implements CartRepository {
       );
     }
 
-    return CartItem.fromJson(apiResponse.data!['data'] as Map<String, dynamic>);
+    return CartItem.fromJson(apiResponse.data!);
   }
 
   @override

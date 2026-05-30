@@ -4,10 +4,13 @@ import 'package:go_router/go_router.dart';
 import '../../features/splash/splash_screen.dart';
 import '../../features/auth/login_screen.dart';
 import '../../features/auth/register_screen.dart';
+import '../../features/auth/forgot_password_screen.dart';
+import '../../features/auth/reset_password_screen.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/search/search_screen.dart';
 import '../../features/projects/projects_screen.dart';
 import '../../features/profile/profile_screen.dart';
+import '../../features/profile/edit_profile_screen.dart';
 import '../../features/product_detail/product_detail_screen.dart';
 import '../../features/checkout/checkout_screen.dart';
 import '../../features/cart/cart_screen.dart';
@@ -21,6 +24,7 @@ import '../../features/home/widgets/compare_bar.dart';
 import '../../features/address/edit_address_screen.dart';
 import '../../features/shipping/shipping_screen.dart';
 import '../../features/payment_methods/payment_methods_screen.dart';
+import '../../features/profile/settings_screen.dart';
 import '../../providers/auth_provider.dart';
 
 /// GoRouter configuration for Otomasiku Marketplace
@@ -31,6 +35,8 @@ abstract class AppRoute {
   static const String splash = 'splash';
   static const String login = 'login';
   static const String register = 'register';
+  static const String forgotPassword = 'forgotPassword';
+  static const String resetPassword = 'resetPassword';
   static const String home = 'home';
   static const String search = 'search';
   static const String projects = 'projects';
@@ -46,19 +52,31 @@ abstract class AppRoute {
   static const String editAddress = 'editAddress';
   static const String paymentMethods = 'paymentMethods';
   static const String orders = 'orders';
+  static const String editProfile = 'editProfile';
+  static const String settings = 'settings';
 }
+
+// Root navigator key — used by routes outside the shell to avoid element tree conflicts
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 // GoRouter instance with StatefulShellRoute for bottom navigation
 final GoRouter appRouter = GoRouter(
+  navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
   redirect: (context, state) {
     final container = ProviderScope.containerOf(context, listen: false);
     final authState = container.read(authProvider);
     final isAuthenticated = authState.isAuthenticated;
+    final isSplash = state.matchedLocation == '/';
 
-    final isAuthRoute = state.matchedLocation == '/' ||
+    final isAuthRoute = isSplash ||
         state.matchedLocation == '/login' ||
-        state.matchedLocation == '/register';
+        state.matchedLocation == '/register' ||
+        state.matchedLocation == '/forgot-password' ||
+        state.matchedLocation == '/reset-password';
+
+    // Never auto-redirect away from splash — user must tap the button
+    if (isSplash && !isAuthenticated) return null;
 
     if (!isAuthenticated && !isAuthRoute) {
       return '/login';
@@ -86,6 +104,16 @@ final GoRouter appRouter = GoRouter(
       path: '/register',
       name: AppRoute.register,
       builder: (context, state) => const RegisterScreen(),
+    ),
+    GoRoute(
+      path: '/forgot-password',
+      name: AppRoute.forgotPassword,
+      builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: '/reset-password',
+      name: AppRoute.resetPassword,
+      builder: (context, state) => const ResetPasswordScreen(),
     ),
 
     // Bottom navigation shell with 4 tabs
@@ -157,10 +185,19 @@ final GoRouter appRouter = GoRouter(
       ],
     ),
 
+    // Edit Profile (outside shell)
+    GoRoute(
+      path: '/edit-profile',
+      name: AppRoute.editProfile,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const EditProfileScreen(),
+    ),
+
     // Product detail (outside shell - standalone route)
     GoRoute(
       path: '/product/:id',
       name: AppRoute.productDetail,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         final productId = state.pathParameters['id']!;
         return ProductDetailScreen(productId: productId);
@@ -171,6 +208,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/cart',
       name: AppRoute.cart,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const CartScreen(),
     ),
 
@@ -178,11 +216,13 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/checkout',
       name: AppRoute.checkout,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const CheckoutScreen(),
     ),
     GoRoute(
       path: '/shipping',
       name: AppRoute.shipping,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const ShippingScreen(),
     ),
 
@@ -190,17 +230,25 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/payment/:orderId',
       name: AppRoute.payment,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
-        return PaymentScreen(orderId: orderId);
+        final totalAmount = int.tryParse(
+          state.uri.queryParameters['totalAmount'] ?? '0',
+        ) ?? 0;
+        return PaymentScreen(orderId: orderId, totalAmount: totalAmount);
       },
     ),
     GoRoute(
       path: '/payment-success/:orderId',
       name: AppRoute.paymentSuccess,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
-        return PaymentSuccessScreen(orderId: orderId);
+        final totalAmount = int.tryParse(
+          state.uri.queryParameters['totalAmount'] ?? '0',
+        ) ?? 0;
+        return PaymentSuccessScreen(orderId: orderId, totalAmount: totalAmount);
       },
     ),
 
@@ -208,6 +256,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/orders',
       name: AppRoute.orders,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const OrdersScreen(),
     ),
 
@@ -215,6 +264,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/order/:id',
       name: AppRoute.orderDetail,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         final orderId = state.pathParameters['id']!;
         return OrderDetailScreen(orderId: orderId);
@@ -225,6 +275,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/compare',
       name: AppRoute.compare,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const CompareScreen(),
     ),
 
@@ -232,9 +283,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/edit-address',
       name: AppRoute.editAddress,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>?;
-        return EditAddressScreen(extra: extra);
+        final addressId = state.uri.queryParameters['addressId'];
+        return EditAddressScreen(addressId: addressId);
       },
     ),
 
@@ -242,7 +294,16 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/payment-methods',
       name: AppRoute.paymentMethods,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const PaymentMethodsScreen(),
+    ),
+
+    // Settings
+    GoRoute(
+      path: '/settings',
+      name: AppRoute.settings,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const SettingsScreen(),
     ),
   ],
 );

@@ -7,12 +7,12 @@ part of 'product.dart';
 // **************************************************************************
 
 Product _$ProductFromJson(Map<String, dynamic> json) => Product(
-  id: json['id'] as String,
+  id: (json['id'] as num).toInt(),
   name: json['name'] as String,
   slug: json['slug'] as String,
   sku: json['sku'] as String?,
-  brand: Brand.fromJson(json['brand'] as Map<String, dynamic>),
-  category: Category.fromJson(json['category'] as Map<String, dynamic>),
+  brandId: (json['brandId'] as num).toInt(),
+  categoryId: (json['categoryId'] as num).toInt(),
   series: json['series'] as String?,
   subSeries: json['subSeries'] as String?,
   variant: json['variant'] as String?,
@@ -26,12 +26,20 @@ Product _$ProductFromJson(Map<String, dynamic> json) => Product(
   minOrder: (json['minOrder'] as num).toInt(),
   descriptionId: json['descriptionId'] as String?,
   descriptionEn: json['descriptionEn'] as String?,
-  images: (json['images'] as List<dynamic>)
-      .map((e) => ProductImage.fromJson(e as Map<String, dynamic>))
-      .toList(),
   isPublished: json['isPublished'] as bool,
   createdAt: DateTime.parse(json['createdAt'] as String),
   updatedAt: DateTime.parse(json['updatedAt'] as String),
+  brandObj: json['brand'] == null
+      ? null
+      : Brand.fromJson(json['brand'] as Map<String, dynamic>),
+  categoryObj: json['category'] == null
+      ? null
+      : Category.fromJson(json['category'] as Map<String, dynamic>),
+  images:
+      (json['images'] as List<dynamic>?)
+          ?.map((e) => ProductImage.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      [],
 );
 
 Map<String, dynamic> _$ProductToJson(Product instance) => <String, dynamic>{
@@ -39,8 +47,8 @@ Map<String, dynamic> _$ProductToJson(Product instance) => <String, dynamic>{
   'name': instance.name,
   'slug': instance.slug,
   'sku': instance.sku,
-  'brand': instance.brand,
-  'category': instance.category,
+  'brandId': instance.brandId,
+  'categoryId': instance.categoryId,
   'series': instance.series,
   'subSeries': instance.subSeries,
   'variant': instance.variant,
@@ -54,34 +62,44 @@ Map<String, dynamic> _$ProductToJson(Product instance) => <String, dynamic>{
   'minOrder': instance.minOrder,
   'descriptionId': instance.descriptionId,
   'descriptionEn': instance.descriptionEn,
-  'images': instance.images,
   'isPublished': instance.isPublished,
   'createdAt': instance.createdAt.toIso8601String(),
   'updatedAt': instance.updatedAt.toIso8601String(),
+  'brand': instance.brandObj,
+  'category': instance.categoryObj,
+  'images': instance.images,
 };
 
 Brand _$BrandFromJson(Map<String, dynamic> json) => Brand(
   id: (json['id'] as num).toInt(),
   name: json['name'] as String,
-  slug: json['slug'] as String,
+  slug: json['slug'] as String? ?? '',
+  description: json['description'] as String?,
+  logoUrl: json['logoUrl'] as String?,
 );
 
 Map<String, dynamic> _$BrandToJson(Brand instance) => <String, dynamic>{
   'id': instance.id,
   'name': instance.name,
   'slug': instance.slug,
+  'description': instance.description,
+  'logoUrl': instance.logoUrl,
 };
 
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
   id: (json['id'] as num).toInt(),
   name: json['name'] as String,
-  slug: json['slug'] as String,
+  slug: json['slug'] as String? ?? '',
+  description: json['description'] as String?,
+  iconUrl: json['iconUrl'] as String?,
 );
 
 Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
   'id': instance.id,
   'name': instance.name,
   'slug': instance.slug,
+  'description': instance.description,
+  'iconUrl': instance.iconUrl,
 };
 
 ProductImage _$ProductImageFromJson(Map<String, dynamic> json) => ProductImage(

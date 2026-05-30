@@ -27,13 +27,15 @@ void main() {
             'data': {
               'data': [
                 {
-                  'id': '550e8400-e29b-41d4-a716-446655440000',
+                  'id': 1,
                   'name': 'FR-A840-2.2K-1 Inverter',
                   'slug': 'fr-a840-2-2k-1-inverter',
                   'sku': 'FR-A840-2.2K-1',
+                  'brandId': 1,
+                  'categoryId': 1,
                   'brand': {'id': 1, 'name': 'Mitsubishi', 'slug': 'mitsubishi'},
                   'category': {'id': 1, 'name': 'Inverter', 'slug': 'inverter'},
-                  'price': '15000000',
+                  'price': 15000000,
                   'stock': 10,
                   'version': 1,
                   'unit': 'unit',

@@ -8,6 +8,7 @@ import '../../core/utils/currency_formatter.dart';
 import '../../core/widgets/app_toast.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/product.dart';
+import '../../providers/catalog_provider.dart';
 import '../../providers/compare_provider.dart';
 import '../../providers/product_provider.dart';
 import '../../shared/widgets/product_image.dart' as product_image;
@@ -69,7 +70,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         .toList();
     if (activeCategories.isNotEmpty) {
       products = products.where((p) {
-        final catSlug = p.category.slug.toLowerCase();
+        final catSlug = ref.read(categorySlugForIdProvider(p.categoryId));
         return activeCategories.contains(catSlug);
       }).toList();
     }
@@ -86,7 +87,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         .toList();
     if (activeBrands.isNotEmpty) {
       products = products.where((p) {
-        final brandSlug = p.brand.slug.toLowerCase();
+        final brandSlug = ref.read(brandSlugForIdProvider(p.brandId));
         return activeBrands.contains(brandSlug);
       }).toList();
     }
@@ -169,7 +170,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   void _addToCompare(Product product) {
-    final success = ref.read(compareProvider.notifier).toggle(product.id);
+    final success = ref.read(compareProvider.notifier).toggle(product.idString);
     if (!success) {
       AppToast.show(context, 'Maksimal 2 produk untuk dibandingkan', isError: true);
     } else {
@@ -398,6 +399,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Widget _buildProductCard(Product product, bool isDark) {
+    final isInCompare = ref.watch(
+      compareProvider.select((s) => s.isInCompare(product.idString)),
+    );
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -408,7 +412,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       child: InkWell(
         onTap: () => context.pushNamed(
           AppRoute.productDetail,
-          pathParameters: {'id': product.id},
+          pathParameters: {'id': product.idString},
         ),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
@@ -464,7 +468,12 @@ child: product_image.ProductNetworkImage(
               ),
               IconButton(
                 onPressed: () => _addToCompare(product),
-                icon: Icon(Icons.balance, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+                icon: Icon(
+                  Icons.balance,
+                  color: isInCompare
+                      ? AppColors.mitsubishiRed
+                      : (isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+                ),
               ),
             ],
           ),

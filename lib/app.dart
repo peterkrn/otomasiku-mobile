@@ -19,6 +19,9 @@ class OtomasikuApp extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp.router(
+      // Key forces rebuild when locale/theme changes to avoid GoRouter stale element assertions
+      key: ValueKey('${locale.languageCode}_$themeMode'),
+
       // App metadata
       title: 'Otomasiku',
       debugShowCheckedModeBanner: false,
@@ -50,6 +53,10 @@ class OtomasikuApp extends ConsumerWidget {
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.mitsubishiRed,
         surface: AppColors.surface,
+        surfaceContainerHighest: Colors.white,
+        surfaceContainerHigh: Colors.white,
+        surfaceContainerLow: Colors.white,
+        surfaceContainer: Colors.white,
         brightness: Brightness.light,
       ),
       scaffoldBackgroundColor: AppColors.background,
@@ -105,6 +112,10 @@ class OtomasikuApp extends ConsumerWidget {
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.mitsubishiRed,
         surface: AppColors.darkSurface,
+        surfaceContainerHighest: AppColors.darkSurface,
+        surfaceContainerHigh: AppColors.darkSurface,
+        surfaceContainerLow: AppColors.darkSurface,
+        surfaceContainer: AppColors.darkSurface,
         brightness: Brightness.dark,
       ),
       scaffoldBackgroundColor: AppColors.darkBackground,

@@ -187,6 +187,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectAddress => 'Select Address';
 
   @override
+  String get changeAddress => 'Change Address';
+
+  @override
   String get noAddress => 'No address yet';
 
   @override
@@ -926,4 +929,145 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get agreeTermsRequired => 'You must agree to the Terms & Conditions';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get saveProfile => 'Save Profile';
+
+  @override
+  String get profileUpdated => 'Profile updated successfully';
+
+  @override
+  String get addressLabel => 'Address Label';
+
+  @override
+  String get recipient => 'Recipient';
+
+  @override
+  String get addAddress => 'Add Address';
+
+  @override
+  String get editAddress => 'Edit Address';
+
+  @override
+  String get deleteAddress => 'Delete Address';
+
+  @override
+  String get deleteAddressConfirm => 'Delete this address?';
+
+  @override
+  String get addressDeleted => 'Address deleted successfully';
+
+  @override
+  String get noAddressSaved => 'No saved addresses';
+
+  @override
+  String get setAsDefault => 'Set as default';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get noAddresses => 'No addresses';
+
+  @override
+  String get notificationPermissionTitle => 'Enable Notifications';
+
+  @override
+  String get notificationPermissionBody =>
+      'Get real-time updates on your order status';
+
+  @override
+  String get notificationActivate => 'Activate';
+
+  @override
+  String get notificationLater => 'Later';
+
+  @override
+  String get noProjects => 'No projects yet';
+
+  @override
+  String get createProjectHint => 'Create a project to manage B2B purchases';
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String get openingWhatsApp => 'Opening WhatsApp...';
+
+  @override
+  String get clearCompareConfirm => 'Remove all products from comparison?';
+
+  @override
+  String get compareCleared => 'Comparison cleared';
+
+  @override
+  String get checkPaymentStatus => 'Check Payment Status';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get darkMode => 'Dark Mode';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get changePasswordSubtitle => 'Change your account password';
+
+  @override
+  String get resetPasswordViaEmail => 'Reset Password via Email';
+
+  @override
+  String resetPasswordSubtitle(String email) {
+    return 'Send reset link to $email';
+  }
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get passwordMinChars => 'Password must be at least 8 characters';
+
+  @override
+  String get passwordMismatch => 'Passwords do not match';
+
+  @override
+  String get passwordChanged => 'Password changed successfully';
+
+  @override
+  String resetLinkSent(String email) {
+    return 'Reset password link sent to $email';
+  }
+
+  @override
+  String get profileSaved => 'Profile saved successfully';
+
+  @override
+  String get uploadPhotoSoon => 'Photo upload feature coming soon';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'Enter your email and we\'ll send you a link to reset your password';
+
+  @override
+  String get sendResetLink => 'Send Reset Link';
 }

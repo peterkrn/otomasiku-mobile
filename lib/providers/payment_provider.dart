@@ -17,7 +17,7 @@ class PaymentPollingNotifier extends AutoDisposeFamilyAsyncNotifier<Order, Strin
   }
 
   Future<Order> _fetchAndPoll(String orderId) async {
-    final order = await ref.read(orderRepositoryProvider).getOrderById(orderId);
+    final order = await ref.read(paymentRepositoryProvider).getPaymentStatus(orderId);
     if (order.paymentStatus != 'paid') {
       _startPolling(orderId);
     }
@@ -28,7 +28,7 @@ class PaymentPollingNotifier extends AutoDisposeFamilyAsyncNotifier<Order, Strin
     _pollingTimer?.cancel();
     _pollingTimer = Timer.periodic(const Duration(seconds: 10), (_) async {
       try {
-        final order = await ref.read(orderRepositoryProvider).getOrderById(orderId);
+        final order = await ref.read(paymentRepositoryProvider).getPaymentStatus(orderId);
         state = AsyncData(order);
         if (order.paymentStatus == 'paid') {
           _pollingTimer?.cancel();
@@ -43,7 +43,7 @@ class PaymentPollingNotifier extends AutoDisposeFamilyAsyncNotifier<Order, Strin
     _pollingTimer?.cancel();
     state = const AsyncLoading();
     try {
-      final order = await ref.read(orderRepositoryProvider).getOrderById(orderId);
+      final order = await ref.read(paymentRepositoryProvider).getPaymentStatus(orderId);
       state = AsyncData(order);
       if (order.paymentStatus != 'paid') {
         _startPolling(orderId);

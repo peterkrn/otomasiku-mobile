@@ -16,9 +16,16 @@ class OrderListNotifier extends AsyncNotifier<List<Order>> {
   Future<List<Order>> build() async {
     _page = 1;
     _hasMore = true;
-    final response = await ref.read(orderRepositoryProvider).getOrders(page: 1);
-    _hasMore = response.data.length < response.total;
-    return response.data;
+    try {
+      final response = await ref.read(orderRepositoryProvider).getOrders(page: 1);
+      _hasMore = response.data.length < response.total;
+      return response.data;
+    } catch (e) {
+      throw ApiException(
+        code: e is ApiException ? e.code : 'PARSE_ERROR',
+        statusCode: e is ApiException ? e.statusCode : 0,
+      );
+    }
   }
 
   Future<void> loadMore() async {
@@ -69,27 +76,31 @@ class CreateOrderState {
   });
 }
 
-final createOrderStateProvider = StateProvider<CreateOrderState>((ref) => const CreateOrderState());
+final orderCreateProvider =
+    NotifierProvider<OrderCreateNotifier, CreateOrderState>(OrderCreateNotifier.new);
 
-Future<CreateOrderResult> createOrder(
-  WidgetRef ref, {
-  required String addressId,
-  String? notes,
-}) async {
-  ref.read(createOrderStateProvider.notifier).state = const CreateOrderState(isLoading: true);
+class OrderCreateNotifier extends Notifier<CreateOrderState> {
+  @override
+  CreateOrderState build() => const CreateOrderState();
 
-  final idempotencyKey = const Uuid().v4();
-  try {
-    final result = await ref.read(orderRepositoryProvider).createOrder(
-      addressId: addressId,
-      notes: notes,
-      idempotencyKey: idempotencyKey,
-    );
-    ref.read(createOrderStateProvider.notifier).state = CreateOrderState(result: result);
-    return result;
-  } on ApiException catch (e) {
-    if (e.code == 'IDEMPOTENCY_KEY_EXISTS') {
-      if (e.details != null &&
+  Future<CreateOrderResult> createOrder({
+    required String addressId,
+    String? notes,
+  }) async {
+    state = const CreateOrderState(isLoading: true);
+
+    final idempotencyKey = const Uuid().v4();
+    try {
+      final result = await ref.read(orderRepositoryProvider).createOrder(
+        addressId: addressId,
+        notes: notes,
+        idempotencyKey: idempotencyKey,
+      );
+      state = CreateOrderState(result: result);
+      return result;
+    } on ApiException catch (e) {
+      if (e.code == 'IDEMPOTENCY_KEY_EXISTS' &&
+          e.details != null &&
           e.details!.containsKey('orderId')) {
         final orderId = e.details!['orderId'] as String;
         final result = CreateOrderResult(
@@ -97,14 +108,14 @@ Future<CreateOrderResult> createOrder(
           orderNumber: e.details!['orderNumber'] as String? ?? '',
           totalAmount: 0,
         );
-        ref.read(createOrderStateProvider.notifier).state = CreateOrderState(result: result);
+        state = CreateOrderState(result: result);
         return result;
       }
+      state = CreateOrderState(error: e.code);
+      rethrow;
+    } catch (e) {
+      state = const CreateOrderState(error: 'UNKNOWN');
+      rethrow;
     }
-    ref.read(createOrderStateProvider.notifier).state = CreateOrderState(error: e.code);
-    rethrow;
-  } catch (e) {
-    ref.read(createOrderStateProvider.notifier).state = const CreateOrderState(error: 'UNKNOWN');
-    rethrow;
   }
 }

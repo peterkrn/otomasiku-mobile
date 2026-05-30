@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/project.dart';
-import '../data/dummy/dummy_projects.dart' as dummy_projects;
 
 /// Provider for managing projects state
 final projectProvider = StateNotifierProvider<ProjectNotifier, ProjectState>((ref) {
@@ -38,13 +37,11 @@ class ProjectState {
 
 /// Project notifier
 class ProjectNotifier extends StateNotifier<ProjectState> {
-  ProjectNotifier() : super(const ProjectState(projects: [])) {
-    loadProjects();
-  }
+  ProjectNotifier() : super(const ProjectState(projects: []));
 
-  /// Load projects from dummy data (M2 only)
+  /// Load projects — starts empty, user creates their own
   void loadProjects() {
-    state = state.copyWith(projects: dummy_projects.dummyProjects);
+    // No-op: projects are user-created only
   }
 
   /// Get project by ID
@@ -71,6 +68,43 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
       return p;
     }).toList();
 
+    state = state.copyWith(projects: updatedProjects);
+  }
+
+  /// Create a new project
+  void createProject(String name) {
+    final newProject = Project(
+      id: 'proj-${DateTime.now().millisecondsSinceEpoch}',
+      name: name,
+      items: const [],
+      createdAt: DateTime.now(),
+      status: ProjectStatus.planning,
+    );
+    state = state.copyWith(projects: [...state.projects, newProject]);
+  }
+
+  /// Add a product item to a project
+  void addItemToProject(String projectId, ProjectItem item) {
+    final updatedProjects = state.projects.map((p) {
+      if (p.id == projectId) {
+        final existingIdx = p.items.indexWhere((i) => i.productId == item.productId);
+        if (existingIdx >= 0) {
+          final updated = List<ProjectItem>.from(p.items);
+          final existing = updated[existingIdx];
+          updated[existingIdx] = ProjectItem(
+            id: existing.id,
+            productId: existing.productId,
+            productName: existing.productName,
+            productImage: existing.productImage,
+            price: existing.price,
+            quantity: existing.quantity + item.quantity,
+          );
+          return p.copyWith(items: updated);
+        }
+        return p.copyWith(items: [...p.items, item]);
+      }
+      return p;
+    }).toList();
     state = state.copyWith(projects: updatedProjects);
   }
 }

@@ -4,14 +4,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'app.dart';
 import 'core/config/env_config.dart';
 import 'core/network/api_client.dart';
+import 'core/notifications/notification_service.dart';
 import 'core/router/app_router.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: '.env');
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -25,6 +29,9 @@ void main() async {
   await Supabase.initialize(
     url: EnvConfig.supabaseUrl,
     anonKey: EnvConfig.supabaseAnonKey,
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
   );
 
   ApiClient().configure(
@@ -32,5 +39,17 @@ void main() async {
     onSessionExpired: () => appRouter.goNamed(AppRoute.login),
   );
 
-  runApp(const ProviderScope(child: OtomasikuApp()));
+  // Listen for password recovery deep link
+  Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+    if (data.event == AuthChangeEvent.passwordRecovery) {
+      appRouter.goNamed(AppRoute.resetPassword);
+    }
+  });
+
+  final notificationService = NotificationService();
+  await notificationService.initialize(router: appRouter);
+
+  runApp(ProviderScope(
+    child: const OtomasikuApp(),
+  ));
 }

@@ -7,29 +7,30 @@ part of 'order.dart';
 // **************************************************************************
 
 Order _$OrderFromJson(Map<String, dynamic> json) => Order(
-  id: json['id'] as String,
-  orderNumber: json['orderNumber'] as String,
+  id: const _ToStringConverter().fromJson(json['id']),
+  orderNumber: (json['orderNumber'] ?? json['order_number'] ?? '') as String,
   status: json['status'] as String,
-  paymentStatus: json['paymentStatus'] as String,
-  totalAmount: const BigIntStringConverter().fromJson(json['totalAmount']),
-  vaNumber: json['vaNumber'] as String?,
-  vaExpiresAt: json['vaExpiresAt'] == null
+  paymentStatus: (json['paymentStatus'] ?? json['payment_status'] ?? 'pending') as String,
+  totalAmount: const BigIntStringConverter().fromJson(json['totalAmount'] ?? json['total_amount']),
+  vaNumber: (json['vaNumber'] ?? json['va_number']) as String?,
+  vaExpiresAt: (json['vaExpiresAt'] ?? json['va_expires_at']) == null
       ? null
-      : DateTime.parse(json['vaExpiresAt'] as String),
-  shippingAddress: OrderAddress.fromJson(
-    json['shippingAddress'] as Map<String, dynamic>,
-  ),
-  items: (json['items'] as List<dynamic>)
-      .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
+      : DateTime.parse((json['vaExpiresAt'] ?? json['va_expires_at']) as String),
+  addressId: (json['addressId'] ?? json['address_id']) as String?,
+  shippingAddress: (json['shippingAddress'] ?? json['shipping_address']) == null
+      ? null
+      : OrderAddress.fromJson((json['shippingAddress'] ?? json['shipping_address']) as Map<String, dynamic>),
+  items: (json['items'] as List<dynamic>?)
+      ?.map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
       .toList(),
   notes: json['notes'] as String?,
-  resiNumber: json['resiNumber'] as String?,
-  createdAt: DateTime.parse(json['createdAt'] as String),
-  updatedAt: DateTime.parse(json['updatedAt'] as String),
+  resiNumber: (json['resiNumber'] ?? json['resi_number']) as String?,
+  createdAt: DateTime.parse((json['createdAt'] ?? json['created_at']) as String),
+  updatedAt: DateTime.parse((json['updatedAt'] ?? json['updated_at']) as String),
 );
 
 Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
-  'id': instance.id,
+  'id': const _ToStringConverter().toJson(instance.id),
   'orderNumber': instance.orderNumber,
   'status': instance.status,
   'paymentStatus': instance.paymentStatus,
@@ -45,15 +46,15 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
 };
 
 OrderItem _$OrderItemFromJson(Map<String, dynamic> json) => OrderItem(
-  productId: json['productId'] as String,
-  productName: json['productName'] as String,
+  productId: const _ToStringConverter().fromJson(json['productId'] ?? json['product_id']),
+  productName: (json['productName'] ?? json['product_name'] ?? '') as String,
   quantity: (json['quantity'] as num).toInt(),
-  unitPrice: const BigIntStringConverter().fromJson(json['unitPrice']),
+  unitPrice: const BigIntStringConverter().fromJson(json['unitPrice'] ?? json['unit_price']),
   subtotal: const BigIntStringConverter().fromJson(json['subtotal']),
 );
 
 Map<String, dynamic> _$OrderItemToJson(OrderItem instance) => <String, dynamic>{
-  'productId': instance.productId,
+  'productId': const _ToStringConverter().toJson(instance.productId),
   'productName': instance.productName,
   'quantity': instance.quantity,
   'unitPrice': const BigIntStringConverter().toJson(instance.unitPrice),
@@ -63,10 +64,10 @@ Map<String, dynamic> _$OrderItemToJson(OrderItem instance) => <String, dynamic>{
 OrderAddress _$OrderAddressFromJson(Map<String, dynamic> json) => OrderAddress(
   recipient: json['recipient'] as String,
   phone: json['phone'] as String,
-  street: json['street'] as String,
+  street: (json['street'] ?? json['address'] ?? '') as String,
   city: json['city'] as String,
   province: json['province'] as String,
-  postalCode: json['postalCode'] as String,
+  postalCode: (json['postalCode'] ?? json['postal_code'] ?? '') as String,
 );
 
 Map<String, dynamic> _$OrderAddressToJson(OrderAddress instance) =>

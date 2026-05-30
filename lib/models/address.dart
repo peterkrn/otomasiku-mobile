@@ -4,6 +4,7 @@ part 'address.g.dart';
 
 @JsonSerializable()
 class Address {
+  @_ToStringConverter()
   final String id;
   final String label;
   final String recipient;
@@ -36,4 +37,14 @@ class Address {
   String get fullAddress => '$street, $city, $province $postalCode';
 
   String get fullLabel => '$label - $fullAddress';
+}
+
+class _ToStringConverter implements JsonConverter<String, dynamic> {
+  const _ToStringConverter();
+
+  @override
+  String fromJson(dynamic value) => value.toString();
+
+  @override
+  dynamic toJson(String value) => value;
 }

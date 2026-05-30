@@ -4,17 +4,19 @@ import 'package:otomasiku_mobile/models/product.dart';
 void main() {
   group('Product.fromJson', () {
     final json = {
-      'id': '550e8400-e29b-41d4-a716-446655440000',
+      'id': 1,
       'name': 'FR-A840-2.2K-1 Inverter',
       'slug': 'fr-a840-2-2k-1-inverter',
       'sku': 'FR-A840-2.2K-1',
+      'brandId': 1,
+      'categoryId': 1,
       'brand': {'id': 1, 'name': 'Mitsubishi', 'slug': 'mitsubishi'},
       'category': {'id': 1, 'name': 'Inverter', 'slug': 'inverter'},
       'series': 'FR-A800',
       'subSeries': 'FR-A840',
       'variant': '2.2kW / 400V',
-      'price': '15000000',
-      'originalPrice': '18000000',
+      'price': 15000000,
+      'originalPrice': 18000000,
       'stock': 10,
       'version': 1,
       'unit': 'unit',
@@ -32,7 +34,7 @@ void main() {
     test('parses all fields correctly', () {
       final product = Product.fromJson(json as Map<String, dynamic>);
 
-      expect(product.id, '550e8400-e29b-41d4-a716-446655440000');
+      expect(product.id, 1);
       expect(product.name, 'FR-A840-2.2K-1 Inverter');
       expect(product.slug, 'fr-a840-2-2k-1-inverter');
       expect(product.sku, 'FR-A840-2.2K-1');

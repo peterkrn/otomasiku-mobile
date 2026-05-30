@@ -7,8 +7,8 @@ part of 'cart_item.dart';
 // **************************************************************************
 
 CartItem _$CartItemFromJson(Map<String, dynamic> json) => CartItem(
-  id: json['id'] as String,
-  productId: json['productId'] as String,
+  id: const _ToStringConverter().fromJson(json['id']),
+  productId: const _ToStringConverter().fromJson(json['productId']),
   quantity: (json['quantity'] as num).toInt(),
   productSnapshot: CartProductSnapshot.fromJson(
     json['productSnapshot'] as Map<String, dynamic>,
@@ -17,8 +17,8 @@ CartItem _$CartItemFromJson(Map<String, dynamic> json) => CartItem(
 );
 
 Map<String, dynamic> _$CartItemToJson(CartItem instance) => <String, dynamic>{
-  'id': instance.id,
-  'productId': instance.productId,
+  'id': const _ToStringConverter().toJson(instance.id),
+  'productId': const _ToStringConverter().toJson(instance.productId),
   'quantity': instance.quantity,
   'productSnapshot': instance.productSnapshot,
   'createdAt': instance.createdAt.toIso8601String(),
@@ -28,7 +28,7 @@ CartProductSnapshot _$CartProductSnapshotFromJson(Map<String, dynamic> json) =>
     CartProductSnapshot(
       name: json['name'] as String,
       price: const BigIntStringConverter().fromJson(json['price']),
-      primaryImageUrl: json['primaryImageUrl'] as String,
+      primaryImageUrl: json['primaryImageUrl'] as String? ?? '',
     );
 
 Map<String, dynamic> _$CartProductSnapshotToJson(

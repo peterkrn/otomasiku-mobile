@@ -207,7 +207,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             // Forgot password
                             TextButton(
                               onPressed: () {
-                                // TODO: Navigate to forgot password
+                                context.pushNamed(AppRoute.forgotPassword);
                               },
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
@@ -369,18 +369,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFFF6B6B), width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFFFF6B6B), width: 1),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFFF6B6B), width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFFFF6B6B), width: 1),
         ),
-        // Error text shown below field, outside the box — no height expansion
         errorStyle: const TextStyle(
+          fontSize: 12,
           color: Color(0xFFFF6B6B),
-          fontSize: 11,
-          height: 0.8,
+          fontWeight: FontWeight.w400,
+          height: 1.2,
         ),
+        errorMaxLines: 1,
       ),
     );
   }
@@ -395,7 +396,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     final authNotifier = ref.read(authProvider.notifier);
-    await authNotifier.login(_emailController.text, _passwordController.text);
+    await authNotifier.login(_emailController.text, _passwordController.text, rememberMe: _rememberMe);
 
     if (!mounted) return;
 

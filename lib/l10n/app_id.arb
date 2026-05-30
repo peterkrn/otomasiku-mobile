@@ -417,5 +417,34 @@
   "openingWhatsApp": "Membuka WhatsApp...",
   "clearCompareConfirm": "Hapus semua produk dari perbandingan?",
   "compareCleared": "Perbandingan dikosongkan",
-  "checkPaymentStatus": "Cek Status Pembayaran"
+  "checkPaymentStatus": "Cek Status Pembayaran",
+  "settings": "Pengaturan",
+  "appearance": "Tampilan",
+  "security": "Keamanan",
+  "darkMode": "Mode Gelap",
+  "name": "Nama",
+  "changePassword": "Ganti Password",
+  "changePasswordSubtitle": "Ubah password akun Anda",
+  "resetPasswordViaEmail": "Reset Password via Email",
+  "resetPasswordSubtitle": "Kirim link reset ke {email}",
+  "@resetPasswordSubtitle": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "newPassword": "Password Baru",
+  "confirmPassword": "Konfirmasi Password",
+  "passwordMinChars": "Password minimal 8 karakter",
+  "passwordMismatch": "Password tidak cocok",
+  "passwordChanged": "Password berhasil diubah",
+  "resetLinkSent": "Link reset password dikirim ke {email}",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "profileSaved": "Profil berhasil disimpan",
+  "uploadPhotoSoon": "Fitur upload foto segera hadir",
+  "forgotPasswordSubtitle": "Masukkan email Anda dan kami akan mengirim link untuk reset password",
+  "sendResetLink": "Kirim Link Reset"
 }

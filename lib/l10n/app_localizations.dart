@@ -62,7 +62,8 @@ import 'app_localizations_id.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -70,7 +71,8 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -82,17 +84,18 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('id')
+    Locale('id'),
   ];
 
   /// Application name
@@ -2014,9 +2017,124 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Cek Status Pembayaran'**
   String get checkPaymentStatus;
+
+  /// No description provided for @settings.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengaturan'**
+  String get settings;
+
+  /// No description provided for @appearance.
+  ///
+  /// In id, this message translates to:
+  /// **'Tampilan'**
+  String get appearance;
+
+  /// No description provided for @security.
+  ///
+  /// In id, this message translates to:
+  /// **'Keamanan'**
+  String get security;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In id, this message translates to:
+  /// **'Mode Gelap'**
+  String get darkMode;
+
+  /// No description provided for @name.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama'**
+  String get name;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Ganti Password'**
+  String get changePassword;
+
+  /// No description provided for @changePasswordSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Ubah password akun Anda'**
+  String get changePasswordSubtitle;
+
+  /// No description provided for @resetPasswordViaEmail.
+  ///
+  /// In id, this message translates to:
+  /// **'Reset Password via Email'**
+  String get resetPasswordViaEmail;
+
+  /// No description provided for @resetPasswordSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim link reset ke {email}'**
+  String resetPasswordSubtitle(String email);
+
+  /// No description provided for @newPassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Password Baru'**
+  String get newPassword;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi Password'**
+  String get confirmPassword;
+
+  /// No description provided for @passwordMinChars.
+  ///
+  /// In id, this message translates to:
+  /// **'Password minimal 8 karakter'**
+  String get passwordMinChars;
+
+  /// No description provided for @passwordMismatch.
+  ///
+  /// In id, this message translates to:
+  /// **'Password tidak cocok'**
+  String get passwordMismatch;
+
+  /// No description provided for @passwordChanged.
+  ///
+  /// In id, this message translates to:
+  /// **'Password berhasil diubah'**
+  String get passwordChanged;
+
+  /// No description provided for @resetLinkSent.
+  ///
+  /// In id, this message translates to:
+  /// **'Link reset password dikirim ke {email}'**
+  String resetLinkSent(String email);
+
+  /// No description provided for @profileSaved.
+  ///
+  /// In id, this message translates to:
+  /// **'Profil berhasil disimpan'**
+  String get profileSaved;
+
+  /// No description provided for @uploadPhotoSoon.
+  ///
+  /// In id, this message translates to:
+  /// **'Fitur upload foto segera hadir'**
+  String get uploadPhotoSoon;
+
+  /// No description provided for @forgotPasswordSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan email Anda dan kami akan mengirim link untuk reset password'**
+  String get forgotPasswordSubtitle;
+
+  /// No description provided for @sendResetLink.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim Link Reset'**
+  String get sendResetLink;
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -2025,25 +2143,26 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'id'].contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      <String>['en', 'id'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
-
-
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en': return AppLocalizationsEn();
-    case 'id': return AppLocalizationsId();
+    case 'en':
+      return AppLocalizationsEn();
+    case 'id':
+      return AppLocalizationsId();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.'
+    'that was used.',
   );
 }

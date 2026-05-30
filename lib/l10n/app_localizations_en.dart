@@ -600,7 +600,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get atmStep1 => 'Insert ATM card and PIN';
 
   @override
-  String get atmStep2 => 'Select Other Transactions > Transfer > BCA Virtual Account';
+  String get atmStep2 =>
+      'Select Other Transactions > Transfer > BCA Virtual Account';
 
   @override
   String get atmStep3 => 'Enter VA number and press Correct';
@@ -612,7 +613,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ibankingStep1 => 'Login to KlikBCA (internetbanking.klikbca.com)';
 
   @override
-  String get ibankingStep2 => 'Select Fund Transfer > Transfer to BCA Virtual Account';
+  String get ibankingStep2 =>
+      'Select Fund Transfer > Transfer to BCA Virtual Account';
 
   @override
   String get ibankingStep3 => 'Enter VA number and click Continue';
@@ -977,7 +979,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationPermissionTitle => 'Enable Notifications';
 
   @override
-  String get notificationPermissionBody => 'Get real-time updates on your order status';
+  String get notificationPermissionBody =>
+      'Get real-time updates on your order status';
 
   @override
   String get notificationActivate => 'Activate';
@@ -1005,4 +1008,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get checkPaymentStatus => 'Check Payment Status';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get darkMode => 'Dark Mode';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get changePasswordSubtitle => 'Change your account password';
+
+  @override
+  String get resetPasswordViaEmail => 'Reset Password via Email';
+
+  @override
+  String resetPasswordSubtitle(String email) {
+    return 'Send reset link to $email';
+  }
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get passwordMinChars => 'Password must be at least 8 characters';
+
+  @override
+  String get passwordMismatch => 'Passwords do not match';
+
+  @override
+  String get passwordChanged => 'Password changed successfully';
+
+  @override
+  String resetLinkSent(String email) {
+    return 'Reset password link sent to $email';
+  }
+
+  @override
+  String get profileSaved => 'Profile saved successfully';
+
+  @override
+  String get uploadPhotoSoon => 'Photo upload feature coming soon';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'Enter your email and we\'ll send you a link to reset your password';
+
+  @override
+  String get sendResetLink => 'Send Reset Link';
 }

@@ -418,9 +418,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ),
         errorStyle: const TextStyle(
           color: Color(0xFFFF6B6B),
-          fontSize: 11,
-          height: 0.8,
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          height: 1.2,
         ),
+        errorMaxLines: 1,
       ),
     );
   }

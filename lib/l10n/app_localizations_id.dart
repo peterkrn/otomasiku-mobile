@@ -600,7 +600,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get atmStep1 => 'Masukkan kartu ATM dan PIN';
 
   @override
-  String get atmStep2 => 'Pilih Transaksi Lainnya > Transfer > BCA Virtual Account';
+  String get atmStep2 =>
+      'Pilih Transaksi Lainnya > Transfer > BCA Virtual Account';
 
   @override
   String get atmStep3 => 'Masukkan nomor VA dan tekan Benar';
@@ -612,7 +613,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get ibankingStep1 => 'Login ke KlikBCA (internetbanking.klikbca.com)';
 
   @override
-  String get ibankingStep2 => 'Pilih Transfer Dana > Transfer ke BCA Virtual Account';
+  String get ibankingStep2 =>
+      'Pilih Transfer Dana > Transfer ke BCA Virtual Account';
 
   @override
   String get ibankingStep3 => 'Masukkan nomor VA dan klik Lanjutkan';
@@ -926,7 +928,8 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get agreeTermsRequired => 'Anda harus setuju dengan Syarat & Ketentuan';
+  String get agreeTermsRequired =>
+      'Anda harus setuju dengan Syarat & Ketentuan';
 
   @override
   String get editProfile => 'Edit Profil';
@@ -977,7 +980,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get notificationPermissionTitle => 'Aktifkan Notifikasi';
 
   @override
-  String get notificationPermissionBody => 'Dapatkan update status pesanan Anda secara real-time';
+  String get notificationPermissionBody =>
+      'Dapatkan update status pesanan Anda secara real-time';
 
   @override
   String get notificationActivate => 'Aktifkan';
@@ -1005,4 +1009,66 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get checkPaymentStatus => 'Cek Status Pembayaran';
+
+  @override
+  String get settings => 'Pengaturan';
+
+  @override
+  String get appearance => 'Tampilan';
+
+  @override
+  String get security => 'Keamanan';
+
+  @override
+  String get darkMode => 'Mode Gelap';
+
+  @override
+  String get name => 'Nama';
+
+  @override
+  String get changePassword => 'Ganti Password';
+
+  @override
+  String get changePasswordSubtitle => 'Ubah password akun Anda';
+
+  @override
+  String get resetPasswordViaEmail => 'Reset Password via Email';
+
+  @override
+  String resetPasswordSubtitle(String email) {
+    return 'Kirim link reset ke $email';
+  }
+
+  @override
+  String get newPassword => 'Password Baru';
+
+  @override
+  String get confirmPassword => 'Konfirmasi Password';
+
+  @override
+  String get passwordMinChars => 'Password minimal 8 karakter';
+
+  @override
+  String get passwordMismatch => 'Password tidak cocok';
+
+  @override
+  String get passwordChanged => 'Password berhasil diubah';
+
+  @override
+  String resetLinkSent(String email) {
+    return 'Link reset password dikirim ke $email';
+  }
+
+  @override
+  String get profileSaved => 'Profil berhasil disimpan';
+
+  @override
+  String get uploadPhotoSoon => 'Fitur upload foto segera hadir';
+
+  @override
+  String get forgotPasswordSubtitle =>
+      'Masukkan email Anda dan kami akan mengirim link untuk reset password';
+
+  @override
+  String get sendResetLink => 'Kirim Link Reset';
 }

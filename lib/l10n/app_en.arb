@@ -417,5 +417,34 @@
   "openingWhatsApp": "Opening WhatsApp...",
   "clearCompareConfirm": "Remove all products from comparison?",
   "compareCleared": "Comparison cleared",
-  "checkPaymentStatus": "Check Payment Status"
+  "checkPaymentStatus": "Check Payment Status",
+  "settings": "Settings",
+  "appearance": "Appearance",
+  "security": "Security",
+  "darkMode": "Dark Mode",
+  "name": "Name",
+  "changePassword": "Change Password",
+  "changePasswordSubtitle": "Change your account password",
+  "resetPasswordViaEmail": "Reset Password via Email",
+  "resetPasswordSubtitle": "Send reset link to {email}",
+  "@resetPasswordSubtitle": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm Password",
+  "passwordMinChars": "Password must be at least 8 characters",
+  "passwordMismatch": "Passwords do not match",
+  "passwordChanged": "Password changed successfully",
+  "resetLinkSent": "Reset password link sent to {email}",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "profileSaved": "Profile saved successfully",
+  "uploadPhotoSoon": "Photo upload feature coming soon",
+  "forgotPasswordSubtitle": "Enter your email and we'll send you a link to reset your password",
+  "sendResetLink": "Send Reset Link"
 }

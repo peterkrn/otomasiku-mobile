@@ -76,9 +76,7 @@ class ProfileScreen extends ConsumerWidget {
         ),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Stack(
-        children: [
-          Row(
+      child: Row(
             children: [
               CircleAvatar(
                 radius: 32,
@@ -108,6 +106,8 @@ class ProfileScreen extends ConsumerWidget {
                     const SizedBox(height: 4),
                     Text(
                       displayEmail,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.white.withValues(alpha: 0.7),
@@ -128,32 +128,6 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ],
           ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: GestureDetector(
-              onTap: () => ref.read(themeProvider.notifier).toggleTheme(),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    width: 1,
-                  ),
-                ),
-                child: Icon(
-                  isDark ? Icons.light_mode : Icons.dark_mode,
-                  color: isDark ? const Color(0xFFFCD34D) : Colors.white,
-                  size: 20,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -380,27 +354,65 @@ class ProfileScreen extends ConsumerWidget {
   void _showLogoutDialog(BuildContext context, AppLocalizations l10n, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.logout),
-        content: Text(l10n.logoutConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              ref.read(authProvider.notifier).logout();
-              Navigator.pop(ctx);
-              context.goNamed(AppRoute.splash);
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.mitsubishiRed,
-            ),
-            child: Text(l10n.confirm),
-          ),
-        ],
-      ),
+      barrierDismissible: false,
+      builder: (ctx) => _LogoutDialog(l10n: l10n, ref: ref),
     );
+  }
+}
+
+class _LogoutDialog extends StatefulWidget {
+  final AppLocalizations l10n;
+  final WidgetRef ref;
+
+  const _LogoutDialog({required this.l10n, required this.ref});
+
+  @override
+  State<_LogoutDialog> createState() => _LogoutDialogState();
+}
+
+class _LogoutDialogState extends State<_LogoutDialog> {
+  bool _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.l10n.logout),
+      content: _isLoading
+          ? const Row(
+              children: [
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                SizedBox(width: 16),
+                Text('Sedang keluar...'),
+              ],
+            )
+          : Text(widget.l10n.logoutConfirm),
+      actions: _isLoading
+          ? null
+          : [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(widget.l10n.cancel),
+              ),
+              TextButton(
+                onPressed: _handleLogout,
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.mitsubishiRed,
+                ),
+                child: Text(widget.l10n.confirm),
+              ),
+            ],
+    );
+  }
+
+  Future<void> _handleLogout() async {
+    setState(() => _isLoading = true);
+    await widget.ref.read(authProvider.notifier).logout();
+    if (!mounted) return;
+    Navigator.pop(context);
+    context.goNamed(AppRoute.splash);
   }
 }

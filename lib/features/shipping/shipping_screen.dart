@@ -48,7 +48,13 @@ class _ShippingScreenState extends ConsumerState<ShippingScreen> {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : const Color(0xFFF3F4F6),
       appBar: AppBar(
-        leading: BackButton(onPressed: () => context.pop()),
+        leading: BackButton(onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.goNamed(AppRoute.home);
+          }
+        }),
         title: Text(
           l10n.shippingAddress,
           style: const TextStyle(fontWeight: FontWeight.bold),

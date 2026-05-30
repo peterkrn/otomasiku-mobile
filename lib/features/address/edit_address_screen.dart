@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/router/app_router.dart';
 import '../../core/widgets/app_toast.dart';
 import '../../data/repositories/address_repository.dart';
 import '../../l10n/app_localizations.dart';
@@ -123,7 +124,13 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
-        leading: BackButton(onPressed: () => context.pop()),
+        leading: BackButton(onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.goNamed(AppRoute.home);
+          }
+        }),
         title: Text(_isEditing ? l10n.editAddress : l10n.addAddress),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,

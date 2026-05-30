@@ -39,6 +39,13 @@ void main() async {
     onSessionExpired: () => appRouter.goNamed(AppRoute.login),
   );
 
+  // Listen for password recovery deep link
+  Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+    if (data.event == AuthChangeEvent.passwordRecovery) {
+      appRouter.goNamed(AppRoute.resetPassword);
+    }
+  });
+
   final notificationService = NotificationService();
   await notificationService.initialize(router: appRouter);
 

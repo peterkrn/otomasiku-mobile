@@ -102,14 +102,21 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   void _init() {
     if (_authService.isAuthenticated) {
-      final session = Supabase.instance.client.auth.currentSession;
-      state = state.copyWith(
-        isAuthenticated: true,
-        userId: session?.user.id,
-        email: session?.user.email,
-        name: session?.user.userMetadata?['full_name'] as String?,
-      );
       Future.microtask(() async {
+        final rememberMe = await _tokenStorage.getRememberMe();
+        if (!rememberMe) {
+          await _authService.logout();
+          await _tokenStorage.setRememberMe(true);
+          state = const AuthState();
+          return;
+        }
+        final session = Supabase.instance.client.auth.currentSession;
+        state = state.copyWith(
+          isAuthenticated: true,
+          userId: session?.user.id,
+          email: session?.user.email,
+          name: session?.user.userMetadata?['full_name'] as String?,
+        );
         await _bootstrap();
         state = state.copyWith(isBootstrapped: true);
         await _loadProfile();
@@ -127,12 +134,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<void> login(String email, String password) async {
+  Future<void> login(String email, String password, {bool rememberMe = true}) async {
     state = state.copyWith(isLoading: true, errorCode: null);
 
     final result = await _authService.login(email, password);
 
     if (result.isSuccess) {
+      await _tokenStorage.setRememberMe(rememberMe);
       _updateFromSession();
       await _bootstrap();
       state = state.copyWith(isBootstrapped: true);

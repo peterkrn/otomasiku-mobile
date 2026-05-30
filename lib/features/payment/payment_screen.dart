@@ -395,6 +395,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   Widget _buildAmountCard(Order order, AppLocalizations l10n, bool isDark) {
+    final displayTotal = order.totalAmount > 0 ? order.totalAmount : widget.totalAmount;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -413,13 +415,57 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          Text(
-            CurrencyFormatter.format(order.totalAmount),
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: AppColors.mitsubishiRed,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+            decoration: BoxDecoration(
+              color: AppColors.mitsubishiRed.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.mitsubishiRed.withValues(alpha: 0.2)),
             ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  CurrencyFormatter.format(displayTotal),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.mitsubishiRed,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: displayTotal.toString()));
+                    AppToast.show(context, 'Nominal disalin', isError: false, bottomOffset: 160);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.mitsubishiRed.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.copy, size: 16, color: AppColors.mitsubishiRed),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Icon(Icons.info_outline, size: 14, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'Transfer sesuai nominal agar pembayaran terverifikasi otomatis',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

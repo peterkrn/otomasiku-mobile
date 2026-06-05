@@ -10,6 +10,7 @@ import '../../models/address.dart';
 import '../../models/order.dart';
 import '../../providers/address_provider.dart';
 import '../../providers/order_provider.dart';
+import '../../shared/widgets/app_error_view.dart';
 
 class OrderDetailScreen extends ConsumerWidget {
   final String orderId;
@@ -28,9 +29,12 @@ class OrderDetailScreen extends ConsumerWidget {
         appBar: AppBar(title: Text(l10n.orderDetail)),
         body: const Center(child: CircularProgressIndicator()),
       ),
-      error: (_, _) => Scaffold(
+      error: (error, _) => Scaffold(
         appBar: AppBar(title: Text(l10n.orderDetail)),
-        body: Center(child: Text(l10n.orderNotFound)),
+        body: AppErrorView(
+          error: error,
+          onRetry: () => ref.invalidate(orderDetailProvider(orderId)),
+        ),
       ),
     );
   }

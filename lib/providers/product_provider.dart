@@ -46,8 +46,9 @@ class ProductListNotifier extends AsyncNotifier<List<Product>> {
     try {
       final response =
           await ref.read(productRepositoryProvider).getProducts(filter.copyWith(page: _page));
-      _hasMore = response.data.length < response.total;
-      state = AsyncData([...state.value ?? [], ...response.data]);
+      final accumulated = <Product>[...state.value ?? [], ...response.data];
+      _hasMore = accumulated.length < response.total;
+      state = AsyncData(accumulated);
     } catch (e, st) {
       _page--;
       state = AsyncError(e, st);

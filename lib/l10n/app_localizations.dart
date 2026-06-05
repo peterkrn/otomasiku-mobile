@@ -668,6 +668,120 @@ abstract class AppLocalizations {
   /// **'Gagal memuat detail produk'**
   String get errorLoadingProductDetail;
 
+  /// No description provided for @errorOffline.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada koneksi internet. Periksa jaringan Anda.'**
+  String get errorOffline;
+
+  /// No description provided for @errorTimeout.
+  ///
+  /// In id, this message translates to:
+  /// **'Permintaan timeout. Silakan coba lagi.'**
+  String get errorTimeout;
+
+  /// No description provided for @errorSessionExpired.
+  ///
+  /// In id, this message translates to:
+  /// **'Sesi Anda telah berakhir. Silakan masuk kembali.'**
+  String get errorSessionExpired;
+
+  /// No description provided for @errorServer.
+  ///
+  /// In id, this message translates to:
+  /// **'Kesalahan server. Silakan coba beberapa saat lagi.'**
+  String get errorServer;
+
+  /// No description provided for @errorLoadAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal memuat alamat.'**
+  String get errorLoadAddress;
+
+  /// No description provided for @errorImageLoad.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal memuat gambar.'**
+  String get errorImageLoad;
+
+  /// No description provided for @notLoggedIn.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda belum login. Silakan login untuk melanjutkan.'**
+  String get notLoggedIn;
+
+  /// No description provided for @addressSaveFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal menyimpan alamat. Silakan coba lagi.'**
+  String get addressSaveFailed;
+
+  /// No description provided for @goToLogin.
+  ///
+  /// In id, this message translates to:
+  /// **'Ke Halaman Login'**
+  String get goToLogin;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In id, this message translates to:
+  /// **'Dibatalkan'**
+  String get cancelled;
+
+  /// No description provided for @errorWeakPassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata sandi minimal 6 karakter.'**
+  String get errorWeakPassword;
+
+  /// No description provided for @errorUnauthorized.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda tidak memiliki akses.'**
+  String get errorUnauthorized;
+
+  /// No description provided for @errorProductNotFound.
+  ///
+  /// In id, this message translates to:
+  /// **'Produk tidak ditemukan.'**
+  String get errorProductNotFound;
+
+  /// No description provided for @errorOrderPaid.
+  ///
+  /// In id, this message translates to:
+  /// **'Pesanan sudah dibayar.'**
+  String get errorOrderPaid;
+
+  /// No description provided for @errorPaymentFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran gagal.'**
+  String get errorPaymentFailed;
+
+  /// No description provided for @errorInvalidAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Nominal pembayaran tidak valid.'**
+  String get errorInvalidAmount;
+
+  /// No description provided for @errorCartEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Keranjang Anda kosong.'**
+  String get errorCartEmpty;
+
+  /// No description provided for @errorInvalidQuantity.
+  ///
+  /// In id, this message translates to:
+  /// **'Jumlah tidak valid.'**
+  String get errorInvalidQuantity;
+
+  /// No description provided for @errorServiceUnavailable.
+  ///
+  /// In id, this message translates to:
+  /// **'Layanan sedang tidak tersedia.'**
+  String get errorServiceUnavailable;
+
   /// No description provided for @loadMore.
   ///
   /// In id, this message translates to:

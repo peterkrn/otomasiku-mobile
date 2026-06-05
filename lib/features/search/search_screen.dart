@@ -171,10 +171,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   void _addToCompare(Product product) {
     final success = ref.read(compareProvider.notifier).toggle(product.idString);
+    final l10n = AppLocalizations.of(context);
     if (!success) {
-      AppToast.show(context, 'Maksimal 2 produk untuk dibandingkan', isError: true);
+      AppToast.show(context, l10n.compareMaxError, isError: true);
     } else {
-      AppToast.show(context, 'Ditambahkan ke perbandingan', isError: false);
+      AppToast.show(context, l10n.addedToCompare, isError: false);
     }
   }
 

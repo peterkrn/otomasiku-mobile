@@ -16,6 +16,7 @@ import '../../providers/product_provider.dart';
 import '../../providers/project_provider.dart';
 import '../../models/project.dart';
 import '../../shared/widgets/product_image.dart' as product_image;
+import '../../shared/widgets/app_error_view.dart';
 import 'widgets/product_bottom_bar.dart';
 import 'widgets/tiered_pricing_widget.dart';
 
@@ -56,7 +57,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     return productAsync.when(
       data: (product) => _buildProductScreen(product, l10n, isDark),
       loading: () => _buildLoadingScreen(l10n, isDark),
-      error: (error, _) => _buildErrorScreen(l10n, isDark),
+      error: (error, _) => _buildErrorScreen(error, l10n, isDark),
     );
   }
 
@@ -85,7 +86,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     );
   }
 
-  Widget _buildErrorScreen(AppLocalizations l10n, bool isDark) {
+  Widget _buildErrorScreen(Object error, AppLocalizations l10n, bool isDark) {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -102,28 +103,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 64, color: AppColors.mitsubishiRed),
-            const SizedBox(height: 16),
-            Text(
-              l10n.errorLoadingProductDetail,
-              style: TextStyle(fontSize: 16, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => ref.refresh(productDetailProvider(widget.productId)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.mitsubishiRed,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: Text(l10n.retry),
-            ),
-          ],
-        ),
+      body: AppErrorView(
+        error: error,
+        onRetry: () => ref.refresh(productDetailProvider(widget.productId)),
       ),
     );
   }
@@ -553,7 +535,7 @@ child: product_image.ProductNetworkImage(
 
   void _addToCart(Product product, AppLocalizations l10n) {
     if (!ref.read(authProvider).isAuthenticated) {
-      AppToast.show(context, 'Anda belum login. Silakan login terlebih dahulu.', isError: true, bottomOffset: 100);
+      AppToast.show(context, AppLocalizations.of(context).notLoggedIn, isError: true, bottomOffset: 100);
       return;
     }
     setState(() => _isAddingToCart = true);
@@ -584,7 +566,7 @@ child: product_image.ProductNetworkImage(
 
   void _buyNow(Product product, AppLocalizations l10n, int displayStock) {
     if (!ref.read(authProvider).isAuthenticated) {
-      AppToast.show(context, 'Anda belum login. Silakan login terlebih dahulu.', isError: true, bottomOffset: 100);
+      AppToast.show(context, AppLocalizations.of(context).notLoggedIn, isError: true, bottomOffset: 100);
       return;
     }
     if (_quantity > displayStock) {

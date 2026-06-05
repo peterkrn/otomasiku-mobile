@@ -46,5 +46,14 @@ void main() {
         expect(find.textContaining(message), findsOneWidget);
       }
     });
+
+    testWidgets('shows localized errorGeneric message', (tester) async {
+      final details = FlutterErrorDetails(exception: Exception('any'));
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(body: AppErrorWidget(details)),
+      ));
+      // AppLocalizations not injected → falls back to English hardcoded string
+      expect(find.text('Something went wrong.'), findsOneWidget);
+    });
   });
 }

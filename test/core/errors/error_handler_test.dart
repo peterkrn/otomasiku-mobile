@@ -74,10 +74,10 @@ void main() {
       expect(msg, contains('outOfStock'));
     });
 
-    test('VALIDATION_ERROR formats field: message', () {
+    test('VALIDATION_ERROR → errorValidation (no raw server text)', () {
       final msg = translateErrorCode('VALIDATION_ERROR', l10n,
           details: {'field': 'email', 'message': 'required'});
-      expect(msg, 'email: required');
+      expect(msg, 'errorValidation');
     });
 
     test('unknown code → errorGeneric', () {

@@ -73,7 +73,13 @@ String translateErrorCode(
       final available = details?['available'] ?? 0;
       return '${l10n.outOfStock} (${l10n.available}: $available)';
     case 'INSUFFICIENT_STOCK':
-      final available = details?['available'] as int? ?? 0;
+      final raw = details?['available'];
+      final available = switch (raw) {
+        int v => v,
+        num v => v.toInt(),
+        String v => int.tryParse(v) ?? 0,
+        _ => 0,
+      };
       return l10n.insufficientStock(available);
 
     // Order errors
@@ -100,9 +106,6 @@ String translateErrorCode(
 
     // Validation errors
     case 'VALIDATION_ERROR':
-      final field = details?['field'] ?? '';
-      final message = details?['message'] ?? '';
-      return '$field: $message'.trim();
     case 'INVALID_INPUT':
       return l10n.errorValidation;
 

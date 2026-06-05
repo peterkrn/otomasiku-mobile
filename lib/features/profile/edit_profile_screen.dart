@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
-import '../../core/errors/app_exception.dart';
 import '../../core/utils/error_handler.dart';
 import '../../shared/widgets/app_error_view.dart';
 import '../../data/repositories/profile_repository.dart';
@@ -68,9 +67,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     } catch (e) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
-      final errorMessage = e is ApiException
-          ? translateErrorCode(e.code, l10n.asErrorL10n, details: e.details)
-          : l10n.errorGeneric;
+      final errorMessage = errorMessageFor(e, l10n.asErrorL10n);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),
       );

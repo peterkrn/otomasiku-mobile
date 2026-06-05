@@ -668,6 +668,60 @@ abstract class AppLocalizations {
   /// **'Gagal memuat detail produk'**
   String get errorLoadingProductDetail;
 
+  /// No description provided for @errorOffline.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada koneksi internet. Periksa jaringan Anda.'**
+  String get errorOffline;
+
+  /// No description provided for @errorTimeout.
+  ///
+  /// In id, this message translates to:
+  /// **'Permintaan timeout. Silakan coba lagi.'**
+  String get errorTimeout;
+
+  /// No description provided for @errorSessionExpired.
+  ///
+  /// In id, this message translates to:
+  /// **'Sesi Anda telah berakhir. Silakan masuk kembali.'**
+  String get errorSessionExpired;
+
+  /// No description provided for @errorServer.
+  ///
+  /// In id, this message translates to:
+  /// **'Kesalahan server. Silakan coba beberapa saat lagi.'**
+  String get errorServer;
+
+  /// No description provided for @errorLoadAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal memuat alamat.'**
+  String get errorLoadAddress;
+
+  /// No description provided for @errorImageLoad.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal memuat gambar.'**
+  String get errorImageLoad;
+
+  /// No description provided for @notLoggedIn.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda belum login. Silakan login untuk melanjutkan.'**
+  String get notLoggedIn;
+
+  /// No description provided for @addressSaveFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal menyimpan alamat. Silakan coba lagi.'**
+  String get addressSaveFailed;
+
+  /// No description provided for @goToLogin.
+  ///
+  /// In id, this message translates to:
+  /// **'Ke Halaman Login'**
+  String get goToLogin;
+
   /// No description provided for @loadMore.
   ///
   /// In id, this message translates to:

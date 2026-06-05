@@ -302,6 +302,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorLoadingProductDetail => 'Failed to load product details';
 
   @override
+  String get errorOffline =>
+      'No internet connection. Please check your network.';
+
+  @override
+  String get errorTimeout => 'Request timed out. Please try again.';
+
+  @override
+  String get errorSessionExpired =>
+      'Your session has expired. Please log in again.';
+
+  @override
+  String get errorServer => 'Server error. Please try again later.';
+
+  @override
+  String get errorLoadAddress => 'Failed to load addresses.';
+
+  @override
+  String get errorImageLoad => 'Failed to load image.';
+
+  @override
+  String get notLoggedIn => 'You are not logged in. Please log in to continue.';
+
+  @override
+  String get addressSaveFailed => 'Failed to save address. Please try again.';
+
+  @override
+  String get goToLogin => 'Go to Login';
+
+  @override
   String get loadMore => 'Load more';
 
   @override

@@ -43,8 +43,8 @@ void main() {
                   'images': [
                     {
                       'id': 'img-1',
-                      'url': 'assets/images/test.jpeg',
-                      'path': 'products/test.jpeg',
+                      'url': 'assets/images/products/mitsubishi/inverter/fr_a840_2_2k_1.jpeg',
+                      'path': 'products/mitsubishi/inverter/fr_a840_2_2k_1.jpeg',
                       'is_primary': true,
                       'sort_order': 0,
                     },

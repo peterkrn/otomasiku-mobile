@@ -8,7 +8,7 @@ import '../../../providers/auth_provider.dart';
 import '../../../models/product.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/product_provider.dart';
-import '../../../shared/widgets/retry_widget.dart';
+import '../../../shared/widgets/app_error_view.dart';
 import '../../../shared/widgets/shimmer_grid.dart';
 import '../widgets/hero_banner.dart';
 import '../widgets/product_card.dart';
@@ -146,9 +146,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ? _buildEmptyState(l10n, isDark)
                   : _buildProductGrid(products),
               loading: () => const ShimmerGrid(),
-              error: (error, _) => RetryWidget(
-                message: l10n.errorLoadingProducts,
-                onRetry: () => ref.read(productListProvider.notifier).refresh(),
+              error: (error, _) => SliverToBoxAdapter(
+                child: AppErrorView(
+                  error: error,
+                  onRetry: () => ref.read(productListProvider.notifier).refresh(),
+                ),
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 80)),

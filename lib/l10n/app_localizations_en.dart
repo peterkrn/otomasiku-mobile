@@ -302,6 +302,65 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorLoadingProductDetail => 'Failed to load product details';
 
   @override
+  String get errorOffline =>
+      'No internet connection. Please check your network.';
+
+  @override
+  String get errorTimeout => 'Request timed out. Please try again.';
+
+  @override
+  String get errorSessionExpired =>
+      'Your session has expired. Please log in again.';
+
+  @override
+  String get errorServer => 'Server error. Please try again later.';
+
+  @override
+  String get errorLoadAddress => 'Failed to load addresses.';
+
+  @override
+  String get errorImageLoad => 'Failed to load image.';
+
+  @override
+  String get notLoggedIn => 'You are not logged in. Please log in to continue.';
+
+  @override
+  String get addressSaveFailed => 'Failed to save address. Please try again.';
+
+  @override
+  String get goToLogin => 'Go to Login';
+
+  @override
+  String get cancelled => 'Cancelled';
+
+  @override
+  String get errorWeakPassword => 'Password must be at least 6 characters.';
+
+  @override
+  String get errorUnauthorized => 'You do not have access.';
+
+  @override
+  String get errorProductNotFound => 'Product not found.';
+
+  @override
+  String get errorOrderPaid => 'Order has already been paid.';
+
+  @override
+  String get errorPaymentFailed => 'Payment failed.';
+
+  @override
+  String get errorInvalidAmount => 'Invalid payment amount.';
+
+  @override
+  String get errorCartEmpty => 'Your cart is empty.';
+
+  @override
+  String get errorInvalidQuantity => 'Invalid quantity.';
+
+  @override
+  String get errorServiceUnavailable => 'Service is currently unavailable.';
+
+  @override
   String get loadMore => 'Load more';
 
   @override

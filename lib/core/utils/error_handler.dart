@@ -1,3 +1,30 @@
+import '../errors/app_exception.dart';
+
+/// Minimal l10n contract required by [errorMessageFor].
+/// Implemented by the generated AppLocalizations class.
+abstract interface class ErrorL10n {
+  String get errorOffline;
+  String get errorTimeout;
+  String get errorSessionExpired;
+  String get errorServer;
+  String get errorGeneric;
+  /// Delegates to [translateErrorCode] for backend API error codes.
+  String translateCode(String code, {Map<String, dynamic>? details});
+}
+
+/// Maps a thrown [error] object to a localized user-facing string.
+String errorMessageFor(Object error, ErrorL10n l10n) {
+  return switch (error) {
+    NetworkException() => l10n.errorOffline,
+    TimeoutException() => l10n.errorTimeout,
+    SessionExpiredException() => l10n.errorSessionExpired,
+    ServerException() => l10n.errorServer,
+    ApiException(:final code, :final details) =>
+      l10n.translateCode(code, details: details),
+    _ => l10n.errorGeneric,
+  };
+}
+
 /// Translates error codes from Express backend to localized strings
 /// Used when backend returns error.code instead of full messages
 /// Source: docs/AI_RULES.md — "No hardcoded error text from Express"

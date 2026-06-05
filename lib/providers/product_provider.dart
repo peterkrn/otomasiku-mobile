@@ -11,6 +11,7 @@ final productListProvider =
 class ProductListNotifier extends AsyncNotifier<List<Product>> {
   int _page = 1;
   bool _hasMore = true;
+  bool _isLoadingMore = false;
   DateTime? _lastFetchedAt;
   ProductFilter? _lastFilter;
 
@@ -40,7 +41,8 @@ class ProductListNotifier extends AsyncNotifier<List<Product>> {
   }
 
   Future<void> loadMore() async {
-    if (!_hasMore) return;
+    if (!_hasMore || _isLoadingMore) return;
+    _isLoadingMore = true;
     final filter = ref.read(productFilterProvider);
     _page++;
     try {
@@ -52,6 +54,8 @@ class ProductListNotifier extends AsyncNotifier<List<Product>> {
     } catch (e, st) {
       _page--;
       state = AsyncError(e, st);
+    } finally {
+      _isLoadingMore = false;
     }
   }
 

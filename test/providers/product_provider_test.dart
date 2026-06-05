@@ -199,7 +199,11 @@ class _MockProductRepository implements ProductRepository {
   Future<ProductListResponse> getProducts(ProductFilter filter) async {
     getProductsCalls++;
     if (pageResponses != null) {
-      final resp = pageResponses![_pageCallIndex.clamp(0, pageResponses!.length - 1)];
+      final expectedPage = _pageCallIndex + 1;
+      if (filter.page != expectedPage) {
+        throw StateError('Expected page $expectedPage, got ${filter.page}');
+      }
+      final resp = pageResponses![_pageCallIndex];
       _pageCallIndex++;
       return resp;
     }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:otomasiku_mobile/core/errors/app_error_widget.dart';
@@ -24,6 +25,26 @@ void main() {
         ),
       ));
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('shows error icon', (tester) async {
+      final details = FlutterErrorDetails(exception: Exception('any error'));
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(body: AppErrorWidget(details)),
+      ));
+      expect(find.byIcon(Icons.error_outline), findsOneWidget);
+    });
+
+    testWidgets('shows exception text in debug mode', (tester) async {
+      // kDebugMode is true in test runs
+      const message = 'specific error for test';
+      final details = FlutterErrorDetails(exception: Exception(message));
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(body: AppErrorWidget(details)),
+      ));
+      if (kDebugMode) {
+        expect(find.textContaining(message), findsOneWidget);
+      }
     });
   });
 }

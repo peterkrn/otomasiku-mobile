@@ -691,7 +691,7 @@ class OrderDetailScreen extends ConsumerWidget {
       case 'done':
         return l10n.delivered;
       case 'cancelled':
-        return 'Dibatalkan';
+        return l10n.cancelled;
       default:
         return status;
     }

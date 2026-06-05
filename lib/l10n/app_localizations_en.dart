@@ -331,6 +331,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get goToLogin => 'Go to Login';
 
   @override
+  String get cancelled => 'Cancelled';
+
+  @override
+  String get errorWeakPassword => 'Password must be at least 6 characters.';
+
+  @override
+  String get errorUnauthorized => 'You do not have access.';
+
+  @override
+  String get errorProductNotFound => 'Product not found.';
+
+  @override
+  String get errorOrderPaid => 'Order has already been paid.';
+
+  @override
+  String get errorPaymentFailed => 'Payment failed.';
+
+  @override
+  String get errorInvalidAmount => 'Invalid payment amount.';
+
+  @override
+  String get errorCartEmpty => 'Your cart is empty.';
+
+  @override
+  String get errorInvalidQuantity => 'Invalid quantity.';
+
+  @override
+  String get errorServiceUnavailable => 'Service is currently unavailable.';
+
+  @override
   String get loadMore => 'Load more';
 
   @override

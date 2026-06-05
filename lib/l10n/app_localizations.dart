@@ -722,6 +722,66 @@ abstract class AppLocalizations {
   /// **'Ke Halaman Login'**
   String get goToLogin;
 
+  /// No description provided for @cancelled.
+  ///
+  /// In id, this message translates to:
+  /// **'Dibatalkan'**
+  String get cancelled;
+
+  /// No description provided for @errorWeakPassword.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata sandi minimal 6 karakter.'**
+  String get errorWeakPassword;
+
+  /// No description provided for @errorUnauthorized.
+  ///
+  /// In id, this message translates to:
+  /// **'Anda tidak memiliki akses.'**
+  String get errorUnauthorized;
+
+  /// No description provided for @errorProductNotFound.
+  ///
+  /// In id, this message translates to:
+  /// **'Produk tidak ditemukan.'**
+  String get errorProductNotFound;
+
+  /// No description provided for @errorOrderPaid.
+  ///
+  /// In id, this message translates to:
+  /// **'Pesanan sudah dibayar.'**
+  String get errorOrderPaid;
+
+  /// No description provided for @errorPaymentFailed.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran gagal.'**
+  String get errorPaymentFailed;
+
+  /// No description provided for @errorInvalidAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Nominal pembayaran tidak valid.'**
+  String get errorInvalidAmount;
+
+  /// No description provided for @errorCartEmpty.
+  ///
+  /// In id, this message translates to:
+  /// **'Keranjang Anda kosong.'**
+  String get errorCartEmpty;
+
+  /// No description provided for @errorInvalidQuantity.
+  ///
+  /// In id, this message translates to:
+  /// **'Jumlah tidak valid.'**
+  String get errorInvalidQuantity;
+
+  /// No description provided for @errorServiceUnavailable.
+  ///
+  /// In id, this message translates to:
+  /// **'Layanan sedang tidak tersedia.'**
+  String get errorServiceUnavailable;
+
   /// No description provided for @loadMore.
   ///
   /// In id, this message translates to:

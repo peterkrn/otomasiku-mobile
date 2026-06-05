@@ -333,6 +333,36 @@ class AppLocalizationsId extends AppLocalizations {
   String get goToLogin => 'Ke Halaman Login';
 
   @override
+  String get cancelled => 'Dibatalkan';
+
+  @override
+  String get errorWeakPassword => 'Kata sandi minimal 6 karakter.';
+
+  @override
+  String get errorUnauthorized => 'Anda tidak memiliki akses.';
+
+  @override
+  String get errorProductNotFound => 'Produk tidak ditemukan.';
+
+  @override
+  String get errorOrderPaid => 'Pesanan sudah dibayar.';
+
+  @override
+  String get errorPaymentFailed => 'Pembayaran gagal.';
+
+  @override
+  String get errorInvalidAmount => 'Nominal pembayaran tidak valid.';
+
+  @override
+  String get errorCartEmpty => 'Keranjang Anda kosong.';
+
+  @override
+  String get errorInvalidQuantity => 'Jumlah tidak valid.';
+
+  @override
+  String get errorServiceUnavailable => 'Layanan sedang tidak tersedia.';
+
+  @override
   String get loadMore => 'Muat lebih banyak';
 
   @override

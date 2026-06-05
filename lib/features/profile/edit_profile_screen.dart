@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/errors/app_exception.dart';
 import '../../core/utils/error_handler.dart';
+import '../../shared/widgets/app_error_view.dart';
 import '../../data/repositories/profile_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
@@ -67,11 +68,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     } catch (e) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
-      final errorCode = e is ApiException ? e.code : 'UPDATE_FAILED';
-      final errorMessage = translateErrorCode(errorCode, {
-        'error_invalid_input': l10n.errorGeneric,
-        'error_unknown': l10n.errorGeneric,
-      });
+      final errorMessage = e is ApiException
+          ? translateErrorCode(e.code, l10n.asErrorL10n, details: e.details)
+          : l10n.errorGeneric;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),
       );

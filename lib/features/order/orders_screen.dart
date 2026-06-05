@@ -424,7 +424,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
         );
       case 'cancelled':
         return _StatusInfo(
-          label: 'Dibatalkan',
+          label: l10n.cancelled,
           icon: Icons.cancel,
           color: AppColors.mitsubishiRed,
           bgColor: AppColors.mitsubishiRed.withValues(alpha: 0.1),

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Global error widget shown by [ErrorWidget.builder].
 /// Constraint-safe: uses intrinsic sizing so it fits in any parent.
@@ -7,6 +8,14 @@ class AppErrorWidget extends StatelessWidget {
   final FlutterErrorDetails details;
 
   const AppErrorWidget(this.details, {super.key});
+
+  String _message(BuildContext context) {
+    try {
+      return AppLocalizations.of(context).errorGeneric;
+    } catch (_) {
+      return 'Something went wrong.';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +29,10 @@ class AppErrorWidget extends StatelessWidget {
             children: [
               const Icon(Icons.error_outline, size: 48, color: Color(0xFFE7192D)),
               const SizedBox(height: 12),
-              const Text(
-                'Terjadi kesalahan',
+              Text(
+                _message(context),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               if (kDebugMode) ...[
                 const SizedBox(height: 8),

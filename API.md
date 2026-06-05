@@ -86,15 +86,39 @@ All endpoints are prefixed with the base URL. Authentication uses a Supabase JWT
 
 ## 7. Products
 
+### Canonical image object shape
+
+All product image objects — in the list response, detail response, and `/images` endpoint — use the same snake_case shape:
+
+```json
+{
+  "id": 1,
+  "product_id": 1,
+  "url": "https://…/img.jpg",
+  "path": "products/1/images/…",
+  "is_primary": true,
+  "sort_order": 0,
+  "created_at": "2024-01-01T00:00:00.000Z"
+}
+```
+
+### Endpoints
+
 | Method | Endpoint | Auth | Input | Response |
 | :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/api/products` | Public | Query: `brand`, `category`, `search`, `page`, `pageSize` | `200 { "success": true, "data": { "data": [...], "total", "page", "pageSize" } }` |
-| `GET` | `/api/products/:id` | Public | None | `200 { "success": true, "data": { ... } }` |
-| `GET` | `/api/products/slug/:slug` | Public | None | `200 { "success": true, "data": { ... } }` |
+| `GET` | `/api/products` | Public | Query: `brand` (slug), `category` (slug), `search`, `page`, `pageSize`.<br>Admin may also pass `brandId` (int) / `categoryId` (int) instead of slugs. | `200 { "success": true, "data": { "data": [ { ...product, "images": [ {image object} ] } ], "total", "page", "pageSize", "totalPages" } }` |
+| `GET` | `/api/products/:id` | Public | None | `200 { "success": true, "data": { ...product, "images": [ {image object} ], "documents": [...] } }` |
+| `GET` | `/api/products/slug/:slug` | Public | None | `200 { "success": true, "data": { ...product, "images": [ {image object} ], "documents": [...] } }` |
 | `POST` | `/api/products` | Admin | Body: `{ "name", "slug", "brandId", "categoryId", "price", "stock", "sku"?, "originalPrice"?, "descriptionId"?, "descriptionEn"?, "series"?, "subSeries"?, "variant"?, "unit"?, "minOrder"?, "isPublished"? }` | `200 { "success": true, "data": { ... } }` |
 | `PUT` | `/api/products/:id` | Admin | Body: all fields optional | `200 { "success": true, "data": { ... } }` |
 | `DELETE` | `/api/products/:id` | Admin | None | `204 No Content` |
-| `POST` | `/api/products/:id/assets` | Admin | `multipart/form-data` — image (jpeg/png/webp) or PDF | `200 { "success": true, "data": { "url": "string" } }` |
+| `POST` | `/api/products/:id/assets` | Admin | `multipart/form-data` — field: image (jpeg/png/webp, max 8 per product) or PDF. Optional fields: `is_primary` ("true"/"false"), `sort_order` (int), `type` (string, for PDF) | `201` — Image: `{ "success": true, "data": { "id", "url", "path", "mime", "is_primary", "sort_order" } }` — Document: `{ "success": true, "data": { "id", "name", "type", "url", "path", "sizeKb" } }` |
+| `GET` | `/api/products/:id/images` | Admin | None | `200 { "success": true, "data": [ {image object} ] }` |
+| `DELETE` | `/api/products/:id/images/:imageId` | Admin | None | `204 No Content` |
+| `PATCH` | `/api/products/:id/images/reorder` | Admin | Body: `{ "order": [imageId, …] }` (all image IDs in desired order) | `200 { "success": true, "data": [ {image object} ] }` |
+| `PATCH` | `/api/products/:id/images/:imageId/primary` | Admin | None | `200 { "success": true, "data": {image object} }` |
+| `GET` | `/api/products/:id/documents` | Admin | None | `200 { "success": true, "data": [ { "id", "name", "type", "url", "path", "sizeKb", "createdAt" } ] }` |
+| `DELETE` | `/api/products/:id/documents/:documentId` | Admin | None | `204 No Content` |
 
 ---
 
@@ -119,7 +143,7 @@ All endpoints are prefixed with the base URL. Authentication uses a Supabase JWT
 | Method | Endpoint | Auth | Input | Response |
 | :--- | :--- | :--- | :--- | :--- |
 | `GET` | `/api/orders` | Customer/Admin | Query: `page`, `pageSize` | `200 { "success": true, "data": { "data": [...], "total", "page", "pageSize" } }` |
-| `GET` | `/api/orders/:id` | Customer/Admin | None | `200 { "success": true, "data": { ...orderDetail } }` |
+| `GET` | `/api/orders/:id` | Customer/Admin | None | `200 { "success": true, "data": { "order": { ...orderFields }, "items": [ { "id", "productId", "productName", "quantity", "unitPrice", "subtotal" } ] } }` |
 | `GET` | `/api/orders/:id/status-history` | Customer/Admin | None | `200 { "success": true, "data": [ { "status", "changedAt", "changedBy", "notes" } ] }` |
 | `POST` | `/api/orders` | Customer/Admin | Header: `X-Idempotency-Key` <br> Body: `{ "addressId": "uuid", "notes"?: "string (max 500)" }` | `201 { "success": true, "data": { "orderId", "orderNumber", "totalAmount" } }` |
 

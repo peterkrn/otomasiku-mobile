@@ -240,7 +240,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     }
 
     if (_selectedAddressId == null) {
-      AppToast.show(context, 'Silakan pilih alamat pengiriman',
+      AppToast.show(context, l10n.pleaseSelectShippingAddress,
           isError: true, bottomOffset: 100);
       return;
     }
@@ -269,7 +269,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       messenger.showSnackBar(SnackBar(
         content: Text(
           e.toString().contains('INSUFFICIENT_STOCK')
-              ? 'Stok tidak mencukupi. Silakan periksa kembali keranjang Anda.'
+              ? l10n.insufficientStock(0)
               : errorMsg,
         ),
         backgroundColor: AppColors.mitsubishiRed,

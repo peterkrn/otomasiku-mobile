@@ -361,6 +361,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorServiceUnavailable => 'Service is currently unavailable.';
 
   @override
+  String get pleaseSelectShippingAddress => 'Please select a shipping address.';
+
+  @override
+  String get paymentTimeExpired => 'Payment time has expired.';
+
+  @override
   String get loadMore => 'Load more';
 
   @override

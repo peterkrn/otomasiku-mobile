@@ -137,6 +137,8 @@
   "errorCartEmpty": "Your cart is empty.",
   "errorInvalidQuantity": "Invalid quantity.",
   "errorServiceUnavailable": "Service is currently unavailable.",
+  "pleaseSelectShippingAddress": "Please select a shipping address.",
+  "paymentTimeExpired": "Payment time has expired.",
   "loadMore": "Load more",
   "back": "Back",
   "close": "Close",

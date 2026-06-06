@@ -208,11 +208,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         redirectTo: 'io.otomasiku.app://login-callback',
       );
       if (mounted) setState(() { _sent = true; _isLoading = false; });
-    } on AuthException catch (e) {
+    } on AuthException catch (_) {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message), backgroundColor: AppColors.mitsubishiRed),
+          SnackBar(content: Text(AppLocalizations.of(context).errorGeneric), backgroundColor: AppColors.mitsubishiRed),
         );
       }
     }

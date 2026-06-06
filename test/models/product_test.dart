@@ -24,7 +24,13 @@ void main() {
       'descriptionId': 'Deskripsi inverter',
       'descriptionEn': 'Inverter description',
       'images': [
-        {'url': 'assets/images/products/mitsubishi/inverter/fr_a840_2_2k_1.jpeg', 'isPrimary': true},
+        {
+          'id': 'img-1',
+          'url': 'assets/images/products/mitsubishi/inverter/fr_a840_2_2k_1.jpeg',
+          'path': 'products/mitsubishi/inverter/fr_a840_2_2k_1.jpeg',
+          'is_primary': true,
+          'sort_order': 0,
+        },
       ],
       'isPublished': true,
       'createdAt': '2026-01-01T00:00:00.000Z',
@@ -51,8 +57,11 @@ void main() {
       expect(product.minOrder, 1);
       expect(product.descriptionId, 'Deskripsi inverter');
       expect(product.images.length, 1);
+      expect(product.images.first.id, 'img-1');
       expect(product.images.first.url, 'assets/images/products/mitsubishi/inverter/fr_a840_2_2k_1.jpeg');
+      expect(product.images.first.path, 'products/mitsubishi/inverter/fr_a840_2_2k_1.jpeg');
       expect(product.images.first.isPrimary, true);
+      expect(product.images.first.sortOrder, 0);
       expect(product.primaryImageUrl, 'assets/images/products/mitsubishi/inverter/fr_a840_2_2k_1.jpeg');
       expect(product.isPublished, true);
     });

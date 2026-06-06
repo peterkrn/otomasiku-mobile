@@ -107,7 +107,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
       }
     } catch (e) {
       if (mounted) {
-        AppToast.show(context, 'Gagal menyimpan alamat', isError: true);
+        AppToast.show(context, AppLocalizations.of(context).addressSaveFailed, isError: true);
       }
     } finally {
       if (mounted) {

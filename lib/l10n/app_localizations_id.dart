@@ -302,6 +302,73 @@ class AppLocalizationsId extends AppLocalizations {
   String get errorLoadingProductDetail => 'Gagal memuat detail produk';
 
   @override
+  String get errorOffline =>
+      'Tidak ada koneksi internet. Periksa jaringan Anda.';
+
+  @override
+  String get errorTimeout => 'Permintaan timeout. Silakan coba lagi.';
+
+  @override
+  String get errorSessionExpired =>
+      'Sesi Anda telah berakhir. Silakan masuk kembali.';
+
+  @override
+  String get errorServer =>
+      'Kesalahan server. Silakan coba beberapa saat lagi.';
+
+  @override
+  String get errorLoadAddress => 'Gagal memuat alamat.';
+
+  @override
+  String get errorImageLoad => 'Gagal memuat gambar.';
+
+  @override
+  String get notLoggedIn =>
+      'Anda belum login. Silakan login untuk melanjutkan.';
+
+  @override
+  String get addressSaveFailed => 'Gagal menyimpan alamat. Silakan coba lagi.';
+
+  @override
+  String get goToLogin => 'Ke Halaman Login';
+
+  @override
+  String get cancelled => 'Dibatalkan';
+
+  @override
+  String get errorWeakPassword => 'Kata sandi minimal 6 karakter.';
+
+  @override
+  String get errorUnauthorized => 'Anda tidak memiliki akses.';
+
+  @override
+  String get errorProductNotFound => 'Produk tidak ditemukan.';
+
+  @override
+  String get errorOrderPaid => 'Pesanan sudah dibayar.';
+
+  @override
+  String get errorPaymentFailed => 'Pembayaran gagal.';
+
+  @override
+  String get errorInvalidAmount => 'Nominal pembayaran tidak valid.';
+
+  @override
+  String get errorCartEmpty => 'Keranjang Anda kosong.';
+
+  @override
+  String get errorInvalidQuantity => 'Jumlah tidak valid.';
+
+  @override
+  String get errorServiceUnavailable => 'Layanan sedang tidak tersedia.';
+
+  @override
+  String get pleaseSelectShippingAddress => 'Silakan pilih alamat pengiriman.';
+
+  @override
+  String get paymentTimeExpired => 'Waktu pembayaran habis.';
+
+  @override
   String get loadMore => 'Muat lebih banyak';
 
   @override

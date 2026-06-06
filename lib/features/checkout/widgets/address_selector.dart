@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_router.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../providers/address_provider.dart';
+import '../../../shared/widgets/app_error_view.dart';
 
 class AddressSelector extends ConsumerWidget {
   final String? selectedAddressId;
@@ -190,9 +191,9 @@ class AddressSelector extends ConsumerWidget {
         height: 60,
         child: Center(child: CircularProgressIndicator()),
       ),
-      error: (e, _) => Text(
-        'Gagal memuat alamat',
-        style: TextStyle(color: AppColors.mitsubishiRed),
+      error: (e, _) => AppErrorView(
+        error: e,
+        onRetry: () => ref.invalidate(addressListProvider),
       ),
     );
   }

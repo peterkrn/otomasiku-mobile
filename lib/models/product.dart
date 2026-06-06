@@ -139,12 +139,20 @@ class Category {
 
 @JsonSerializable()
 class ProductImage {
+  final String id;
   final String url;
+  final String path;
+  @JsonKey(name: 'is_primary')
   final bool isPrimary;
+  @JsonKey(name: 'sort_order')
+  final int sortOrder;
 
   const ProductImage({
+    required this.id,
     required this.url,
+    required this.path,
     required this.isPrimary,
+    required this.sortOrder,
   });
 
   factory ProductImage.fromJson(Map<String, dynamic> json) =>

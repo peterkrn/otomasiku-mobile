@@ -7,7 +7,7 @@ import '../../core/utils/currency_formatter.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/order.dart';
 import '../../providers/order_provider.dart';
-import '../../shared/widgets/retry_widget.dart';
+import '../../shared/widgets/app_error_view.dart';
 
 class OrdersScreen extends ConsumerStatefulWidget {
   const OrdersScreen({super.key});
@@ -98,8 +98,8 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
         child: ordersAsync.when(
           data: (orders) => _buildOrderList(l10n, orders, isDark),
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => RetryWidget(
-            message: l10n.errorGeneric,
+          error: (error, _) => AppErrorView(
+            error: error,
             onRetry: () => ref.read(orderListProvider.notifier).refresh(),
           ),
         ),
@@ -424,7 +424,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
         );
       case 'cancelled':
         return _StatusInfo(
-          label: 'Dibatalkan',
+          label: l10n.cancelled,
           icon: Icons.cancel,
           color: AppColors.mitsubishiRed,
           bgColor: AppColors.mitsubishiRed.withValues(alpha: 0.1),

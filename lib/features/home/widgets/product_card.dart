@@ -234,7 +234,7 @@ child: product_image.ProductNetworkImage(
     if (!ref.read(authProvider).isAuthenticated) {
       AppToast.show(
         context,
-        'Anda belum login. Silakan login terlebih dahulu.',
+        AppLocalizations.of(context).notLoggedIn,
         isError: true,
       );
       return;
@@ -255,7 +255,7 @@ child: product_image.ProductNetworkImage(
 
     AppToast.show(
       context,
-      '${widget.product.name} ditambahkan ke keranjang',
+      AppLocalizations.of(context).addedToCart(widget.product.name),
       isError: false,
     );
 

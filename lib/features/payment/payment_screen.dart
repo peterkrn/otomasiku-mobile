@@ -11,6 +11,7 @@ import '../../core/utils/currency_formatter.dart';
 import '../../core/widgets/app_toast.dart';
 import '../../models/order.dart';
 import '../../providers/payment_provider.dart';
+import '../../shared/widgets/app_error_view.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
   final String orderId;
@@ -110,25 +111,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       body: orderAsync.when(
         data: (order) => _buildPaymentContent(order, l10n, isDark),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, size: 64, color: AppColors.mitsubishiRed),
-              const SizedBox(height: 16),
-              Text(l10n.errorGeneric),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.invalidate(paymentPollingProvider(widget.orderId)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.mitsubishiRed,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: Text(l10n.retry),
-              ),
-            ],
-          ),
+        error: (error, _) => AppErrorView(
+          error: error,
+          onRetry: () => ref.invalidate(paymentPollingProvider(widget.orderId)),
         ),
       ),
       bottomNavigationBar: null,
@@ -243,7 +228,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                isExpired ? 'Waktu pembayaran habis' : l10n.paymentWaiting,
+                isExpired ? l10n.paymentTimeExpired : l10n.paymentWaiting,
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,

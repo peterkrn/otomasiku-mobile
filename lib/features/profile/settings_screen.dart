@@ -448,10 +448,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         );
       }
-    } on AuthException catch (e) {
+    } on AuthException catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message), backgroundColor: AppColors.mitsubishiRed),
+          SnackBar(content: Text(l10n.errorGeneric), backgroundColor: AppColors.mitsubishiRed),
         );
       }
     }

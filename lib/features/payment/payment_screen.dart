@@ -422,7 +422,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 GestureDetector(
                   onTap: () {
                     Clipboard.setData(ClipboardData(text: displayTotal.toString()));
-                    AppToast.show(context, 'Nominal disalin', isError: false, bottomOffset: 160);
+                    AppToast.show(context, l10n.paymentCopied, isError: false, bottomOffset: 160);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(8),

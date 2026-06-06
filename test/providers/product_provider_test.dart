@@ -85,6 +85,66 @@ void main() {
     });
   });
 
+
+  group('ProductListNotifier _hasMore — cumulative count', () {
+    test('stops loading when cumulative count reaches total', () async {
+      // 3 total items across 2 pages (pageSize 2). After page 2, loaded=3 >= total=3 → no more.
+      final mockRepo = _MockProductRepository()
+        ..pageResponses = [
+          ProductListResponse(
+              data: [_product(1), _product(2)], total: 3, page: 1, pageSize: 2),
+          ProductListResponse(
+              data: [_product(3)], total: 3, page: 2, pageSize: 2),
+        ];
+
+      final container = ProviderContainer(
+        overrides: [productRepositoryProvider.overrideWithValue(mockRepo)],
+      );
+      addTearDown(container.dispose);
+
+      // Build
+      final page1 = await container.read(productListProvider.future);
+      expect(page1, hasLength(2));
+
+      // loadMore — should load page 2
+      await container.read(productListProvider.notifier).loadMore();
+      final page2 = container.read(productListProvider).requireValue;
+      expect(page2, hasLength(3));
+
+      // loadMore again — _hasMore should be false, no extra API call
+      final callsBefore = mockRepo.getProductsCalls;
+      await container.read(productListProvider.notifier).loadMore();
+      expect(mockRepo.getProductsCalls, callsBefore); // no extra call
+    });
+
+    test('does not stop early when last page has fewer items than pageSize', () async {
+      // 5 total, pageSize 3. Page 1 = 3 items, page 2 = 2 items.
+      // Bug: page-length check would see 2 < 5 = true and keep going.
+      // Fix: cumulative 5 >= 5 = false → stops correctly.
+      final mockRepo = _MockProductRepository()
+        ..pageResponses = [
+          ProductListResponse(
+              data: [_product(1), _product(2), _product(3)], total: 5, page: 1, pageSize: 3),
+          ProductListResponse(
+              data: [_product(4), _product(5)], total: 5, page: 2, pageSize: 3),
+        ];
+
+      final container = ProviderContainer(
+        overrides: [productRepositoryProvider.overrideWithValue(mockRepo)],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(productListProvider.future);
+      await container.read(productListProvider.notifier).loadMore();
+
+      final callsBefore = mockRepo.getProductsCalls;
+      await container.read(productListProvider.notifier).loadMore(); // should not call
+      expect(mockRepo.getProductsCalls, callsBefore);
+      expect(container.read(productListProvider).requireValue, hasLength(5));
+    });
+  });
+
+
   group('productDetailProvider cache lookup', () {
     late _MockProductRepository mockRepo;
 
@@ -131,9 +191,22 @@ class _MockProductRepository implements ProductRepository {
   int getProductsCalls = 0;
   int getByIdCalls = 0;
 
+  // Override per-call responses for pagination tests
+  List<ProductListResponse>? pageResponses;
+  int _pageCallIndex = 0;
+
   @override
   Future<ProductListResponse> getProducts(ProductFilter filter) async {
     getProductsCalls++;
+    if (pageResponses != null) {
+      final expectedPage = _pageCallIndex + 1;
+      if (filter.page != expectedPage) {
+        throw StateError('Expected page $expectedPage, got ${filter.page}');
+      }
+      final resp = pageResponses![_pageCallIndex];
+      _pageCallIndex++;
+      return resp;
+    }
     return ProductListResponse(
       data: [_product(1), _product(2)],
       total: 2,

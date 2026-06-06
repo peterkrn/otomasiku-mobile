@@ -11,6 +11,7 @@ final productListProvider =
 class ProductListNotifier extends AsyncNotifier<List<Product>> {
   int _page = 1;
   bool _hasMore = true;
+  bool _isLoadingMore = false;
   DateTime? _lastFetchedAt;
   ProductFilter? _lastFilter;
 
@@ -40,17 +41,21 @@ class ProductListNotifier extends AsyncNotifier<List<Product>> {
   }
 
   Future<void> loadMore() async {
-    if (!_hasMore) return;
+    if (!_hasMore || _isLoadingMore) return;
+    _isLoadingMore = true;
     final filter = ref.read(productFilterProvider);
     _page++;
     try {
       final response =
           await ref.read(productRepositoryProvider).getProducts(filter.copyWith(page: _page));
-      _hasMore = response.data.length < response.total;
-      state = AsyncData([...state.value ?? [], ...response.data]);
+      final accumulated = <Product>[...state.value ?? [], ...response.data];
+      _hasMore = accumulated.length < response.total;
+      state = AsyncData(accumulated);
     } catch (e, st) {
       _page--;
       state = AsyncError(e, st);
+    } finally {
+      _isLoadingMore = false;
     }
   }
 

@@ -8,6 +8,8 @@ import '../../../core/widgets/app_toast.dart';
 import '../../../providers/address_provider.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/order_provider.dart';
+import '../../../core/utils/error_handler.dart';
+import '../../../shared/widgets/app_error_view.dart';
 import 'widgets/address_selector.dart';
 import 'widgets/checkout_bottom_bar.dart';
 import 'widgets/checkout_order_item.dart';
@@ -240,12 +242,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     }
 
     if (_selectedAddressId == null) {
-      AppToast.show(context, 'Silakan pilih alamat pengiriman',
+      AppToast.show(context, l10n.pleaseSelectShippingAddress,
           isError: true, bottomOffset: 100);
       return;
     }
 
-    final errorMsg = l10n.errorGeneric;
     final router = GoRouter.of(context);
     final messenger = ScaffoldMessenger.of(context);
 
@@ -267,11 +268,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       ref.read(selectedCartItemsProvider.notifier).state = {};
     } on Exception catch (e) {
       messenger.showSnackBar(SnackBar(
-        content: Text(
-          e.toString().contains('INSUFFICIENT_STOCK')
-              ? 'Stok tidak mencukupi. Silakan periksa kembali keranjang Anda.'
-              : errorMsg,
-        ),
+        content: Text(errorMessageFor(e, l10n.asErrorL10n)),
         backgroundColor: AppColors.mitsubishiRed,
       ));
     }

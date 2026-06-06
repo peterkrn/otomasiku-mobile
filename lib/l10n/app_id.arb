@@ -137,6 +137,8 @@
   "errorCartEmpty": "Keranjang Anda kosong.",
   "errorInvalidQuantity": "Jumlah tidak valid.",
   "errorServiceUnavailable": "Layanan sedang tidak tersedia.",
+  "pleaseSelectShippingAddress": "Silakan pilih alamat pengiriman.",
+  "paymentTimeExpired": "Waktu pembayaran habis.",
   "loadMore": "Muat lebih banyak",
   "back": "Kembali",
   "close": "Tutup",

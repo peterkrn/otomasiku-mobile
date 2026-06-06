@@ -228,7 +228,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                isExpired ? 'Waktu pembayaran habis' : l10n.paymentWaiting,
+                isExpired ? l10n.paymentTimeExpired : l10n.paymentWaiting,
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,

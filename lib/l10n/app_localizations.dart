@@ -782,6 +782,18 @@ abstract class AppLocalizations {
   /// **'Layanan sedang tidak tersedia.'**
   String get errorServiceUnavailable;
 
+  /// No description provided for @pleaseSelectShippingAddress.
+  ///
+  /// In id, this message translates to:
+  /// **'Silakan pilih alamat pengiriman.'**
+  String get pleaseSelectShippingAddress;
+
+  /// No description provided for @paymentTimeExpired.
+  ///
+  /// In id, this message translates to:
+  /// **'Waktu pembayaran habis.'**
+  String get paymentTimeExpired;
+
   /// No description provided for @loadMore.
   ///
   /// In id, this message translates to:

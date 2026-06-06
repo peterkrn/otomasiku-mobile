@@ -363,6 +363,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get errorServiceUnavailable => 'Layanan sedang tidak tersedia.';
 
   @override
+  String get pleaseSelectShippingAddress => 'Silakan pilih alamat pengiriman.';
+
+  @override
+  String get paymentTimeExpired => 'Waktu pembayaran habis.';
+
+  @override
   String get loadMore => 'Muat lebih banyak';
 
   @override

@@ -266,7 +266,7 @@ All error responses:
 **Param:** `:id` — Order UUID  
 **Valid transitions:**
 
-```
+```text
 pending → cancelled
 pending → processing   (payment callback only — cannot be set manually)
 processing → shipped
@@ -299,7 +299,7 @@ shipped → done
 
 ## 6. Status State Machine
 
-```
+```text
                     ┌── cancelled
                     │
   pending ──────────┤── processing (payment callback only)
@@ -314,7 +314,7 @@ shipped → done
 ```
 
 PaymentStatus transitions:
-```
+```text
 unpaid ──(BCA callback)──▶ paid
 unpaid ──(VA expired)────▶ expired
 ```
@@ -325,7 +325,9 @@ unpaid ──(VA expired)────▶ expired
 
 `POST /api/cart` and `POST /api/orders` require `Idempotency-Key: <uuid>` header.
 
-Duplicate requests with the same key return the cached response (code 409 `IDEMPOTENCY_KEY_EXISTS` if the key was already consumed by a different endpoint).
+Duplicate requests with the same key return the cached response with the original status code.
+
+If an idempotency key was already consumed by a different endpoint, the server rejects the request with `409 IDEMPOTENCY_KEY_EXISTS`.
 
 ---
 

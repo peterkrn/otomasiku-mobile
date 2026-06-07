@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +25,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _searchController = TextEditingController();
   final _scrollController = ScrollController();
   String _selectedCategorySlug = '';
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -33,6 +35,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchController.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
@@ -119,6 +122,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         onRefresh: () => ref.read(productListProvider.notifier).refresh(),
         child: CustomScrollView(
           controller: _scrollController,
+          cacheExtent: 600,
           slivers: [
             SliverToBoxAdapter(child: _buildSearchBar(context, isDark)),
             SliverToBoxAdapter(child: _buildFilterChips(isDark)),
@@ -182,10 +186,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
         onChanged: (value) {
-          ref.read(productFilterProvider.notifier).state = ref.read(productFilterProvider).copyWith(
-            search: value.isEmpty ? null : value,
-            clearSearch: value.isEmpty,
-          );
+          _searchDebounce?.cancel();
+          _searchDebounce = Timer(const Duration(milliseconds: 350), () {
+            ref.read(productFilterProvider.notifier).state = ref.read(productFilterProvider).copyWith(
+              search: value.isEmpty ? null : value,
+              clearSearch: value.isEmpty,
+            );
+          });
         },
       ),
     );
@@ -257,9 +264,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           childAspectRatio: 0.55,
         ),
         delegate: SliverChildBuilderDelegate(
-          (context, index) => ProductCard(
-            key: ValueKey('card-${products[index].id}'),
-            product: products[index],
+          (context, index) => RepaintBoundary(
+            child: ProductCard(
+              key: ValueKey('card-${products[index].id}'),
+              product: products[index],
+            ),
           ),
           childCount: products.length,
         ),

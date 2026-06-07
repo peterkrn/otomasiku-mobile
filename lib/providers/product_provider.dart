@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/errors/app_exception.dart';
 import '../data/repositories/product_repository.dart';
 import '../models/product.dart';
 import 'repository_providers.dart';
@@ -33,12 +34,26 @@ class ProductListNotifier extends AsyncNotifier<List<Product>> {
     _page = 1;
     _hasMore = true;
     _lastFilter = filter;
-    final response =
-        await ref.read(productRepositoryProvider).getProducts(filter.copyWith(page: 1));
-    _hasMore = response.data.length < response.total;
-    _lastFetchedAt = DateTime.now();
-    return response.data;
+    try {
+      final response =
+          await ref.read(productRepositoryProvider).getProducts(filter.copyWith(page: 1));
+      _hasMore = response.data.length < response.total;
+      _lastFetchedAt = DateTime.now();
+      return response.data;
+    } catch (e) {
+      // Preserve cached data only for transient errors and same filter context
+      if (!filterChanged &&
+          _isTransient(e) &&
+          state.hasValue &&
+          state.requireValue.isNotEmpty) {
+        return state.requireValue;
+      }
+      rethrow;
+    }
   }
+
+  bool _isTransient(Object e) =>
+      e is NetworkException || e is TimeoutException || e is ServerException;
 
   Future<void> loadMore() async {
     if (!_hasMore || _isLoadingMore) return;

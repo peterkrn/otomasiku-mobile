@@ -33,11 +33,19 @@ class ProductListNotifier extends AsyncNotifier<List<Product>> {
     _page = 1;
     _hasMore = true;
     _lastFilter = filter;
-    final response =
-        await ref.read(productRepositoryProvider).getProducts(filter.copyWith(page: 1));
-    _hasMore = response.data.length < response.total;
-    _lastFetchedAt = DateTime.now();
-    return response.data;
+    try {
+      final response =
+          await ref.read(productRepositoryProvider).getProducts(filter.copyWith(page: 1));
+      _hasMore = response.data.length < response.total;
+      _lastFetchedAt = DateTime.now();
+      return response.data;
+    } catch (e) {
+      // On transient error, keep last good data if available (error shown inline)
+      if (state.hasValue && state.requireValue.isNotEmpty) {
+        return state.requireValue;
+      }
+      rethrow;
+    }
   }
 
   Future<void> loadMore() async {

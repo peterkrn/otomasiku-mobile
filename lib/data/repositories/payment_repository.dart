@@ -36,6 +36,9 @@ class PaymentRepositoryImpl implements PaymentRepository {
       final data = apiResponse.data!;
       final orderMap = data['order'] as Map<String, dynamic>;
       orderMap['items'] = data['items'];
+      if (data['paymentProof'] != null) {
+        orderMap['paymentProof'] = data['paymentProof'];
+      }
       return Order.fromJson(orderMap);
     } catch (e) {
       if (kDebugMode) debugPrint('=== ORDER PARSE ERROR: $e\nDATA: ${apiResponse.data}');

@@ -1135,4 +1135,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sendResetLink => 'Send Reset Link';
+
+  @override
+  String get paymentUploadProof => 'Upload Transfer Proof';
+
+  @override
+  String get paymentProofPending => 'Awaiting Admin Verification';
+
+  @override
+  String get paymentProofApproved => 'Payment Confirmed';
+
+  @override
+  String paymentProofRejectedReason(String reason) {
+    return 'Rejected: $reason';
+  }
+
+  @override
+  String get paymentReupload => 'Re-upload';
+
+  @override
+  String get paymentBankName => 'Bank Name';
+
+  @override
+  String get paymentAccountName => 'Sender Account Name';
+
+  @override
+  String get paymentAmount => 'Transfer Amount';
+
+  @override
+  String get paymentPickImage => 'Gallery';
+
+  @override
+  String get paymentTakePhoto => 'Camera';
+
+  @override
+  String get paymentSubmitProof => 'Submit Transfer Proof';
+
+  @override
+  String get paymentProofUploaded => 'Transfer proof submitted successfully';
+
+  @override
+  String get paymentFieldsRequired => 'All fields are required';
 }

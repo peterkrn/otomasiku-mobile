@@ -5,6 +5,7 @@ import '../data/repositories/auth_repository.dart';
 import '../data/repositories/cart_repository.dart';
 import '../data/repositories/order_repository.dart';
 import '../data/repositories/payment_repository.dart';
+import '../data/repositories/payment_proof_repository.dart';
 import '../data/repositories/product_repository.dart';
 import '../data/repositories/profile_repository.dart';
 import 'api_provider.dart';
@@ -35,4 +36,8 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 
 final paymentRepositoryProvider = Provider<PaymentRepository>((ref) {
   return PaymentRepositoryImpl(ref.read(apiClientProvider));
+});
+
+final paymentProofRepositoryProvider = Provider<PaymentProofRepository>((ref) {
+  return PaymentProofRepositoryImpl(ref.read(apiClientProvider));
 });

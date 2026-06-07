@@ -467,5 +467,23 @@
   "profileSaved": "Profile saved successfully",
   "uploadPhotoSoon": "Photo upload feature coming soon",
   "forgotPasswordSubtitle": "Enter your email and we'll send you a link to reset your password",
-  "sendResetLink": "Send Reset Link"
+  "sendResetLink": "Send Reset Link",
+  "paymentUploadProof": "Upload Transfer Proof",
+  "paymentProofPending": "Awaiting Admin Verification",
+  "paymentProofApproved": "Payment Confirmed",
+  "paymentProofRejectedReason": "Rejected: {reason}",
+  "@paymentProofRejectedReason": {
+    "placeholders": {
+      "reason": { "type": "String" }
+    }
+  },
+  "paymentReupload": "Re-upload",
+  "paymentBankName": "Bank Name",
+  "paymentAccountName": "Sender Account Name",
+  "paymentAmount": "Transfer Amount",
+  "paymentPickImage": "Gallery",
+  "paymentTakePhoto": "Camera",
+  "paymentSubmitProof": "Submit Transfer Proof",
+  "paymentProofUploaded": "Transfer proof submitted successfully",
+  "paymentFieldsRequired": "All fields are required"
 }

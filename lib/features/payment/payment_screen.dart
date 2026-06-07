@@ -12,6 +12,7 @@ import '../../core/widgets/app_toast.dart';
 import '../../models/order.dart';
 import '../../providers/payment_provider.dart';
 import '../../shared/widgets/app_error_view.dart';
+import 'widgets/bukti_transfer_card.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
   final String orderId;
@@ -124,16 +125,26 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   Widget _buildPaymentContent(Order order, AppLocalizations l10n, bool isDark) {
     final remaining = _remaining(order);
     final isExpired = remaining == Duration.zero && order.vaExpiresAt != null;
+    final showCountdown = order.vaExpiresAt != null;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          _buildCountdownCard(order, remaining, isExpired, l10n),
-          const SizedBox(height: 16),
+          if (showCountdown) ...[
+            _buildCountdownCard(order, remaining, isExpired, l10n),
+            const SizedBox(height: 16),
+          ],
           _buildVaCard(order, isExpired, l10n, isDark),
           const SizedBox(height: 16),
           _buildAmountCard(order, l10n, isDark),
+          const SizedBox(height: 16),
+          BuktiTransferCard(
+            orderId: widget.orderId,
+            totalAmount: order.totalAmount > 0 ? order.totalAmount : widget.totalAmount,
+            proof: order.paymentProof,
+            onUploaded: () => ref.read(paymentPollingProvider(widget.orderId).notifier).checkNow(widget.orderId),
+          ),
           const SizedBox(height: 16),
           _buildInstructionsCard(l10n, isDark),
           const SizedBox(height: 16),

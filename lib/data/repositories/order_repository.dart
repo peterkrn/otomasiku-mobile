@@ -74,6 +74,9 @@ class OrderRepositoryImpl implements OrderRepository {
     final data = apiResponse.data!;
     final orderMap = data['order'] as Map<String, dynamic>;
     orderMap['items'] = data['items'];
+    if (data['paymentProof'] != null) {
+      orderMap['paymentProof'] = data['paymentProof'];
+    }
     return Order.fromJson(orderMap);
   }
 

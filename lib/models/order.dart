@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
 import '../core/utils/bigint_converter.dart';
+import 'payment_proof.dart';
 
 part 'order.g.dart';
 
@@ -33,6 +34,7 @@ class Order {
   final DateTime? deliveredAt;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final PaymentProof? paymentProof;
 
   const Order({
     required this.id,
@@ -54,6 +56,7 @@ class Order {
     this.deliveredAt,
     required this.createdAt,
     required this.updatedAt,
+    this.paymentProof,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);

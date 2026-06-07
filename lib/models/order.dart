@@ -15,13 +15,22 @@ class Order {
   @BigIntStringConverter()
   final int totalAmount;
 
+  @NullableBigIntStringConverter()
+  final int? subtotal;
+
+  @NullableBigIntStringConverter()
+  final int? shippingCost;
+
   final String? vaNumber;
   final DateTime? vaExpiresAt;
   final String? addressId;
   final OrderAddress? shippingAddress;
   final List<OrderItem>? items;
   final String? notes;
+  final String? adminNotes;
   final String? resiNumber;
+  final DateTime? shippedAt;
+  final DateTime? deliveredAt;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -31,13 +40,18 @@ class Order {
     required this.status,
     required this.paymentStatus,
     required this.totalAmount,
+    this.subtotal,
+    this.shippingCost,
     this.vaNumber,
     this.vaExpiresAt,
     this.addressId,
     this.shippingAddress,
     this.items,
     this.notes,
+    this.adminNotes,
     this.resiNumber,
+    this.shippedAt,
+    this.deliveredAt,
     required this.createdAt,
     required this.updatedAt,
   });

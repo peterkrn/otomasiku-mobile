@@ -1,151 +1,94 @@
-# Handoff — API Integration & Model Alignment
+# Handoff — 2026-06-07
 
-**Branch:** `feat/spec-08-09-profile-push` · **Base:** `master` (merged through PR #8)
+## Changes Made
 
----
+### Backend (`otomasiku-backend`)
 
-## What's Done This Session
+#### 1. Fix: Welcome email sent repeatedly (BUG)
 
-### 1. Firebase Setup (merged via PR #8)
-- `firebase_core`, `firebase_crashlytics`, `firebase_performance`, `firebase_messaging` added
-- `Firebase.initializeApp()` in `main.dart`
-- `android/build.gradle.kts` (root) created — was missing entirely
-- `android/app/build.gradle.kts` rewritten — had wrong content
-- `android/settings.gradle.kts` fixed — syntax error + FlutterFire plugins
-- `google-services.json` configured for `com.otomasiku.app`
-- `lib/firebase_options.dart` generated
+**File:** `src/infra/database/repositories/ProfileRepository.ts`
 
-### 2. API Base URL Fixed
-- Changed from `https://otomasiku-api-staging.up.railway.app/api` to `https://otomasiku-backend-staging.up.railway.app/api`
-- `ApiClient.dio.baseUrl` was empty string `''` — now reads from `EnvConfig.apiBaseUrl`
+**Root cause:** `upsertDefaultCustomer` used `update: {}` (empty) in the Prisma upsert. Since nothing was written on update, `updated_at` remained equal to `created_at` for existing users. The `isNew` detection (`|updated_at - created_at| < 1000ms`) always returned `true`, firing a welcome email on every bootstrap call.
 
-### 3. Product Model Aligned to Actual API
-**Problem:** Model expected nested `brand`/`category` objects + `images` array + `id` as String. API returns flat `brandId`/`categoryId` ints, no images, `id` as int.
+**Fix:** Changed to `update: { updated_at: new Date() }` so existing users get `updated_at` bumped, making the diff > 0 and `isNew = false`.
 
-**Fix:**
-- `Product.id` → `int` (added `idString` getter for UI)
-- `brand`/`category` → `brandId`/`categoryId` (int) with optional `brandObj`/`categoryObj` for future nested responses
-- `images` → optional, defaults to `[]`
-- Convenience getters (`brand`, `category`, `primaryImageUrl`) preserved for UI compatibility
-- All screen references updated from `product.id` → `product.idString`
+#### 2. Fix: `POST /api/cart` returning 201 instead of 200 (CONTRACT VIOLATION)
 
-### 4. Repository Response Parsing Fixed
-All repositories had double-nesting bugs (`apiResponse.data!['data']` when `apiResponse.data` already IS the object).
+**File:** `src/interfaces/http/handlers/cart.handler.ts`
 
-| Repository | Method | Fix |
-|---|---|---|
-| `product` | `getProductById` | Removed `['data']` nesting |
-| `order` | `getOrderById` | Removed `['data']` nesting |
-| `order` | `getStatusHistory` | Changed to parse `data` as array directly |
-| `order` | `createOrder` | `orderId` → `.toString()`, `totalAmount` → `BigIntStringConverter` |
-| `address` | `getAddresses` | Parse `data` as array directly (not `data.data`) |
-| `address` | `getAddressById/create/update` | Removed `['data']` nesting |
-| `profile` | `getProfile/updateProfile` | Removed `['data']` nesting |
-| `cart` | `addItem/updateItem` | Removed `['data']` nesting |
+**Root cause:** Handler returned `res.status(201)` but `TRANSACTIONS_API_CONTRACT.md` specifies `200` for this endpoint.
 
-### 5. API Route Mismatches Fixed
-
-| Issue | Before | After |
-|---|---|---|
-| Order status history | `/orders/$id/status` | `/orders/$id/status-history` |
-| Profile update method | `PUT /me` | `PATCH /me` |
-| Products page size param | `limit` | `pageSize` |
-| Orders page size param | `limit` | `pageSize` |
-| Cart addItem productId | sent as String | sent as `int.parse(productId)` |
-
-### 6. Model Resilience (int/String ID handling)
-API returns IDs as integers but Flutter code uses Strings for route params and state. Added `_ToStringConverter` to:
-- `CartItem.id`, `CartItem.productId`
-- `Order.id`, `OrderItem.productId`
-- `Address.id`
-
-### 7. UserProfile Model Updated
-API returns `{ "id", "email", "role", "profile": { "fullName", "phone", ... } }` (nested). Model now handles both flat and nested `profile` field.
-
-### 8. Dummy Data Removed
-- Deleted `lib/data/dummy/dummy_products.dart`
-- Deleted `lib/data/dummy/dummy_cart.dart`
-
-### 9. Push Notifications (in progress)
-- `lib/core/notifications/notification_service.dart` — FCM token management
-- `lib/core/notifications/notification_handler.dart` — foreground/background message handling
-- `lib/core/notifications/notification_channels.dart` — Android notification channels
-- Android manifest updated with FCM permissions
-
-### 10. Profile & Address Screens (in progress)
-- `lib/features/profile/edit_profile_screen.dart` — new screen
-- `lib/providers/address_provider.dart` — new provider
-- `lib/features/address/edit_address_screen.dart` — updated to match new Address model
-- `lib/features/shipping/shipping_screen.dart` — updated to match new Address model
+**Fix:** Changed to `res.json(responseBody)` (default 200) and updated idempotency key storage from 201 → 200.
 
 ---
 
-## Current State
+### Mobile (`otomasiku-mobile`)
 
-`flutter analyze` passes with only 2 info-level warnings (BuildContext across async gaps in checkout_screen.dart — pre-existing).
+#### 3. Feature: Pull-to-refresh on product detail screen
 
----
+**File:** `lib/features/product_detail/product_detail_screen.dart`
 
-## Files Modified (not yet committed)
+Added `RefreshIndicator` wrapping the `SingleChildScrollView` with `AlwaysScrollableScrollPhysics`. Calls `productListProvider.notifier.refresh()` — same network path as the home screen for consistent refresh duration/feel.
 
-**Core:**
-- `lib/core/config/env_config.dart` — API base URL
-- `lib/core/network/api_client.dart` — baseUrl from EnvConfig
-- `lib/core/network/api_interceptor.dart` — Crashlytics error recording
-- `lib/core/router/app_router.dart` — new routes
-- `lib/core/auth/token_storage.dart`
-- `lib/main.dart` — Firebase init, notification init
+#### 4. Feature: Image gallery with PageView + dot indicators
 
-**Models (all regenerated with build_runner):**
-- `product.dart` — flat brandId/categoryId, int id
-- `cart_item.dart` — _ToStringConverter for ids
-- `order.dart` — _ToStringConverter for ids
-- `address.dart` — _ToStringConverter for id
-- `user_profile.dart` — nested profile handling
+**File:** `lib/features/product_detail/product_detail_screen.dart`
 
-**Repositories:**
-- `product_repository.dart` — pageSize param, direct data parsing
-- `cart_repository.dart` — int productId, direct data parsing
-- `order_repository.dart` — pageSize param, BigIntStringConverter, direct parsing
-- `address_repository.dart` — array/direct data parsing
-- `profile_repository.dart` — PATCH method, direct data parsing
+Replaced single static image with:
+- `PageView.builder` when product has 2+ images (sorted by `sortOrder`)
+- Animated pill-style dot indicators (active = 20px red, inactive = 6px translucent)
+- Falls back to single image when only 1 image exists
+- Dark mode compatible
 
-**Screens:**
-- `product_card.dart` — `product.idString`
-- `product_detail_screen.dart` — `product.idString`
-- `compare_screen.dart` — `product.idString`
-- `search_screen.dart` — `product.idString`
-- `profile_screen.dart` — updated
-- `edit_address_screen.dart` — new Address model fields
-- `shipping_screen.dart` — new Address model fields
+#### 5. Fix: Unmodifiable list sort crash in image gallery
 
-**New files:**
-- `lib/core/notifications/` (3 files)
-- `lib/features/profile/edit_profile_screen.dart`
-- `lib/providers/address_provider.dart`
-- `.env.example`
-- Tests in `test/`
+**File:** `lib/features/product_detail/product_detail_screen.dart`
+
+**Root cause:** `product.images..sort()` mutated the original list in-place. The list from JSON deserialization / `const []` default is unmodifiable → runtime error.
+
+**Fix:** Changed to `List<ProductImage>.from(product.images)..sort(...)` to sort a mutable copy.
 
 ---
 
-## Still Pending
+## Contract Audit Summary
 
-| Item | Status | Notes |
-|---|---|---|
-| FCM token registration on login | 🔲 | Wire `notificationService.registerToken()` after auth |
-| Push notification deep linking | 🔲 | Navigate to order detail on tap |
-| Profile screen full wiring | 🔲 | Edit profile, avatar upload |
-| Address CRUD screens | 🔲 | edit_address_screen partially done |
-| Brand/category filtering | 🔲 | API returns flat IDs — need to fetch brands/categories list for filter labels |
-| iOS `GoogleService-Info.plist` | 🔲 | Needed for iOS builds |
-| Commit & push this branch | 🔲 | All changes uncommitted |
+Full audit of all transaction endpoints against `TRANSACTIONS_API_CONTRACT.md`:
+
+| Endpoint | Status |
+|----------|--------|
+| `GET /api/cart` | ✅ Compliant |
+| `POST /api/cart` | ✅ Fixed (was 201, now 200) |
+| `PUT /api/cart/:id` | ✅ Compliant |
+| `DELETE /api/cart/:id` | ✅ Compliant |
+| `DELETE /api/cart` | ✅ Compliant |
+| `POST /api/orders` | ✅ Compliant (201) |
+| `GET /api/orders` | ✅ Compliant |
+| `GET /api/orders/:id` | ✅ Compliant |
+| `GET /api/orders/:id/status-history` | ✅ Compliant |
+| `PATCH /api/admin/orders/:id/status` | ✅ Compliant |
+| `POST /api/payment/bca/callback` | ✅ Compliant |
+| BigInt serialization (prices as strings) | ✅ Via `BigInt.prototype.toJSON` |
+| UUID param validation | ✅ All via `parseUuid` |
+| Idempotency-Key enforcement | ✅ Cart + Orders |
 
 ---
 
-## Key Architecture Decisions Made
+## Files Modified
 
-1. **Product.id is `int` internally, `String` externally** — `idString` getter bridges the gap. All route params and provider keys use String.
-2. **`_ToStringConverter`** pattern — handles API returning int IDs where Flutter expects String. Defined per-model (private) to avoid coupling.
-3. **`UserProfile.fromJson` is hand-written** — handles both flat and nested `profile` object from API.
-4. **Dummy data deleted** — no longer needed with real API connected.
-5. **`ApiClient.baseUrl` set once** — from `EnvConfig.apiBaseUrl`, no per-request URL needed.
+```
+# Backend
+src/infra/database/repositories/ProfileRepository.ts   # isNew fix
+src/interfaces/http/handlers/cart.handler.ts            # 201→200
+
+# Mobile
+lib/features/product_detail/product_detail_screen.dart  # refresh + gallery + sort fix
+```
+
+---
+
+## Pending (unchanged from previous handoff)
+
+| Item | Action |
+|------|--------|
+| `AdminAuditLog.resource_id` migration | Run `pnpm db:migrate` on staging/prod |
+| Product text search index | Optional — only if latency confirmed at scale |

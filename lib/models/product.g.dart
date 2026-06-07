@@ -103,9 +103,9 @@ Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
 };
 
 ProductImage _$ProductImageFromJson(Map<String, dynamic> json) => ProductImage(
-  id: json['id'] as String,
+  id: (json['id'] as num).toInt(),
   url: json['url'] as String,
-  path: json['path'] as String,
+  path: json['path'] as String?,
   isPrimary: json['is_primary'] as bool,
   sortOrder: (json['sort_order'] as num).toInt(),
 );

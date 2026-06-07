@@ -467,5 +467,23 @@
   "profileSaved": "Profil berhasil disimpan",
   "uploadPhotoSoon": "Fitur upload foto segera hadir",
   "forgotPasswordSubtitle": "Masukkan email Anda dan kami akan mengirim link untuk reset password",
-  "sendResetLink": "Kirim Link Reset"
+  "sendResetLink": "Kirim Link Reset",
+  "paymentUploadProof": "Upload Bukti Transfer",
+  "paymentProofPending": "Menunggu Verifikasi Admin",
+  "paymentProofApproved": "Pembayaran Dikonfirmasi",
+  "paymentProofRejectedReason": "Ditolak: {reason}",
+  "@paymentProofRejectedReason": {
+    "placeholders": {
+      "reason": { "type": "String" }
+    }
+  },
+  "paymentReupload": "Upload Ulang",
+  "paymentBankName": "Nama Bank",
+  "paymentAccountName": "Nama Rekening Pengirim",
+  "paymentAmount": "Nominal Transfer",
+  "paymentPickImage": "Galeri",
+  "paymentTakePhoto": "Kamera",
+  "paymentSubmitProof": "Kirim Bukti Transfer",
+  "paymentProofUploaded": "Bukti transfer berhasil dikirim",
+  "paymentFieldsRequired": "Semua kolom wajib diisi"
 }

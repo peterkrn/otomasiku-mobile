@@ -2257,6 +2257,84 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Kirim Link Reset'**
   String get sendResetLink;
+
+  /// No description provided for @paymentUploadProof.
+  ///
+  /// In id, this message translates to:
+  /// **'Upload Bukti Transfer'**
+  String get paymentUploadProof;
+
+  /// No description provided for @paymentProofPending.
+  ///
+  /// In id, this message translates to:
+  /// **'Menunggu Verifikasi Admin'**
+  String get paymentProofPending;
+
+  /// No description provided for @paymentProofApproved.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran Dikonfirmasi'**
+  String get paymentProofApproved;
+
+  /// No description provided for @paymentProofRejectedReason.
+  ///
+  /// In id, this message translates to:
+  /// **'Ditolak: {reason}'**
+  String paymentProofRejectedReason(String reason);
+
+  /// No description provided for @paymentReupload.
+  ///
+  /// In id, this message translates to:
+  /// **'Upload Ulang'**
+  String get paymentReupload;
+
+  /// No description provided for @paymentBankName.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Bank'**
+  String get paymentBankName;
+
+  /// No description provided for @paymentAccountName.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Rekening Pengirim'**
+  String get paymentAccountName;
+
+  /// No description provided for @paymentAmount.
+  ///
+  /// In id, this message translates to:
+  /// **'Nominal Transfer'**
+  String get paymentAmount;
+
+  /// No description provided for @paymentPickImage.
+  ///
+  /// In id, this message translates to:
+  /// **'Galeri'**
+  String get paymentPickImage;
+
+  /// No description provided for @paymentTakePhoto.
+  ///
+  /// In id, this message translates to:
+  /// **'Kamera'**
+  String get paymentTakePhoto;
+
+  /// No description provided for @paymentSubmitProof.
+  ///
+  /// In id, this message translates to:
+  /// **'Kirim Bukti Transfer'**
+  String get paymentSubmitProof;
+
+  /// No description provided for @paymentProofUploaded.
+  ///
+  /// In id, this message translates to:
+  /// **'Bukti transfer berhasil dikirim'**
+  String get paymentProofUploaded;
+
+  /// No description provided for @paymentFieldsRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua kolom wajib diisi'**
+  String get paymentFieldsRequired;
 }
 
 class _AppLocalizationsDelegate

@@ -1138,4 +1138,45 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get sendResetLink => 'Kirim Link Reset';
+
+  @override
+  String get paymentUploadProof => 'Upload Bukti Transfer';
+
+  @override
+  String get paymentProofPending => 'Menunggu Verifikasi Admin';
+
+  @override
+  String get paymentProofApproved => 'Pembayaran Dikonfirmasi';
+
+  @override
+  String paymentProofRejectedReason(String reason) {
+    return 'Ditolak: $reason';
+  }
+
+  @override
+  String get paymentReupload => 'Upload Ulang';
+
+  @override
+  String get paymentBankName => 'Nama Bank';
+
+  @override
+  String get paymentAccountName => 'Nama Rekening Pengirim';
+
+  @override
+  String get paymentAmount => 'Nominal Transfer';
+
+  @override
+  String get paymentPickImage => 'Galeri';
+
+  @override
+  String get paymentTakePhoto => 'Kamera';
+
+  @override
+  String get paymentSubmitProof => 'Kirim Bukti Transfer';
+
+  @override
+  String get paymentProofUploaded => 'Bukti transfer berhasil dikirim';
+
+  @override
+  String get paymentFieldsRequired => 'Semua kolom wajib diisi';
 }

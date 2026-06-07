@@ -210,7 +210,7 @@ class OrderDetailScreen extends ConsumerWidget {
                   return _buildTimelineItem(
                     icon: Icons.check,
                     label: _getStatusLabel(entry.value.status, l10n),
-                    subtitle: _formatDate(entry.value.changedAt),
+                    subtitle: _formatDate(entry.value.createdAt),
                     isCompleted: true,
                     isLast: isLast,
                     isDark: isDark,

@@ -35,6 +35,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   int _quantity = 1;
   bool _isAddingToCart = false;
   int? _selectedTierMin;
+  int _currentImagePage = 0;
 
   @override
   void initState() {
@@ -142,24 +143,28 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildImageSection(product, l10n, isDark),
-            _buildProductInfo(product, l10n, displayStock, isDark),
-            TieredPricingWidget(
-              product: product,
-              quantity: _quantity,
-              onTierSelected: (minQty) => setState(() {
-                _selectedTierMin = minQty;
-                _quantity = minQty;
-              }),
-              onRfqTap: () => _showRFQDialog(product, l10n),
-              isDark: isDark,
-            ),
-            _buildTabs(product, l10n, isDark),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () => ref.read(productListProvider.notifier).refresh(),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildImageSection(product, l10n, isDark),
+              _buildProductInfo(product, l10n, displayStock, isDark),
+              TieredPricingWidget(
+                product: product,
+                quantity: _quantity,
+                onTierSelected: (minQty) => setState(() {
+                  _selectedTierMin = minQty;
+                  _quantity = minQty;
+                }),
+                onRfqTap: () => _showRFQDialog(product, l10n),
+                isDark: isDark,
+              ),
+              _buildTabs(product, l10n, isDark),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: ProductBottomBar(
@@ -178,6 +183,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   }
 
   Widget _buildImageSection(Product product, AppLocalizations l10n, bool isDark) {
+    final imageUrls = product.images.isNotEmpty
+        ? (List<ProductImage>.from(product.images)..sort((a, b) => a.sortOrder.compareTo(b.sortOrder)))
+            .map((i) => i.url)
+            .toList()
+        : <String>[product.primaryImageUrl];
+
     return Container(
       color: isDark ? AppColors.darkSurface : Colors.white,
       padding: const EdgeInsets.all(24),
@@ -187,15 +198,51 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             aspectRatio: 1,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: Container(
-                color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-child: product_image.ProductNetworkImage(
-  imageUrl: product.primaryImageUrl,
-  categorySlug: product.category.slug,
-),
-              ),
+              child: imageUrls.length > 1
+                  ? PageView.builder(
+                      itemCount: imageUrls.length,
+                      onPageChanged: (index) => setState(() => _currentImagePage = index),
+                      itemBuilder: (context, index) => Container(
+                        color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+                        child: product_image.ProductNetworkImage(
+                          imageUrl: imageUrls[index],
+                          categorySlug: product.category.slug,
+                        ),
+                      ),
+                    )
+                  : Container(
+                      color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+                      child: product_image.ProductNetworkImage(
+                        imageUrl: imageUrls.first,
+                        categorySlug: product.category.slug,
+                      ),
+                    ),
             ),
           ),
+          if (imageUrls.length > 1)
+            Positioned(
+              bottom: 12,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(imageUrls.length, (index) {
+                  final isActive = index == _currentImagePage;
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: isActive ? 20 : 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                      color: isActive
+                          ? AppColors.mitsubishiRed
+                          : (isDark ? Colors.white38 : Colors.black26),
+                    ),
+                  );
+                }),
+              ),
+            ),
           Positioned(
             top: 8,
             left: 8,

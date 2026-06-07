@@ -28,7 +28,7 @@ CartProductSnapshot _$CartProductSnapshotFromJson(Map<String, dynamic> json) =>
     CartProductSnapshot(
       name: json['name'] as String,
       price: const BigIntStringConverter().fromJson(json['price']),
-      primaryImageUrl: json['primaryImageUrl'] as String? ?? '',
+      primaryImageUrl: json['imageUrl'] as String? ?? '',
     );
 
 Map<String, dynamic> _$CartProductSnapshotToJson(
@@ -36,5 +36,5 @@ Map<String, dynamic> _$CartProductSnapshotToJson(
 ) => <String, dynamic>{
   'name': instance.name,
   'price': const BigIntStringConverter().toJson(instance.price),
-  'primaryImageUrl': instance.primaryImageUrl,
+  'imageUrl': instance.primaryImageUrl,
 };

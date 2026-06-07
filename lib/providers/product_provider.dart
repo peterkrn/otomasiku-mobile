@@ -92,10 +92,11 @@ class ProductListNotifier extends AsyncNotifier<List<Product>> {
 }
 
 /// Returns product from list cache if available, otherwise fetches from API.
+/// Watches the list provider so detail refreshes when the list is refreshed.
 final productDetailProvider =
     FutureProvider.family<Product, String>((ref, id) async {
-  // Check list cache first to avoid extra API call
-  final listState = ref.read(productListProvider);
+  // Watch list — so when list refreshes (new images etc.), this re-runs
+  final listState = ref.watch(productListProvider);
   if (listState.hasValue) {
     final cached = listState.requireValue.where((p) => p.idString == id).firstOrNull;
     if (cached != null) return cached;

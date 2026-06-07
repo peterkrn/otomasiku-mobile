@@ -35,7 +35,7 @@ class CartProductSnapshot {
   @BigIntStringConverter()
   final int price;
 
-  @JsonKey(defaultValue: '')
+  @JsonKey(name: 'imageUrl', defaultValue: '')
   final String primaryImageUrl;
 
   const CartProductSnapshot({

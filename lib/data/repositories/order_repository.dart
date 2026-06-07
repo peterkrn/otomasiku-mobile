@@ -71,7 +71,13 @@ class OrderRepositoryImpl implements OrderRepository {
       );
     }
 
-    return Order.fromJson(apiResponse.data!);
+    final data = apiResponse.data!;
+    final orderMap = data['order'] as Map<String, dynamic>;
+    orderMap['items'] = data['items'];
+    if (data['paymentProof'] != null) {
+      orderMap['paymentProof'] = data['paymentProof'];
+    }
+    return Order.fromJson(orderMap);
   }
 
   @override
@@ -158,24 +164,30 @@ class CreateOrderResult {
 }
 
 class OrderStatusHistory {
-  final String status;
-  final DateTime changedAt;
+  final String fromStatus;
+  final String toStatus;
+  final DateTime createdAt;
   final String? changedBy;
-  final String? notes;
+  final String? note;
 
   const OrderStatusHistory({
-    required this.status,
-    required this.changedAt,
+    required this.fromStatus,
+    required this.toStatus,
+    required this.createdAt,
     this.changedBy,
-    this.notes,
+    this.note,
   });
+
+  /// Alias for backward-compat with UI that reads `.status`
+  String get status => toStatus;
 
   factory OrderStatusHistory.fromJson(Map<String, dynamic> json) {
     return OrderStatusHistory(
-      status: json['status'] as String,
-      changedAt: DateTime.parse(json['changedAt'] as String),
-      changedBy: json['changedBy'] as String?,
-      notes: json['notes'] as String?,
+      fromStatus: json['from_status'] as String,
+      toStatus: json['to_status'] as String,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      changedBy: json['changed_by'] as String?,
+      note: json['note'] as String?,
     );
   }
 }

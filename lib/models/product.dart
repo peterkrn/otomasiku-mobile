@@ -139,9 +139,9 @@ class Category {
 
 @JsonSerializable()
 class ProductImage {
-  final String id;
+  final int id;
   final String url;
-  final String path;
+  final String? path;
   @JsonKey(name: 'is_primary')
   final bool isPrimary;
   @JsonKey(name: 'sort_order')
@@ -150,7 +150,7 @@ class ProductImage {
   const ProductImage({
     required this.id,
     required this.url,
-    required this.path,
+    this.path,
     required this.isPrimary,
     required this.sortOrder,
   });

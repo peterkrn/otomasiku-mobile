@@ -3,7 +3,7 @@
 
 > **Purpose:** Patterns confirmed to work in this codebase. Updated every time a bug is found and fixed.
 > Reference this file alongside `docs/AI_RULES.md`.
-> Last updated: 2026-03-17
+> Last updated: 2026-06-07
 
 ---
 
@@ -27,6 +27,8 @@
 | 14 | Skipped 100+ frames warning | `FutureBuilder` with stagger delay causes frame drops | Remove `FutureBuilder`, use `TweenAnimationBuilder` only — see §10 |
 | 15 | Double checkmark icon on "Tambah" | `TextButton.icon` with dynamic label including its own icon | Use `TextButton` with manual `Row` + conditional icon — see §17 |
 | 16 | Card bottom overflowed by 57px | `childAspectRatio` > 0.6 + rigid Column content | Set `childAspectRatio: 0.58` + use `Spacer()` — see §4 & §17 |
+| 17 | Products silently fail to load (blank screen) | `ProductImage.id` typed as `String` but API returns `int`; `path` typed non-nullable but API returns `null` | Fix model types to match API — see §18 |
+| 18 | Bootstrap endpoint slow (2800ms) | `upsertDefaultCustomer` queries `findRoleIdByName` on every call | Cache role ID at module level — see §19 |
 
 ---
 
@@ -561,5 +563,57 @@ TextButton(
 ```
 
 **Rule:** Always use a `Spacer()` before the final action button in a grid card to ensure a "justified" bottom edge across all items. Use snappy animations (~600ms) for success states.
+
+---
+
+## §18 — Model Types Must Match API Response Types Exactly
+
+**Problem:** `ProductImage` model had `id` as `String` and `path` as non-nullable `String`, but the API returns `id` as `int` and `path` as `String?`. The generated `fromJson` cast crashes silently — the error resilience in `product_provider.dart` swallows it and returns an empty cached grid, making the app appear broken with no visible error.
+
+```dart
+// ❌ WRONG — types don't match API response
+@JsonSerializable()
+class ProductImage {
+  final String id;    // API returns int!
+  final String path;  // API returns null when no bucket path!
+}
+
+// ✅ CORRECT — match the API exactly
+@JsonSerializable()
+class ProductImage {
+  final int id;
+  final String? path;
+}
+```
+
+**Rule:** Before adding/modifying any model field, check the actual API response type. Use `@BigIntStringConverter()` for BigInt fields (price, originalPrice) which arrive as strings. After fixing the model, regenerate with `dart run build_runner build` or manually update the `.g.dart` file.
+
+**Debugging tip:** If the product list appears blank with no visible error, check for deserialization type mismatches — the error resilience code in providers will silently swallow `TypeError` as a "transient" error.
+
+---
+
+## §19 — Backend: Cache Immutable Lookups (Role IDs)
+
+**Problem:** `POST /api/me/bootstrap` took 2800ms because `upsertDefaultCustomer` hit the DB for `findRoleIdByName('customer')` on every single call. The `customer` role ID is seeded and never changes at runtime.
+
+```typescript
+// ❌ WRONG — queries on every bootstrap
+async upsertDefaultCustomer(userId: string, email?: string | null) {
+  const customerRoleId = await this.findRoleIdByName('customer'); // extra round-trip!
+  // ...
+}
+
+// ✅ CORRECT — cache at module level
+let cachedCustomerRoleId: number | null = null;
+
+async upsertDefaultCustomer(userId: string, email?: string | null) {
+  if (!cachedCustomerRoleId) {
+    cachedCustomerRoleId = await this.findRoleIdByName('customer');
+  }
+  // ...
+}
+```
+
+**Rule:** For DB values that are seeded constants (role IDs, system config), cache them in a module-level variable after first fetch. This eliminates a DB round-trip on every request.
 
 ---

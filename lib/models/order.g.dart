@@ -12,6 +12,10 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
   status: json['status'] as String,
   paymentStatus: json['paymentStatus'] as String,
   totalAmount: const BigIntStringConverter().fromJson(json['totalAmount']),
+  subtotal: const NullableBigIntStringConverter().fromJson(json['subtotal']),
+  shippingCost: const NullableBigIntStringConverter().fromJson(
+    json['shippingCost'],
+  ),
   vaNumber: json['vaNumber'] as String?,
   vaExpiresAt: json['vaExpiresAt'] == null
       ? null
@@ -24,9 +28,19 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
       ?.map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
       .toList(),
   notes: json['notes'] as String?,
+  adminNotes: json['adminNotes'] as String?,
   resiNumber: json['resiNumber'] as String?,
+  shippedAt: json['shippedAt'] == null
+      ? null
+      : DateTime.parse(json['shippedAt'] as String),
+  deliveredAt: json['deliveredAt'] == null
+      ? null
+      : DateTime.parse(json['deliveredAt'] as String),
   createdAt: DateTime.parse(json['createdAt'] as String),
   updatedAt: DateTime.parse(json['updatedAt'] as String),
+  paymentProof: json['paymentProof'] == null
+      ? null
+      : PaymentProof.fromJson(json['paymentProof'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
@@ -35,15 +49,23 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'status': instance.status,
   'paymentStatus': instance.paymentStatus,
   'totalAmount': const BigIntStringConverter().toJson(instance.totalAmount),
+  'subtotal': const NullableBigIntStringConverter().toJson(instance.subtotal),
+  'shippingCost': const NullableBigIntStringConverter().toJson(
+    instance.shippingCost,
+  ),
   'vaNumber': instance.vaNumber,
   'vaExpiresAt': instance.vaExpiresAt?.toIso8601String(),
   'addressId': instance.addressId,
   'shippingAddress': instance.shippingAddress,
   'items': instance.items,
   'notes': instance.notes,
+  'adminNotes': instance.adminNotes,
   'resiNumber': instance.resiNumber,
+  'shippedAt': instance.shippedAt?.toIso8601String(),
+  'deliveredAt': instance.deliveredAt?.toIso8601String(),
   'createdAt': instance.createdAt.toIso8601String(),
   'updatedAt': instance.updatedAt.toIso8601String(),
+  'paymentProof': instance.paymentProof?.toJson(),
 };
 
 OrderItem _$OrderItemFromJson(Map<String, dynamic> json) => OrderItem(

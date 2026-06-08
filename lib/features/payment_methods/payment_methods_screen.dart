@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/config/env_config.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/widgets/app_toast.dart';
@@ -15,7 +16,7 @@ class PaymentMethodsScreen extends StatefulWidget {
 }
 
 class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
-  final String _vaNumber = '1234 5678 9012 3456';
+  final String _vaNumber = EnvConfig.bcaVaNumber;
   bool _atmExpanded = false;
   bool _mbankingExpanded = false;
   bool _klikbcaExpanded = false;

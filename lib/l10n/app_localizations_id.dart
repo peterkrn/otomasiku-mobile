@@ -1179,4 +1179,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get paymentFieldsRequired => 'Semua kolom wajib diisi';
+
+  @override
+  String get productUnavailable => 'Produk ini sedang tidak tersedia';
 }

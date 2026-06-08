@@ -13,6 +13,8 @@ class CartItem {
   final int quantity;
   final CartProductSnapshot productSnapshot;
   final DateTime createdAt;
+  @JsonKey(defaultValue: true)
+  final bool isAvailable;
 
   const CartItem({
     required this.id,
@@ -20,6 +22,7 @@ class CartItem {
     required this.quantity,
     required this.productSnapshot,
     required this.createdAt,
+    this.isAvailable = true,
   });
 
   factory CartItem.fromJson(Map<String, dynamic> json) =>

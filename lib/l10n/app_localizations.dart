@@ -2335,6 +2335,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Semua kolom wajib diisi'**
   String get paymentFieldsRequired;
+
+  /// No description provided for @productUnavailable.
+  ///
+  /// In id, this message translates to:
+  /// **'Produk ini sedang tidak tersedia'**
+  String get productUnavailable;
 }
 
 class _AppLocalizationsDelegate

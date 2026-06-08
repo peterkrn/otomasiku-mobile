@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/config/env_config.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/router/app_router.dart';
 import '../../core/utils/currency_formatter.dart';
@@ -286,7 +287,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   Widget _buildVaCard(Order order, bool isExpired, AppLocalizations l10n, bool isDark) {
-    final vaNumber = order.vaNumber;
+    final vaNumber = order.vaNumber ?? EnvConfig.bcaVaNumber;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -326,7 +327,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          if (vaNumber != null)
+          if (vaNumber.isNotEmpty)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

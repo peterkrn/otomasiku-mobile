@@ -14,6 +14,7 @@ CartItem _$CartItemFromJson(Map<String, dynamic> json) => CartItem(
     json['productSnapshot'] as Map<String, dynamic>,
   ),
   createdAt: DateTime.parse(json['createdAt'] as String),
+  isAvailable: json['isAvailable'] as bool? ?? true,
 );
 
 Map<String, dynamic> _$CartItemToJson(CartItem instance) => <String, dynamic>{
@@ -22,6 +23,7 @@ Map<String, dynamic> _$CartItemToJson(CartItem instance) => <String, dynamic>{
   'quantity': instance.quantity,
   'productSnapshot': instance.productSnapshot,
   'createdAt': instance.createdAt.toIso8601String(),
+  'isAvailable': instance.isAvailable,
 };
 
 CartProductSnapshot _$CartProductSnapshotFromJson(Map<String, dynamic> json) =>

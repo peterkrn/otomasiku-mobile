@@ -1176,4 +1176,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentFieldsRequired => 'All fields are required';
+
+  @override
+  String get productUnavailable => 'This product is currently unavailable';
 }

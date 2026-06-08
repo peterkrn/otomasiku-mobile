@@ -485,5 +485,6 @@
   "paymentTakePhoto": "Kamera",
   "paymentSubmitProof": "Kirim Bukti Transfer",
   "paymentProofUploaded": "Bukti transfer berhasil dikirim",
-  "paymentFieldsRequired": "Semua kolom wajib diisi"
+  "paymentFieldsRequired": "Semua kolom wajib diisi",
+  "productUnavailable": "Produk ini sedang tidak tersedia"
 }

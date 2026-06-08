@@ -485,5 +485,6 @@
   "paymentTakePhoto": "Camera",
   "paymentSubmitProof": "Submit Transfer Proof",
   "paymentProofUploaded": "Transfer proof submitted successfully",
-  "paymentFieldsRequired": "All fields are required"
+  "paymentFieldsRequired": "All fields are required",
+  "productUnavailable": "This product is currently unavailable"
 }

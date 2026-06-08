@@ -1,94 +1,174 @@
-# Handoff — 2026-06-07
+# Handoff — 2026-06-08
+
+## Session Summary
+
+Replaced BCA Developer API callback flow with manual bukti transfer upload + admin verification. Also fixed product availability handling across admin and mobile.
+
+---
 
 ## Changes Made
 
-### Backend (`otomasiku-backend`)
+### Backend (`otomasiku-backend`) — branch: `staging`
 
-#### 1. Fix: Welcome email sent repeatedly (BUG)
+#### 1. Payment Proof Flow (NEW)
 
-**File:** `src/infra/database/repositories/ProfileRepository.ts`
+**New files:**
+- `src/app/flows/PaymentProofFlow.ts` — upload to private Supabase bucket (`otomasiku-payment-proofs`), signed URL generation (1h expiry), admin approve/reject with transactional status updates
+- `src/interfaces/http/handlers/payment-proof.handler.ts` — 4 HTTP handlers using Busboy multipart
 
-**Root cause:** `upsertDefaultCustomer` used `update: {}` (empty) in the Prisma upsert. Since nothing was written on update, `updated_at` remained equal to `created_at` for existing users. The `isNew` detection (`|updated_at - created_at| < 1000ms`) always returned `true`, firing a welcome email on every bootstrap call.
+**New endpoints:**
+- `POST /api/orders/:id/payment-proof` — customer uploads bukti transfer (image + bankName + accountName + amount)
+- `GET /api/orders/:id/payment-proof` — customer checks proof status
+- `GET /api/admin/orders/:id/payment-proof` — admin views proof
+- `PATCH /api/admin/orders/:id/payment-proof` — admin approves (`→ paid + processing`) or rejects (with reason)
 
-**Fix:** Changed to `update: { updated_at: new Date() }` so existing users get `updated_at` bumped, making the diff > 0 and `isNew = false`.
+**Modified files:**
+- `src/interfaces/http/routes/order.routes.ts` — added customer proof routes
+- `src/interfaces/http/routes/admin.routes.ts` — added admin proof routes
+- `src/app/flows/CreateOrderFlow.ts` — returns static `vaNumber` from env
+- `src/app/flows/GetOrderFlow.ts` — includes `paymentProof` (with signed URL) in order response
+- `src/config/env.ts` — added `BCA_VA_NUMBER`, `BCA_ACCOUNT_NAME`, `SUPABASE_PAYMENT_PROOF_BUCKET`
 
-#### 2. Fix: `POST /api/cart` returning 201 instead of 200 (CONTRACT VIOLATION)
+#### 2. Email on Payment Proof Approval
+
+**File:** `src/app/flows/PaymentProofFlow.ts`
+
+On approve: sends `ORDER_PROCESSING` email to both customer and company (`EMAIL_TO_COMPANY`).
+
+#### 3. Status History — Include User Profile
+
+**File:** `src/infra/database/repositories/OrderRepository.ts`
+
+`getStatusHistory()` now includes `user: { full_name, email }` so admin sees who changed the status instead of "Unknown".
+
+#### 4. Customer Details in Order Response
+
+**File:** `src/infra/database/repositories/OrderRepository.ts`
+
+`findById()` now includes `user` relation → returns `customer: { fullName, email, phone, companyName }` in `GET /orders/:id`.
+
+#### 5. Status Transitions — Allow Full Matrix
+
+**Files:** `src/constants/order-statuses.ts`, `src/interfaces/http/handlers/order.handler.ts`
+
+- Added `processing → cancelled` as valid transition
+- Removed guard blocking `pending → processing` manually (admin can now do both)
+- Valid transitions: `pending → [processing, cancelled]`, `processing → [shipped, cancelled]`, `shipped → [done]`
+
+#### 6. Products — Respect `isPublished=all` Filter
+
+**File:** `src/interfaces/http/handlers/product.handler.ts`
+
+Admin sends `isPublished=all` — backend now returns ALL products (active + inactive) instead of always filtering to `isPublished: true`.
+
+#### 7. Cart — Enrich with Product Availability
 
 **File:** `src/interfaces/http/handlers/cart.handler.ts`
 
-**Root cause:** Handler returned `res.status(201)` but `TRANSACTIONS_API_CONTRACT.md` specifies `200` for this endpoint.
-
-**Fix:** Changed to `res.json(responseBody)` (default 200) and updated idempotency key storage from 201 → 200.
+`GET /api/cart` now joins live product data and returns `isAvailable: boolean` per cart item.
 
 ---
 
-### Mobile (`otomasiku-mobile`)
+### Mobile (`otomasiku-mobile`) — branch: `fix/payment-and-product-availability`
 
-#### 3. Feature: Pull-to-refresh on product detail screen
+#### 8. Payment Proof Upload (NEW)
 
-**File:** `lib/features/product_detail/product_detail_screen.dart`
+**New files:**
+- `lib/models/payment_proof.dart` + `.g.dart` — PaymentProof model
+- `lib/data/repositories/payment_proof_repository.dart` — multipart upload via Dio
+- `lib/features/payment/widgets/bukti_transfer_card.dart` — gallery/camera picker, form, status display
 
-Added `RefreshIndicator` wrapping the `SingleChildScrollView` with `AlwaysScrollableScrollPhysics`. Calls `productListProvider.notifier.refresh()` — same network path as the home screen for consistent refresh duration/feel.
+**Modified files:**
+- `lib/features/payment/payment_screen.dart` — hides countdown when `vaExpiresAt == null`, adds BuktiTransferCard inline, reads VA from env
+- `lib/models/order.dart` + `.g.dart` — added `paymentProof` field
+- `lib/data/repositories/order_repository.dart` — parses `paymentProof` from API
+- `lib/data/repositories/payment_repository.dart` — same
+- `lib/providers/repository_providers.dart` — added `paymentProofRepositoryProvider`
+- `lib/core/config/env_config.dart` — added `bcaVaNumber`, `bcaAccountName`
+- `lib/features/payment_methods/payment_methods_screen.dart` — reads VA from env instead of hardcoded
 
-#### 4. Feature: Image gallery with PageView + dot indicators
+**Dependencies added:** `image_picker: ^1.1.2`
 
-**File:** `lib/features/product_detail/product_detail_screen.dart`
+#### 9. Cart — Greyed-out Unavailable Products
 
-Replaced single static image with:
-- `PageView.builder` when product has 2+ images (sorted by `sortOrder`)
-- Animated pill-style dot indicators (active = 20px red, inactive = 6px translucent)
-- Falls back to single image when only 1 image exists
-- Dark mode compatible
+**Modified files:**
+- `lib/models/cart_item.dart` + `.g.dart` — added `isAvailable` field (defaults `true`)
+- `lib/features/cart/widgets/cart_item_card.dart` — 50% opacity + red banner "Produk ini sedang tidak tersedia", disabled controls
 
-#### 5. Fix: Unmodifiable list sort crash in image gallery
+#### 10. ARB Keys Added (both `app_id.arb` + `app_en.arb`)
 
-**File:** `lib/features/product_detail/product_detail_screen.dart`
+Payment proof: `paymentUploadProof`, `paymentProofPending`, `paymentProofApproved`, `paymentProofRejectedReason`, `paymentReupload`, `paymentBankName`, `paymentAccountName`, `paymentAmount`, `paymentPickImage`, `paymentTakePhoto`, `paymentSubmitProof`, `paymentProofUploaded`, `paymentFieldsRequired`
 
-**Root cause:** `product.images..sort()` mutated the original list in-place. The list from JSON deserialization / `const []` default is unmodifiable → runtime error.
-
-**Fix:** Changed to `List<ProductImage>.from(product.images)..sort(...)` to sort a mutable copy.
-
----
-
-## Contract Audit Summary
-
-Full audit of all transaction endpoints against `TRANSACTIONS_API_CONTRACT.md`:
-
-| Endpoint | Status |
-|----------|--------|
-| `GET /api/cart` | ✅ Compliant |
-| `POST /api/cart` | ✅ Fixed (was 201, now 200) |
-| `PUT /api/cart/:id` | ✅ Compliant |
-| `DELETE /api/cart/:id` | ✅ Compliant |
-| `DELETE /api/cart` | ✅ Compliant |
-| `POST /api/orders` | ✅ Compliant (201) |
-| `GET /api/orders` | ✅ Compliant |
-| `GET /api/orders/:id` | ✅ Compliant |
-| `GET /api/orders/:id/status-history` | ✅ Compliant |
-| `PATCH /api/admin/orders/:id/status` | ✅ Compliant |
-| `POST /api/payment/bca/callback` | ✅ Compliant |
-| BigInt serialization (prices as strings) | ✅ Via `BigInt.prototype.toJSON` |
-| UUID param validation | ✅ All via `parseUuid` |
-| Idempotency-Key enforcement | ✅ Cart + Orders |
+Product: `productUnavailable`
 
 ---
 
-## Files Modified
+### Admin (`otomasiku-admin`) — branch: `staging`
 
-```
-# Backend
-src/infra/database/repositories/ProfileRepository.ts   # isNew fix
-src/interfaces/http/handlers/cart.handler.ts            # 201→200
+#### 11. Payment Proof Review Card
 
-# Mobile
-lib/features/product_detail/product_detail_screen.dart  # refresh + gallery + sort fix
-```
+**Modified files:**
+- `src/types/api.ts` — added `PaymentProof` type, `customer` field to `OrderWithItems`
+- `src/lib/orders.ts` — added `fetchPaymentProof()`, `verifyPaymentProof()`
+- `src/app/(dashboard)/orders/[id]/OrderDetailContent.tsx` — payment proof card (image preview, approve/reject buttons), rich customer info (name, email, phone, company)
+
+#### 12. Status Transitions Updated
+
+**File:** `src/app/(dashboard)/orders/[id]/OrderDetailContent.tsx`
+
+`VALID_TRANSITIONS` now matches backend: `pending → [processing, cancelled]`, `processing → [shipped, cancelled]`, `shipped → [done]`
 
 ---
 
-## Pending (unchanged from previous handoff)
+## Environment Variables Required
 
-| Item | Action |
-|------|--------|
-| `AdminAuditLog.resource_id` migration | Run `pnpm db:migrate` on staging/prod |
-| Product text search index | Optional — only if latency confirmed at scale |
+### Railway (otomasiku-backend) — ADD THESE:
+
+| Variable | Example |
+|----------|---------|
+| `BCA_VA_NUMBER` | `1234567890` |
+| `BCA_ACCOUNT_NAME` | `PT Otomasiku Nusantara` |
+| `SUPABASE_PAYMENT_PROOF_BUCKET` | `otomasiku-payment-proofs` |
+
+### Mobile `.env` — ADD THESE:
+
+| Variable | Example |
+|----------|---------|
+| `BCA_VA_NUMBER` | `1234567890` |
+| `BCA_ACCOUNT_NAME` | `PT Otomasiku Nusantara` |
+
+---
+
+## Supabase Setup Required
+
+- **Private bucket** `otomasiku-payment-proofs` — ✅ already created
+- No RLS policies needed (backend uses service role key)
+
+---
+
+## Design Decisions
+
+1. **No Prisma schema changes / no migrations** — reused existing `PaymentProof` model and `VerificationStatus` enum (`pending`/`approved`/`rejected`). Order `payment_status` stays `unpaid` until proof approved → `paid`.
+2. **BCA callback flow NOT deleted** — left intact for backward compat. New flow runs alongside it.
+3. **Signed URLs** — payment proof images stored in private bucket, accessed via 1-hour signed URLs generated at read time.
+4. **Cart availability** — backend enriches at read time (not stored), so changes take effect immediately on next cart load.
+
+---
+
+## Verification Status
+
+| Repo | Build | Tests |
+|------|-------|-------|
+| `otomasiku-backend` | ✅ `tsc --noEmit` clean | ✅ 129 tests pass |
+| `otomasiku-mobile` | ✅ `flutter analyze` clean (1 pre-existing warning) | — |
+| `otomasiku-admin` | ✅ `tsc --noEmit` clean | — |
+
+---
+
+## Open PRs
+
+| Repo | Branch | URL |
+|------|--------|-----|
+| `otomasiku-mobile` | `fix/payment-and-product-availability` | https://github.com/peterkrn/otomasiku-mobile/pull/new/fix/payment-and-product-availability |
+
+Backend and admin changes pushed directly to `staging`.

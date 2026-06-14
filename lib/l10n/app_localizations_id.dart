@@ -12,6 +12,118 @@ class AppLocalizationsId extends AppLocalizations {
   String get appName => 'Otomasiku';
 
   @override
+  String get landingEyebrow =>
+      'Katalog otomasi industri untuk kebutuhan B2B dan B2C';
+
+  @override
+  String get landingHeroBadge =>
+      'Pemasok tepercaya untuk kebutuhan otomasi industri';
+
+  @override
+  String get landingHeadline =>
+      'Produk otomasi industri yang lebih mudah dicari, dibandingkan, dan dipesan.';
+
+  @override
+  String get landingSubheadline =>
+      'Otomasiku membantu pelanggan industri menemukan produk yang dibutuhkan dengan harga khusus B2B, harga kompetitif untuk pembelian umum, dan dukungan admin saat proses pemesanan.';
+
+  @override
+  String get landingViewCatalog => 'Lihat Katalog';
+
+  @override
+  String get landingContactAdmin => 'Hubungi Admin';
+
+  @override
+  String get landingLanguageLabelId => 'ID';
+
+  @override
+  String get landingLanguageLabelEn => 'EN';
+
+  @override
+  String get landingTrustSectionTitle => 'Alasan pelanggan percaya';
+
+  @override
+  String get landingTrustSectionSubtitle =>
+      'Kami menyusun pengalaman belanja yang jelas, sederhana, dan relevan untuk kebutuhan industri.';
+
+  @override
+  String get landingTrustOriginalTitle => 'Produk original';
+
+  @override
+  String get landingTrustOriginalBody =>
+      'Fokus pada produk industri yang jelas identitas brand dan kategorinya.';
+
+  @override
+  String get landingTrustB2bPriceTitle => 'Harga khusus B2B';
+
+  @override
+  String get landingTrustB2bPriceBody =>
+      'Pelanggan bisnis bisa berdiskusi dengan admin untuk kebutuhan pembelian proyek atau volume tertentu.';
+
+  @override
+  String get landingTrustCompetitiveTitle => 'Harga kompetitif';
+
+  @override
+  String get landingTrustCompetitiveBody =>
+      'Untuk kebutuhan pembelian umum, kami menyiapkan penawaran yang tetap relevan untuk pasar otomasi industri.';
+
+  @override
+  String get landingTrustVerificationTitle => 'Verifikasi pembayaran manual';
+
+  @override
+  String get landingTrustVerificationBody =>
+      'Pembayaran dan pengiriman saat ini dipastikan kembali oleh admin agar detail pesanan tetap akurat.';
+
+  @override
+  String get landingCatalogSectionTitle => 'Kategori utama';
+
+  @override
+  String get landingCatalogSectionSubtitle =>
+      'Mulai dari komponen yang paling sering dicari untuk kebutuhan panel, mesin, dan kontrol industri.';
+
+  @override
+  String get landingHowTitle => 'Cara pemesanan';
+
+  @override
+  String get landingHowSubtitle =>
+      'Alur dibuat sederhana agar pelanggan bisa lanjut belanja atau konsultasi tanpa bingung.';
+
+  @override
+  String get landingHowStep1Title => 'Jelajahi katalog';
+
+  @override
+  String get landingHowStep1Body =>
+      'Cari kategori atau produk yang dibutuhkan, lalu buka detail produk untuk melihat informasi utama.';
+
+  @override
+  String get landingHowStep2Title => 'Masuk dan siapkan pesanan';
+
+  @override
+  String get landingHowStep2Body =>
+      'Tambahkan produk ke keranjang, pilih alamat pengiriman, lalu lanjutkan checkout.';
+
+  @override
+  String get landingHowStep3Title => 'Bayar dan tunggu verifikasi admin';
+
+  @override
+  String get landingHowStep3Body =>
+      'Upload bukti transfer QRIS, lalu admin akan memverifikasi pembayaran dan mengatur pengiriman secara manual.';
+
+  @override
+  String get landingBrandTitle => 'Brand yang tersedia';
+
+  @override
+  String get landingBrandSubtitle =>
+      'Saat ini katalog menampilkan brand industri yang sudah dikenal pelanggan kami.';
+
+  @override
+  String get landingFooterTitle => 'Butuh bantuan memilih produk?';
+
+  @override
+  String get landingFooterSubtitle =>
+      'Tim admin dapat membantu Anda mulai dari pencarian produk, konfirmasi pesanan, hingga proses pembayaran.';
+
+  @override
   String get home => 'Beranda';
 
   @override
@@ -173,6 +285,44 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get paymentCopied => 'Berhasil disalin';
+
+  @override
+  String get paymentQrisTitle => 'Pembayaran QRIS';
+
+  @override
+  String get paymentScanQris =>
+      'Scan kode QRIS menggunakan aplikasi mobile banking atau e-wallet favorit Anda';
+
+  @override
+  String get paymentQrisMerchant => 'PT Abadi Bangun Bersama (Otomasiku.com)';
+
+  @override
+  String get paymentQrisOnlyDescription =>
+      'QRIS PT Abadi Bangun Bersama dipilih otomatis untuk pembayaran pesanan ini.';
+
+  @override
+  String get paymentQrisInstruction =>
+      'Scan kode QRIS di bawah ini menggunakan aplikasi mobile banking atau e-wallet Anda, lalu upload bukti transfer setelah pembayaran berhasil.';
+
+  @override
+  String get paymentConfirmPaid => 'Saya Sudah Bayar';
+
+  @override
+  String get paymentPendingTitle => 'Menunggu Verifikasi';
+
+  @override
+  String get paymentPendingSubtitle =>
+      'Admin akan memverifikasi pembayaran Anda';
+
+  @override
+  String get paymentPendingDescription =>
+      'Pembayaran Anda akan diverifikasi secara manual oleh admin kami. Silakan tunggu konfirmasi melalui notifikasi.';
+
+  @override
+  String get paymentViewOrder => 'Lihat Pesanan';
+
+  @override
+  String get paymentBackToShopping => 'Kembali Belanja';
 
   @override
   String get paymentCheckStatus => 'Cek Status';
@@ -604,6 +754,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get shippingEstimate => 'Estimasi 3-5 hari kerja';
 
   @override
+  String get shippingManualDescription =>
+      'Pengiriman diatur secara manual oleh admin setelah pembayaran Anda diverifikasi.';
+
+  @override
   String get freeShipping => 'GRATIS';
 
   @override
@@ -827,6 +981,17 @@ class AppLocalizationsId extends AppLocalizations {
   String get sortNameDesc => 'Nama Z-A';
 
   @override
+  String get activeFiltersLabel => 'Filter aktif:';
+
+  @override
+  String get noActiveFilters => 'Tidak ada filter aktif';
+
+  @override
+  String searchResultsCount(int count) {
+    return 'Ditemukan $count produk';
+  }
+
+  @override
   String get productsSelected => 'Produk dipilih';
 
   @override
@@ -843,6 +1008,15 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get filterPower => 'Rentang Daya';
+
+  @override
+  String get powerRangeSmall => '≤ 2.2 kW';
+
+  @override
+  String get powerRangeMedium => '3.7–15 kW';
+
+  @override
+  String get powerRangeLarge => '≥ 18.5 kW';
 
   @override
   String get noProductsFound => 'Tidak ada produk ditemukan';
@@ -1160,6 +1334,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get paymentBankName => 'Nama Bank';
 
   @override
+  String get paymentBankNameCustom => 'Nama Bank';
+
+  @override
   String get paymentAccountName => 'Nama Rekening Pengirim';
 
   @override
@@ -1178,8 +1355,67 @@ class AppLocalizationsId extends AppLocalizations {
   String get paymentProofUploaded => 'Bukti transfer berhasil dikirim';
 
   @override
+  String get paymentExpiredStockReleased =>
+      'Stok untuk pesanan yang kedaluwarsa ini sudah dilepas kembali.';
+
+  @override
+  String get paymentExpiredCheckoutAgain =>
+      'Silakan checkout lagi jika Anda masih membutuhkan item ini.';
+
+  @override
   String get paymentFieldsRequired => 'Semua kolom wajib diisi';
 
   @override
+  String get paymentLeaveTitle => 'Keluar dari pembayaran?';
+
+  @override
+  String get paymentLeaveMessage =>
+      'Apakah Anda yakin mau keluar menu pembayaran ini?';
+
+  @override
+  String get exitAppTitle => 'Keluar dari aplikasi?';
+
+  @override
+  String get exitAppMessage => 'Apakah Anda yakin ingin keluar?';
+
+  @override
+  String get leave => 'Keluar';
+
+  @override
   String get productUnavailable => 'Produk ini sedang tidak tersedia';
+
+  @override
+  String trackingNumber(String resi) {
+    return 'Nomor Resi: $resi';
+  }
+
+  @override
+  String get paymentConfirmDialogTitle => 'Konfirmasi Pembayaran';
+
+  @override
+  String get paymentConfirmDialogBody =>
+      'Dengan menekan konfirmasi, tim kami akan memverifikasi pembayaran Anda. Proses verifikasi membutuhkan waktu 1x24 jam.';
+
+  @override
+  String get confirmReceived => 'Pesanan Diterima';
+
+  @override
+  String get confirmReceivedDialog =>
+      'Konfirmasi bahwa pesanan sudah diterima?';
+
+  @override
+  String get confirmReceivedSuccess => 'Pesanan berhasil dikonfirmasi';
+
+  @override
+  String get productPriceNotSetTitle => 'Harga Belum Tersedia';
+
+  @override
+  String get productPriceNotSetBody =>
+      'Produk ini belum memiliki harga. Silakan hubungi admin untuk info ketersediaan dan harga.';
+
+  @override
+  String get productPriceNotSetContactAdmin => 'Hubungi Admin via WhatsApp';
+
+  @override
+  String get contactAdmin => 'Hubungi Admin';
 }

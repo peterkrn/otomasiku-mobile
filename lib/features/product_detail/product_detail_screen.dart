@@ -17,6 +17,7 @@ import '../../providers/project_provider.dart';
 import '../../models/project.dart';
 import '../../shared/widgets/product_image.dart' as product_image;
 import '../../shared/widgets/app_error_view.dart';
+import '../../shared/widgets/product_price_not_set_dialog.dart';
 import 'widgets/product_bottom_bar.dart';
 import 'widgets/tiered_pricing_widget.dart';
 
@@ -36,6 +37,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   bool _isAddingToCart = false;
   int? _selectedTierMin;
   int _currentImagePage = 0;
+
+  void _handleBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(AppRoute.home);
+    }
+  }
 
   @override
   void initState() {
@@ -65,15 +74,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   Widget _buildLoadingScreen(AppLocalizations l10n, bool isDark) {
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.goNamed(AppRoute.home);
-            }
-          },
-        ),
+        leading: BackButton(onPressed: _handleBack),
         title: Text(l10n.productDetail),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
@@ -90,15 +91,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   Widget _buildErrorScreen(Object error, AppLocalizations l10n, bool isDark) {
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.goNamed(AppRoute.home);
-            }
-          },
-        ),
+        leading: BackButton(onPressed: _handleBack),
         title: Text(l10n.productDetail),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
@@ -120,15 +113,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.goNamed(AppRoute.home);
-            }
-          },
-        ),
+        leading: BackButton(onPressed: _handleBack),
         title: Text(l10n.productDetail),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
@@ -462,86 +447,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   }
 
   Widget _buildDocsTab(AppLocalizations l10n, bool isDark) {
-    return ListView(
-      padding: const EdgeInsets.all(24),
-      children: [
-        _buildDocItem(
-          'Datasheet ${l10n.specifications}',
-          'PDF • 2.4 MB',
-          Icons.picture_as_pdf,
-          Colors.red,
-          l10n,
-          isDark,
-        ),
-        const SizedBox(height: 12),
-        _buildDocItem(
-          'Manual Instalasi',
-          'PDF • 5.1 MB',
-          Icons.menu_book,
-          Colors.blue,
-          l10n,
-          isDark,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDocItem(
-    String title,
-    String subtitle,
-    IconData icon,
-    Color color,
-    AppLocalizations l10n,
-    bool isDark,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurfaceVariant : null,
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: isDark ? 0.2 : 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: color, size: 20),
+          Icon(
+            Icons.description_outlined,
+            size: 48,
+            color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          TextButton(
-            onPressed: () {},
-            child: Row(
-              children: [
-                const Icon(Icons.download, size: 14),
-                const SizedBox(width: 4),
-                Text(l10n.download),
-              ],
+          const SizedBox(height: 12),
+          Text(
+            l10n.comingSoon,
+            style: TextStyle(
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             ),
           ),
         ],
@@ -585,6 +504,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
       AppToast.show(context, AppLocalizations.of(context).notLoggedIn, isError: true, bottomOffset: 100);
       return;
     }
+    if (product.price <= 0) {
+      showProductPriceNotSetDialog(
+        context: context,
+        productName: product.name,
+        locale: Localizations.localeOf(context).languageCode,
+      );
+      return;
+    }
     setState(() => _isAddingToCart = true);
 
     ref.read(cartProvider.notifier).addItem(
@@ -616,6 +543,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
       AppToast.show(context, AppLocalizations.of(context).notLoggedIn, isError: true, bottomOffset: 100);
       return;
     }
+    if (product.price <= 0) {
+      showProductPriceNotSetDialog(
+        context: context,
+        productName: product.name,
+        locale: Localizations.localeOf(context).languageCode,
+      );
+      return;
+    }
     if (_quantity > displayStock) {
       AppToast.show(
         context,
@@ -635,9 +570,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
         primaryImageUrl: product.primaryImageUrl,
       ),
     );
-    ref.read(selectedCartItemsProvider.notifier).state = {product.idString};
-
-    context.pushNamed(AppRoute.checkout);
+    Future.microtask(() {
+      if (!mounted) return;
+      final cartItems = ref.read(cartProvider).items;
+      final matchingItem = cartItems.where((item) => item.productId == product.idString).toList();
+      if (matchingItem.isNotEmpty) {
+        matchingItem.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        ref.read(selectedCartItemsProvider.notifier).state = {matchingItem.first.id};
+      }
+      context.pushNamed(AppRoute.checkout);
+    });
   }
 
   void _saveToProject(Product product, AppLocalizations l10n) {

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:otomasiku_mobile/data/repositories/payment_repository.dart';
@@ -19,10 +20,11 @@ class _FakePaymentRepository implements PaymentRepository {
 Order _order({
   String status = 'pending',
   String paymentStatus = 'unpaid',
+  String orderNumber = 'ORD-001',
 }) {
   return Order(
     id: 'order-1',
-    orderNumber: 'ORD-001',
+    orderNumber: orderNumber,
     status: status,
     paymentStatus: paymentStatus,
     totalAmount: 250000,
@@ -32,6 +34,41 @@ Order _order({
 }
 
 void main() {
+  testWidgets('pending payment screen does not overflow on narrow phones with long order numbers', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          paymentRepositoryProvider.overrideWithValue(
+            _FakePaymentRepository(
+              _order(
+                orderNumber: 'cfe6be4b-2b75-416c-bd32-b5427b911234',
+              ),
+            ),
+          ),
+        ],
+        child: const TestApp(
+          child: PaymentPendingScreen(orderId: 'order-1'),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('Order Number'), findsOneWidget);
+    expect(
+      find.text('cfe6be4b-2b75-416c-bd32-b5427b911234'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('expired orders explain that stock has been released', (
     tester,
   ) async {

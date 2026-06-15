@@ -220,21 +220,30 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
 
   Widget _buildInfoRow(String label, String value, bool isDark, {Color? valueColor}) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+        Expanded(
+          flex: 4,
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+            ),
           ),
         ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: valueColor ?? (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+        const SizedBox(width: 12),
+        Expanded(
+          flex: 6,
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            softWrap: true,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: valueColor ?? (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+            ),
           ),
         ),
       ],

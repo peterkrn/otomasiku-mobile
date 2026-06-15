@@ -22,6 +22,7 @@ class FakeOrderRepository implements OrderRepository {
   @override
   Future<CreateOrderResult> createOrder({
     required String addressId,
+    required List<String> cartItemIds,
     String? notes,
     required String idempotencyKey,
   }) async {
@@ -38,6 +39,9 @@ class FakeOrderRepository implements OrderRepository {
 
   @override
   Future<List<OrderStatusHistory>> getStatusHistory(String orderId) async => [];
+
+  @override
+  Future<void> confirmReceived(String orderId) async {}
 
   static Order _simulatedOrder(String id) => Order(
         id: id,

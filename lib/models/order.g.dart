@@ -65,7 +65,7 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'deliveredAt': instance.deliveredAt?.toIso8601String(),
   'createdAt': instance.createdAt.toIso8601String(),
   'updatedAt': instance.updatedAt.toIso8601String(),
-  'paymentProof': instance.paymentProof?.toJson(),
+  'paymentProof': instance.paymentProof,
 };
 
 OrderItem _$OrderItemFromJson(Map<String, dynamic> json) => OrderItem(

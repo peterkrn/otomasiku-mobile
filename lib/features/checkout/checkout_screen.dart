@@ -27,8 +27,15 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 
 class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   final _notesController = TextEditingController();
-  bool _termsAccepted = false;
   String? _selectedAddressId;
+  
+  void _handleBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(AppRoute.cart);
+    }
+  }
 
   @override
   void initState() {
@@ -83,13 +90,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
-        leading: BackButton(onPressed: () {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.goNamed(AppRoute.home);
-          }
-        }),
+        leading: BackButton(onPressed: _handleBack),
         title: Text(l10n.checkout),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         foregroundColor:
@@ -210,8 +211,6 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               subtotal: subtotal,
               discount: discount,
               total: total,
-              termsAccepted: _termsAccepted,
-              onTermsChanged: (v) => setState(() => _termsAccepted = v),
               isDark: isDark,
             ),
           ),
@@ -222,25 +221,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 
   void _removeItem(String cartItemId) {
-    final cartState = ref.read(cartProvider);
-    final item = cartState.items.firstWhere((i) => i.id == cartItemId);
     ref.read(cartProvider.notifier).removeItem(cartItemId);
     final selected = Set<String>.from(ref.read(selectedCartItemsProvider))
-      ..remove(item.productId);
+      ..remove(cartItemId);
     ref.read(selectedCartItemsProvider.notifier).state = selected;
   }
 
   int _calculateDiscount(List items) => 0;
 
   Future<void> _createInvoice(AppLocalizations l10n) async {
-    if (!_termsAccepted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l10n.pleaseAcceptTerms),
-        backgroundColor: AppColors.mitsubishiRed,
-      ));
-      return;
-    }
-
     if (_selectedAddressId == null) {
       AppToast.show(context, l10n.pleaseSelectShippingAddress,
           isError: true, bottomOffset: 100);
@@ -251,8 +240,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final messenger = ScaffoldMessenger.of(context);
 
     try {
+      final selectedCartItemIds = ref.read(selectedCartItemsProvider).toList();
       final result = await ref.read(orderCreateProvider.notifier).createOrder(
             addressId: _selectedAddressId!,
+            cartItemIds: selectedCartItemIds,
             notes: _notesController.text.isNotEmpty
                 ? _notesController.text
                 : null,
@@ -263,8 +254,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       router.pushNamed(AppRoute.payment,
           pathParameters: {'orderId': result.orderId},
           queryParameters: {'totalAmount': result.totalAmount.toString()});
-      // Clear cart after navigation to avoid empty cart flash
-      ref.read(cartProvider.notifier).clearCart();
+      ref
+          .read(cartProvider.notifier)
+          .removeItemsLocally(selectedCartItemIds.toSet());
       ref.read(selectedCartItemsProvider.notifier).state = {};
     } on Exception catch (e) {
       messenger.showSnackBar(SnackBar(

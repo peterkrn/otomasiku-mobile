@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
+import '../../core/config/env_config.dart';
 import '../../core/constants/app_colors.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
@@ -438,7 +439,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     try {
       await Supabase.instance.client.auth.resetPasswordForEmail(
         email,
-        redirectTo: 'io.otomasiku.app://login-callback',
+        redirectTo: '${EnvConfig.deepLinkScheme}://login-callback',
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,9 +11,12 @@ import 'package:otomasiku_mobile/data/repositories/profile_repository.dart';
 import 'package:otomasiku_mobile/models/user_profile.dart';
 import 'package:otomasiku_mobile/providers/auth_provider.dart';
 import 'package:otomasiku_mobile/providers/repository_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late _MockAuthService mockAuthService;
   late _MockProfileRepository mockProfileRepository;
 
@@ -26,17 +30,32 @@ void main() {
   );
 
   ProviderContainer createContainer() {
-    return ProviderContainer(overrides: [
-      authServiceProvider.overrideWithValue(mockAuthService),
-      authRepositoryProvider.overrideWithValue(_MockAuthRepository()),
-      profileRepositoryProvider.overrideWithValue(mockProfileRepository),
-    ]);
+    return ProviderContainer(
+      overrides: [
+        authServiceProvider.overrideWithValue(mockAuthService),
+        authRepositoryProvider.overrideWithValue(_MockAuthRepository()),
+        profileRepositoryProvider.overrideWithValue(mockProfileRepository),
+        authProvider.overrideWith(
+          (ref) => AuthNotifier(
+            mockAuthService,
+            _MockAuthRepository(),
+            mockProfileRepository,
+            ref.read(tokenStorageProvider),
+          ),
+        ),
+      ],
+    );
   }
 
   setUp(() {
     FlutterSecureStorage.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({});
     mockAuthService = _MockAuthService();
     mockProfileRepository = _MockProfileRepository();
+  });
+
+  tearDown(() async {
+    await mockAuthService.dispose();
   });
 
   group('AuthState.profile', () {
@@ -111,10 +130,7 @@ void main() {
       mockProfileRepository.shouldThrow = true;
 
       final input = ProfileInput(fullName: 'Updated Name');
-      expect(
-        () => notifier.updateProfile(input),
-        throwsA(isA<ApiException>()),
-      );
+      expect(() => notifier.updateProfile(input), throwsA(isA<ApiException>()));
     });
   });
 
@@ -136,16 +152,72 @@ void main() {
       expect(notifier.state.isAuthenticated, false);
     });
   });
+
+  group('AuthNotifier.signInWithGoogle', () {
+    test(
+      'does not set an error while waiting for OAuth callback session',
+      () async {
+        final container = createContainer();
+        addTearDown(container.dispose);
+        final notifier = container.read(authProvider.notifier);
+
+        mockAuthService.googleResult = const AuthResult(
+          status: AuthResultStatus.success,
+        );
+
+        await notifier.signInWithGoogle();
+
+        final state = container.read(authProvider);
+        expect(state.isLoading, false);
+        expect(state.errorCode, isNull);
+        expect(state.isAuthenticated, false);
+      },
+    );
+
+    test(
+      'marks the user authenticated after the OAuth callback arrives',
+      () async {
+        final container = createContainer();
+        addTearDown(container.dispose);
+        final notifier = container.read(authProvider.notifier);
+
+        mockAuthService.googleResult = const AuthResult(
+          status: AuthResultStatus.success,
+        );
+
+        await notifier.signInWithGoogle();
+        mockAuthService.emitSignedIn(_testSession());
+
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        final state = container.read(authProvider);
+        expect(state.isAuthenticated, true);
+        expect(state.userId, 'user-001');
+        expect(state.profile?.fullName, 'Test User');
+      },
+    );
+  });
 }
 
 class _MockAuthService extends AuthService {
   _MockAuthService()
-      : super(
-          supabase: SupabaseClient('http://localhost:54321', 'mock-key'),
-        );
+    : super(supabase: SupabaseClient('http://localhost:54321', 'mock-key'));
+
+  final StreamController<AuthStateChangePayload> _authStateController =
+      StreamController<AuthStateChangePayload>.broadcast();
+  Session? _currentSession;
+  AuthResult googleResult = const AuthResult(status: AuthResultStatus.success);
 
   @override
-  bool get isAuthenticated => false;
+  Stream<AuthStateChangePayload> get authStateChanges =>
+      _authStateController.stream;
+
+  @override
+  Session? get currentSession => _currentSession;
+
+  @override
+  bool get isAuthenticated => _currentSession != null;
 
   @override
   Future<AuthResult> login(String email, String password) async {
@@ -162,10 +234,24 @@ class _MockAuthService extends AuthService {
   }
 
   @override
+  Future<AuthResult> signInWithGoogle() async => googleResult;
+
+  @override
   Future<void> logout() async {}
 
   @override
   Future<bool> refreshSession() async => true;
+
+  void emitSignedIn(Session session) {
+    _currentSession = session;
+    _authStateController.add(
+      AuthStateChangePayload(event: AuthChangeEvent.signedIn, session: session),
+    );
+  }
+
+  Future<void> dispose() async {
+    await _authStateController.close();
+  }
 }
 
 class _MockAuthRepository implements AuthRepository {
@@ -218,4 +304,20 @@ class _MockProfileRepository implements ProfileRepository {
 
   @override
   Future<void> removeDeviceToken(String fcmToken) async {}
+}
+
+Session _testSession() {
+  return Session(
+    accessToken: 'header.payload.signature',
+    refreshToken: 'refresh-token',
+    tokenType: 'bearer',
+    user: const User(
+      id: 'user-001',
+      appMetadata: <String, dynamic>{},
+      userMetadata: <String, dynamic>{'full_name': 'Test User'},
+      aud: 'authenticated',
+      email: 'test@otomasi.com',
+      createdAt: '2026-06-12T00:00:00.000Z',
+    ),
+  );
 }

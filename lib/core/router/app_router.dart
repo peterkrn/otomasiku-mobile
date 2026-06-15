@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../l10n/app_localizations.dart';
+import 'remembered_route_store.dart';
 import '../../features/splash/splash_screen.dart';
 import '../../features/auth/login_screen.dart';
 import '../../features/auth/register_screen.dart';
@@ -16,6 +21,7 @@ import '../../features/checkout/checkout_screen.dart';
 import '../../features/cart/cart_screen.dart';
 import '../../features/payment/payment_screen.dart';
 import '../../features/payment/payment_success_screen.dart';
+import '../../features/payment/payment_pending_screen.dart';
 import '../../features/order/order_detail_screen.dart';
 import '../../features/order/orders_screen.dart';
 import '../../features/shared/widgets/bottom_nav_bar.dart';
@@ -25,6 +31,7 @@ import '../../features/address/edit_address_screen.dart';
 import '../../features/shipping/shipping_screen.dart';
 import '../../features/payment_methods/payment_methods_screen.dart';
 import '../../features/profile/settings_screen.dart';
+import '../../features/landing/landing_page_screen.dart';
 import '../../providers/auth_provider.dart';
 
 /// GoRouter configuration for Otomasiku Marketplace
@@ -47,6 +54,7 @@ abstract class AppRoute {
   static const String shipping = 'shipping';
   static const String payment = 'payment';
   static const String paymentSuccess = 'paymentSuccess';
+  static const String paymentPending = 'paymentPending';
   static const String orderDetail = 'orderDetail';
   static const String compare = 'compare';
   static const String editAddress = 'editAddress';
@@ -54,6 +62,7 @@ abstract class AppRoute {
   static const String orders = 'orders';
   static const String editProfile = 'editProfile';
   static const String settings = 'settings';
+  static const String landing = 'landing';
 }
 
 // Root navigator key — used by routes outside the shell to avoid element tree conflicts
@@ -73,10 +82,15 @@ final GoRouter appRouter = GoRouter(
         state.matchedLocation == '/login' ||
         state.matchedLocation == '/register' ||
         state.matchedLocation == '/forgot-password' ||
-        state.matchedLocation == '/reset-password';
+        state.matchedLocation == '/reset-password' ||
+        state.matchedLocation == '/landing';
 
-    // Never auto-redirect away from splash — user must tap the button
-    if (isSplash && !isAuthenticated) return null;
+    if (isAuthenticated && !isAuthRoute && state.name != null) {
+      unawaited(RememberedRouteStore.instance.saveFromState(state));
+    }
+
+    // Splash decides whether to show landing content or restore the last route.
+    if (isSplash) return null;
 
     if (!isAuthenticated && !isAuthRoute) {
       return '/login';
@@ -116,15 +130,18 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const ResetPasswordScreen(),
     ),
 
+    // Landing Page (for unauthenticated users)
+    GoRoute(
+      path: '/landing',
+      name: AppRoute.landing,
+      builder: (context, state) => const LandingPageScreen(),
+    ),
+
     // Bottom navigation shell with 4 tabs
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
-        return PopScope(
-          canPop: false, // Always intercept back button
-          onPopInvokedWithResult: (didPop, result) {
-            // Always go to home tab on back press
-            navigationShell.goBranch(0);
-          },
+        return _ShellScaffold(
+          navigationShell: navigationShell,
           child: Scaffold(
             body: navigationShell,
             bottomNavigationBar: Column(
@@ -251,6 +268,18 @@ final GoRouter appRouter = GoRouter(
         return PaymentSuccessScreen(orderId: orderId, totalAmount: totalAmount);
       },
     ),
+    GoRoute(
+      path: '/payment-pending/:orderId',
+      name: AppRoute.paymentPending,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final orderId = state.pathParameters['orderId']!;
+        final totalAmount = int.tryParse(
+          state.uri.queryParameters['totalAmount'] ?? '0',
+        ) ?? 0;
+        return PaymentPendingScreen(orderId: orderId, totalAmount: totalAmount);
+      },
+    ),
 
     // Orders list
     GoRoute(
@@ -346,4 +375,57 @@ class PlaceholderCompare extends StatelessWidget {
   const PlaceholderCompare({super.key});
   @override
   Widget build(BuildContext context) => const Center(child: Text('Compare'));
+}
+
+class _ShellScaffold extends StatelessWidget {
+  final StatefulNavigationShell navigationShell;
+  final Widget child;
+
+  const _ShellScaffold({
+    required this.navigationShell,
+    required this.child,
+  });
+
+  Future<void> _handleExitAttempt(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.exitAppTitle),
+        content: Text(l10n.exitAppMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.leave),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldExit == true) {
+      await SystemNavigator.pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+
+        if (navigationShell.currentIndex != 0) {
+          navigationShell.goBranch(0);
+          return;
+        }
+
+        await _handleExitAttempt(context);
+      },
+      child: child,
+    );
+  }
 }

@@ -18,25 +18,26 @@ class PaymentSuccessScreen extends ConsumerWidget {
     this.totalAmount = 0,
   });
 
+  void _handleBack(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(AppRoute.orders);
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final orderAsync = ref.watch(orderDetailProvider(orderId));
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return PopScope(
-      canPop: false,
-          onPopInvokedWithResult: (didPop, result) {
-            if (!didPop) {
-              context.goNamed(AppRoute.orders);
-            }
-          },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-            onPressed: () => context.goNamed(AppRoute.orders),
+            onPressed: () => _handleBack(context),
           ),
           backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
           elevation: 0,
@@ -99,8 +100,7 @@ class PaymentSuccessScreen extends ConsumerWidget {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildOrderInfoCard(BuildContext context, AppLocalizations l10n, Order order, int displayTotal, bool isDark) {

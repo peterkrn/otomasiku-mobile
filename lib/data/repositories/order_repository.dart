@@ -10,10 +10,12 @@ abstract class OrderRepository {
   Future<Order> getOrderById(String id);
   Future<CreateOrderResult> createOrder({
     required String addressId,
+    required List<String> cartItemIds,
     String? notes,
     required String idempotencyKey,
   });
   Future<List<OrderStatusHistory>> getStatusHistory(String orderId);
+  Future<void> confirmReceived(String orderId);
 }
 
 class OrderRepositoryImpl implements OrderRepository {
@@ -42,7 +44,7 @@ class OrderRepositoryImpl implements OrderRepository {
     }
 
     final data = apiResponse.data!;
-    final orders = (data['data'] as List)
+    final orders = (data['data'] as List<dynamic>)
         .map((e) => Order.fromJson(e as Map<String, dynamic>))
         .toList();
 
@@ -83,6 +85,7 @@ class OrderRepositoryImpl implements OrderRepository {
   @override
   Future<CreateOrderResult> createOrder({
     required String addressId,
+    required List<String> cartItemIds,
     String? notes,
     required String idempotencyKey,
   }) async {
@@ -90,6 +93,7 @@ class OrderRepositoryImpl implements OrderRepository {
       '/orders',
       data: {
         'addressId': addressId,
+        'cartItemIds': cartItemIds,
         // ignore: use_null_aware_elements
         if (notes != null) 'notes': notes,
       },
@@ -130,10 +134,24 @@ class OrderRepositoryImpl implements OrderRepository {
       );
     }
 
-    final items = json['data'] as List;
+    final items = json['data'] as List<dynamic>;
     return items
         .map((e) => OrderStatusHistory.fromJson(e as Map<String, dynamic>))
         .toList();
+  }
+
+  @override
+  Future<void> confirmReceived(String orderId) async {
+    final response = await _dio.patch('/orders/$orderId/confirm-received');
+    final json = response.data as Map<String, dynamic>;
+    final success = json['success'] as bool? ?? false;
+
+    if (!success) {
+      throw ApiException(
+        code: 'UNKNOWN',
+        statusCode: response.statusCode ?? 200,
+      );
+    }
   }
 }
 

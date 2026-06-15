@@ -46,6 +46,7 @@ class _MockOrderRepository implements OrderRepository {
   bool createShouldFail;
   int getByIdCalls = 0;
   int createCalls = 0;
+  List<String>? lastCartItemIds;
 
   _MockOrderRepository({
     Map<String, Order>? orders,
@@ -71,10 +72,12 @@ class _MockOrderRepository implements OrderRepository {
   @override
   Future<CreateOrderResult> createOrder({
     required String addressId,
+    required List<String> cartItemIds,
     String? notes,
     required String idempotencyKey,
   }) async {
     createCalls++;
+    lastCartItemIds = cartItemIds;
     if (createShouldFail) throw ApiException(code: 'SERVER_ERROR', statusCode: 500);
     const result = CreateOrderResult(
       orderId: 'order-new',
@@ -87,6 +90,9 @@ class _MockOrderRepository implements OrderRepository {
 
   @override
   Future<List<OrderStatusHistory>> getStatusHistory(String orderId) async => [];
+
+  @override
+  Future<void> confirmReceived(String orderId) async {}
 }
 
 // ---------------------------------------------------------------------------
@@ -185,7 +191,10 @@ void main() {
       addTearDown(container.dispose);
 
       expect(
-        () => container.read(orderCreateProvider.notifier).createOrder(addressId: 'addr-1'),
+        () => container.read(orderCreateProvider.notifier).createOrder(
+              addressId: 'addr-1',
+              cartItemIds: const ['item-1'],
+            ),
         throwsA(isA<ApiException>()),
       );
 
@@ -202,9 +211,13 @@ void main() {
       final container = _container(repo);
       addTearDown(container.dispose);
 
-      final result = await container.read(orderCreateProvider.notifier).createOrder(addressId: 'addr-1');
+      final result = await container.read(orderCreateProvider.notifier).createOrder(
+        addressId: 'addr-1',
+        cartItemIds: const ['item-1', 'item-2'],
+      );
 
       expect(result.orderId, isNotEmpty);
+      expect(repo.lastCartItemIds, const ['item-1', 'item-2']);
       final state = container.read(orderCreateProvider);
       expect(state.result, isNotNull);
       expect(state.isLoading, false);

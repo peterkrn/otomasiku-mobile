@@ -85,6 +85,7 @@ class OrderCreateNotifier extends Notifier<CreateOrderState> {
 
   Future<CreateOrderResult> createOrder({
     required String addressId,
+    required List<String> cartItemIds,
     String? notes,
   }) async {
     state = const CreateOrderState(isLoading: true);
@@ -93,6 +94,7 @@ class OrderCreateNotifier extends Notifier<CreateOrderState> {
     try {
       final result = await ref.read(orderRepositoryProvider).createOrder(
         addressId: addressId,
+        cartItemIds: cartItemIds,
         notes: notes,
         idempotencyKey: idempotencyKey,
       );

@@ -71,7 +71,7 @@ void main() {
   // Fix: FakePaymentRepository injected via Riverpod override in debug builds.
   // These tests verify the polling provider CONTRACT via PaymentRepository.
   // -------------------------------------------------------------------------
-  group('Bug #5 — PaymentPollingNotifier', () {
+  group('Bug #5 — PaymentNotifier', () {
     test('returns order immediately when already paid', () async {
       final repo = _MockPaymentRepository(
         responses: [_order(paymentStatus: 'paid', status: 'confirmed')],
@@ -79,7 +79,7 @@ void main() {
       final container = _container(repo);
       addTearDown(container.dispose);
 
-      final order = await container.read(paymentPollingProvider('order-1').future);
+      final order = await container.read(paymentProvider('order-1').future);
 
       expect(order.paymentStatus, 'paid');
     });
@@ -91,7 +91,7 @@ void main() {
       final container = _container(repo);
       addTearDown(container.dispose);
 
-      final order = await container.read(paymentPollingProvider('order-1').future);
+      final order = await container.read(paymentProvider('order-1').future);
 
       expect(order.paymentStatus, 'pending');
     });
@@ -103,11 +103,11 @@ void main() {
 
       await Future.delayed(Duration.zero); // let build() settle
 
-      final state = container.read(paymentPollingProvider('order-1'));
+      final state = container.read(paymentProvider('order-1'));
       expect(state.hasError || state.isLoading, isTrue);
     });
 
-    test('checkNow re-fetches and updates state', () async {
+    test('refresh re-fetches and updates state', () async {
       final repo = _MockPaymentRepository(
         responses: [
           _order(paymentStatus: 'pending'),
@@ -117,11 +117,11 @@ void main() {
       final container = _container(repo);
       addTearDown(container.dispose);
 
-      await container.read(paymentPollingProvider('order-1').future);
+      await container.read(paymentProvider('order-1').future);
 
-      await container.read(paymentPollingProvider('order-1').notifier).checkNow('order-1');
+      await container.read(paymentProvider('order-1').notifier).refresh('order-1');
 
-      final state = container.read(paymentPollingProvider('order-1'));
+      final state = container.read(paymentProvider('order-1'));
       expect(state.value?.paymentStatus, 'paid');
     });
   });

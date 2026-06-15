@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../errors/app_exception.dart';
+
 /// Service for making authenticated API calls to Express backend
 class ApiService {
   ApiService._();
@@ -127,8 +129,12 @@ class ApiService {
     } on DioException catch (e) {
       if (kDebugMode) debugPrint('=== ORDER API ERROR: ${e.response?.statusCode} ${e.response?.data}');
       final data = e.response?.data;
-      final errorMsg = data?['error']?['message'] ?? data?['error']?['code'] ?? 'Order failed';
-      throw Exception(errorMsg);
+      final errorCode = data?['error']?['code'] as String? ?? 'ORDER_FAILED';
+      throw ApiException(
+        code: errorCode,
+        statusCode: e.response?.statusCode ?? 0,
+        details: data?['error']?['details'] as Map<String, dynamic>?,
+      );
     }
   }
 }

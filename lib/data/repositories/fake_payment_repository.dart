@@ -2,7 +2,7 @@ import '../../models/order.dart';
 import 'payment_repository.dart';
 
 /// Fake implementation used in debug/test builds via Riverpod overrides.
-/// Extracted from [PaymentPollingNotifier._fetchAndPoll] kDebugMode block.
+/// Extracted from [PaymentNotifier.build] kDebugMode block.
 class FakePaymentRepository implements PaymentRepository {
   @override
   Future<Order> getPaymentStatus(String orderId) async {

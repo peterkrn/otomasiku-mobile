@@ -58,6 +58,10 @@ windows/flutter/generated_plugin_registrant.h
 windows/flutter/generated_plugins.cmake
 android/gradle.properties
 
+# Release signing keystore and credentials — NEVER commit these
+android/app/upload.jks
+android/key.properties
+
 Project_Otomasiku_Mobile_App_2026 - JIRA_DRAFT.csv
 node_modules
 .env

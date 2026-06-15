@@ -89,17 +89,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'MITSUBISHI',
+                  'Otomasiku',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
                   ),
                 ),
                 Text(
-                  'Electric',
+                  'Industry Automation Marketplace',
                   style: TextStyle(
-                    fontSize: 9,
+                    fontSize: 8,
                     color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
                   ),
                 ),

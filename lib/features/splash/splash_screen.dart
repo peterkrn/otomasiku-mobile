@@ -131,7 +131,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         vertical: true,
                         center: true,
                         logoSize: 88,
-                        classicLogo: true,
                         spacing: 20,
                         titleStyle: TextStyle(
                           fontSize: 28,

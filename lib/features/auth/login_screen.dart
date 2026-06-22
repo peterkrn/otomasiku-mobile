@@ -145,16 +145,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                             _buildHeader(),
                             const SizedBox(height: 40),
                             // Welcome Text
-                            _buildWelcomeText(),
+                            _buildWelcomeText(l10n),
                             const SizedBox(height: 32),
                             // Login Form
                             _buildLoginForm(l10n),
                             const SizedBox(height: 24),
                             // Divider
-                            _buildDivider(),
+                            _buildDivider(l10n),
                             const SizedBox(height: 24),
                             // Register Link
-                            _buildRegisterLink(),
+                            _buildRegisterLink(l10n),
                             const SizedBox(height: 32),
                           ],
                         ),
@@ -192,7 +192,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Widget _buildHeader() {
     return OtomasikuBrandLockup(
       logoSize: 56,
-      classicLogo: true,
       titleStyle: GoogleFonts.inter(
         fontSize: 20,
         fontWeight: FontWeight.w800,
@@ -208,12 +207,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     );
   }
 
-  Widget _buildWelcomeText() {
+  Widget _buildWelcomeText(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Selamat Datang!',
+          l10n.loginTitle,
           style: GoogleFonts.inter(
             fontSize: 28,
             fontWeight: FontWeight.w800,
@@ -222,7 +221,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         ),
         const SizedBox(height: 8),
         Text(
-          'Masuk dengan akun Anda untuk mengakses katalog produk dan penawaran spesial.',
+          l10n.loginSubtitle2,
           style: GoogleFonts.inter(
             fontSize: 14,
             height: 1.5,
@@ -241,12 +240,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           // Email Field
           _buildTextField(
             controller: _emailController,
-            hintText: 'Email atau Username',
+            hintText: l10n.emailHint,
             prefixIcon: Icons.email_outlined,
             keyboardType: TextInputType.emailAddress,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Email harus diisi';
+                return l10n.fieldRequired(l10n.email);
               }
               return null;
             },
@@ -255,7 +254,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           // Password Field
           _buildTextField(
             controller: _passwordController,
-            hintText: 'Password',
+            hintText: l10n.passwordHint,
             prefixIcon: Icons.lock_outline,
             obscureText: _obscurePassword,
             suffixIcon: IconButton(
@@ -269,7 +268,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Password harus diisi';
+                return l10n.fieldRequired(l10n.password);
               }
               return null;
             },
@@ -301,7 +300,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Ingat saya',
+                    l10n.rememberMe,
                     style: GoogleFonts.inter(
                       fontSize: 13,
                       color: Colors.white.withValues(alpha: 0.6),
@@ -318,7 +317,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
-                  'Lupa password?',
+                  l10n.forgotPassword,
                   style: GoogleFonts.inter(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -388,7 +387,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                         ),
                       )
                     : Text(
-                        'Masuk',
+                        l10n.loginButton,
                         style: GoogleFonts.inter(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
@@ -399,7 +398,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
           ),
           const SizedBox(height: 16),
           // Google Sign-In Button
-          _buildGoogleSignInButton(),
+          _buildGoogleSignInButton(l10n),
         ],
       ),
     );
@@ -462,14 +461,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     );
   }
 
-  Widget _buildDivider() {
+  Widget _buildDivider(AppLocalizations l10n) {
     return Row(
       children: [
         Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.15))),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'atau',
+            l10n.or,
             style: GoogleFonts.inter(
               fontSize: 12,
               color: Colors.white.withValues(alpha: 0.5),
@@ -481,14 +480,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     );
   }
 
-  Widget _buildRegisterLink() {
+  Widget _buildRegisterLink(AppLocalizations l10n) {
     return Wrap(
       alignment: WrapAlignment.center,
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 4,
       children: [
         Text(
-          'Belum punya akun?',
+          l10n.noAccount,
           style: GoogleFonts.inter(
             fontSize: 14,
             color: Colors.white.withValues(alpha: 0.6),
@@ -502,7 +501,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           child: Text(
-            'Daftar Sekarang',
+            l10n.registerNow,
             style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -514,7 +513,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     );
   }
 
-  Widget _buildGoogleSignInButton() {
+  Widget _buildGoogleSignInButton(AppLocalizations l10n) {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
@@ -530,7 +529,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               )
             : const GoogleIcon(),
         label: Text(
-          'Masuk dengan Google',
+          l10n.loginWithGoogle,
           style: GoogleFonts.inter(
             fontSize: 15,
             fontWeight: FontWeight.w600,

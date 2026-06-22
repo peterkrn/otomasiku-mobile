@@ -10,7 +10,6 @@ class OtomasikuBrandLockup extends StatelessWidget {
     this.showTagline = true,
     this.center = false,
     this.logoSize = 48,
-    this.classicLogo = true,
     this.spacing = 12,
     this.titleStyle,
     this.taglineStyle,
@@ -22,7 +21,6 @@ class OtomasikuBrandLockup extends StatelessWidget {
   final bool showTagline;
   final bool center;
   final double logoSize;
-  final bool classicLogo;
   final double spacing;
   final TextStyle? titleStyle;
   final TextStyle? taglineStyle;
@@ -36,7 +34,7 @@ class OtomasikuBrandLockup extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: center ? CrossAxisAlignment.center : CrossAxisAlignment.start,
         children: [
-          OtomasikuLogo(size: logoSize, classic: classicLogo),
+          OtomasikuLogo(size: logoSize),
           SizedBox(height: spacing),
           _BrandTextBlock(
             center: center,
@@ -54,7 +52,7 @@ class OtomasikuBrandLockup extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        OtomasikuLogo(size: logoSize, classic: classicLogo),
+        OtomasikuLogo(size: logoSize),
         SizedBox(width: spacing),
         Flexible(
           child: _BrandTextBlock(

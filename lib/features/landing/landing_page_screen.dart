@@ -195,7 +195,6 @@ class _LandingPageScreenState extends ConsumerState<LandingPageScreen>
           Expanded(
             child: OtomasikuBrandLockup(
               logoSize: 40,
-              classicLogo: true,
               showTagline: false,
               titleStyle: GoogleFonts.inter(
                 fontSize: 16,
@@ -336,7 +335,6 @@ class _LandingPageScreenState extends ConsumerState<LandingPageScreen>
                   vertical: true,
                   center: true,
                   logoSize: isCompact ? 76 : 88,
-                  classicLogo: false,
                   spacing: 18,
                   titleStyle: GoogleFonts.inter(
                     fontSize: isCompact ? 34 : 42,

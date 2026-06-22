@@ -606,13 +606,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get added => '✓ Added';
 
   @override
-  String get compareMaxError => 'Maximum 2 products for comparison';
+  String get compareMaxError => 'Unable to add product to comparison';
 
   @override
   String get compare => 'Compare';
 
   @override
   String get clear => 'Clear All';
+
+  @override
+  String get compareEmptyHint => 'Add products to start comparing';
+
+  @override
+  String get compareAddProduct => 'Add Product';
+
+  @override
+  String get compareSpecProduct => 'PRODUCT';
+
+  @override
+  String get compareSpecSeries => 'SERIES';
+
+  @override
+  String get compareSpecVariant => 'VARIANT';
+
+  @override
+  String get compareSpecUnit => 'UNIT';
+
+  @override
+  String get compareSpecMinOrder => 'MIN ORDER';
+
+  @override
+  String get compareSpecStock => 'STOCK';
+
+  @override
+  String get compareSpecPrice => 'PRICE';
 
   @override
   String get cartRemoveConfirm => 'Remove this item from cart?';
@@ -1414,4 +1441,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contactAdmin => 'Contact Admin';
+
+  @override
+  String get loginSubtitle2 =>
+      'Sign in to your account to access the product catalog and special offers.';
+
+  @override
+  String get registerNow => 'Register Now';
+
+  @override
+  String get loginWithGoogle => 'Sign in with Google';
+
+  @override
+  String get errorInvalidEmail => 'Invalid email format';
+
+  @override
+  String get registerSuccessTitle => 'Registration Successful!';
+
+  @override
+  String registerSuccessBody(String email) {
+    return 'A confirmation link has been sent to $email. Please check your email and click the confirmation link to activate your account.';
+  }
+
+  @override
+  String get addressSaved => 'Address saved successfully';
+
+  @override
+  String get addressAdded => 'Address added successfully';
+
+  @override
+  String get paymentVaTransferFrom => 'Transfer from any BCA account';
+
+  @override
+  String get paymentAccountHolder => 'Account Holder';
+
+  @override
+  String get paymentType => 'Type';
+
+  @override
+  String get paymentAutoVerify =>
+      'Payment will be verified automatically. Make sure the transferred amount matches the total bill so the order can be processed.';
+
+  @override
+  String get supportNeedHelp => 'Need help?';
+
+  @override
+  String get supportContactPhone => 'Contact us at 021-1234-5678';
+
+  @override
+  String get notificationOrderUpdates => 'Order Updates';
+
+  @override
+  String get notificationOrderUpdatesDesc =>
+      'Notifications for order status changes';
+
+  @override
+  String get notificationPaymentDesc => 'Payment confirmation';
+
+  @override
+  String get languageLabelId => 'ID';
+
+  @override
+  String get languageLabelEn => 'EN';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get privacyPolicySubtitle => 'Read our privacy policy';
 }

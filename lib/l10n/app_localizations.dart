@@ -1235,7 +1235,7 @@ abstract class AppLocalizations {
   /// No description provided for @compareMaxError.
   ///
   /// In id, this message translates to:
-  /// **'Maksimal 2 produk untuk dibandingkan'**
+  /// **'Tidak dapat menambahkan produk ke perbandingan'**
   String get compareMaxError;
 
   /// No description provided for @compare.
@@ -1249,6 +1249,60 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Hapus Semua'**
   String get clear;
+
+  /// No description provided for @compareEmptyHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambahkan produk untuk mulai membandingkan'**
+  String get compareEmptyHint;
+
+  /// No description provided for @compareAddProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Produk'**
+  String get compareAddProduct;
+
+  /// No description provided for @compareSpecProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'PRODUK'**
+  String get compareSpecProduct;
+
+  /// No description provided for @compareSpecSeries.
+  ///
+  /// In id, this message translates to:
+  /// **'SERIES'**
+  String get compareSpecSeries;
+
+  /// No description provided for @compareSpecVariant.
+  ///
+  /// In id, this message translates to:
+  /// **'VARIAN'**
+  String get compareSpecVariant;
+
+  /// No description provided for @compareSpecUnit.
+  ///
+  /// In id, this message translates to:
+  /// **'SATUAN'**
+  String get compareSpecUnit;
+
+  /// No description provided for @compareSpecMinOrder.
+  ///
+  /// In id, this message translates to:
+  /// **'MIN ORDER'**
+  String get compareSpecMinOrder;
+
+  /// No description provided for @compareSpecStock.
+  ///
+  /// In id, this message translates to:
+  /// **'STOK'**
+  String get compareSpecStock;
+
+  /// No description provided for @compareSpecPrice.
+  ///
+  /// In id, this message translates to:
+  /// **'HARGA'**
+  String get compareSpecPrice;
 
   /// No description provided for @cartRemoveConfirm.
   ///
@@ -2749,6 +2803,132 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Hubungi Admin'**
   String get contactAdmin;
+
+  /// No description provided for @loginSubtitle2.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk dengan akun Anda untuk mengakses katalog produk dan penawaran spesial.'**
+  String get loginSubtitle2;
+
+  /// No description provided for @registerNow.
+  ///
+  /// In id, this message translates to:
+  /// **'Daftar Sekarang'**
+  String get registerNow;
+
+  /// No description provided for @loginWithGoogle.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk dengan Google'**
+  String get loginWithGoogle;
+
+  /// No description provided for @errorInvalidEmail.
+  ///
+  /// In id, this message translates to:
+  /// **'Format email tidak valid'**
+  String get errorInvalidEmail;
+
+  /// No description provided for @registerSuccessTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Registrasi Berhasil!'**
+  String get registerSuccessTitle;
+
+  /// No description provided for @registerSuccessBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Link konfirmasi telah dikirim ke {email}. Silakan cek email Anda dan klik link konfirmasi untuk mengaktifkan akun.'**
+  String registerSuccessBody(String email);
+
+  /// No description provided for @addressSaved.
+  ///
+  /// In id, this message translates to:
+  /// **'Alamat berhasil disimpan'**
+  String get addressSaved;
+
+  /// No description provided for @addressAdded.
+  ///
+  /// In id, this message translates to:
+  /// **'Alamat berhasil ditambahkan'**
+  String get addressAdded;
+
+  /// No description provided for @paymentVaTransferFrom.
+  ///
+  /// In id, this message translates to:
+  /// **'Transfer dari rekening BCA mana saja'**
+  String get paymentVaTransferFrom;
+
+  /// No description provided for @paymentAccountHolder.
+  ///
+  /// In id, this message translates to:
+  /// **'Atas Nama'**
+  String get paymentAccountHolder;
+
+  /// No description provided for @paymentType.
+  ///
+  /// In id, this message translates to:
+  /// **'Jenis'**
+  String get paymentType;
+
+  /// No description provided for @paymentAutoVerify.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran akan diverifikasi otomatis. Pastikan nominal yang ditransfer sesuai dengan total tagihan agar pesanan dapat diproses.'**
+  String get paymentAutoVerify;
+
+  /// No description provided for @supportNeedHelp.
+  ///
+  /// In id, this message translates to:
+  /// **'Butuh bantuan?'**
+  String get supportNeedHelp;
+
+  /// No description provided for @supportContactPhone.
+  ///
+  /// In id, this message translates to:
+  /// **'Hubungi tim kami di 021-1234-5678'**
+  String get supportContactPhone;
+
+  /// No description provided for @notificationOrderUpdates.
+  ///
+  /// In id, this message translates to:
+  /// **'Update Pesanan'**
+  String get notificationOrderUpdates;
+
+  /// No description provided for @notificationOrderUpdatesDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Notifikasi perubahan status pesanan'**
+  String get notificationOrderUpdatesDesc;
+
+  /// No description provided for @notificationPaymentDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi pembayaran'**
+  String get notificationPaymentDesc;
+
+  /// No description provided for @languageLabelId.
+  ///
+  /// In id, this message translates to:
+  /// **'ID'**
+  String get languageLabelId;
+
+  /// No description provided for @languageLabelEn.
+  ///
+  /// In id, this message translates to:
+  /// **'EN'**
+  String get languageLabelEn;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In id, this message translates to:
+  /// **'Kebijakan Privasi'**
+  String get privacyPolicy;
+
+  /// No description provided for @privacyPolicySubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Baca kebijakan privasi kami'**
+  String get privacyPolicySubtitle;
 }
 
 class _AppLocalizationsDelegate

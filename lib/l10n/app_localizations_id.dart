@@ -609,13 +609,41 @@ class AppLocalizationsId extends AppLocalizations {
   String get added => '✓ Ditambahkan';
 
   @override
-  String get compareMaxError => 'Maksimal 2 produk untuk dibandingkan';
+  String get compareMaxError =>
+      'Tidak dapat menambahkan produk ke perbandingan';
 
   @override
   String get compare => 'Bandingkan';
 
   @override
   String get clear => 'Hapus Semua';
+
+  @override
+  String get compareEmptyHint => 'Tambahkan produk untuk mulai membandingkan';
+
+  @override
+  String get compareAddProduct => 'Tambah Produk';
+
+  @override
+  String get compareSpecProduct => 'PRODUK';
+
+  @override
+  String get compareSpecSeries => 'SERIES';
+
+  @override
+  String get compareSpecVariant => 'VARIAN';
+
+  @override
+  String get compareSpecUnit => 'SATUAN';
+
+  @override
+  String get compareSpecMinOrder => 'MIN ORDER';
+
+  @override
+  String get compareSpecStock => 'STOK';
+
+  @override
+  String get compareSpecPrice => 'HARGA';
 
   @override
   String get cartRemoveConfirm => 'Hapus item ini dari keranjang?';
@@ -1418,4 +1446,72 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get contactAdmin => 'Hubungi Admin';
+
+  @override
+  String get loginSubtitle2 =>
+      'Masuk dengan akun Anda untuk mengakses katalog produk dan penawaran spesial.';
+
+  @override
+  String get registerNow => 'Daftar Sekarang';
+
+  @override
+  String get loginWithGoogle => 'Masuk dengan Google';
+
+  @override
+  String get errorInvalidEmail => 'Format email tidak valid';
+
+  @override
+  String get registerSuccessTitle => 'Registrasi Berhasil!';
+
+  @override
+  String registerSuccessBody(String email) {
+    return 'Link konfirmasi telah dikirim ke $email. Silakan cek email Anda dan klik link konfirmasi untuk mengaktifkan akun.';
+  }
+
+  @override
+  String get addressSaved => 'Alamat berhasil disimpan';
+
+  @override
+  String get addressAdded => 'Alamat berhasil ditambahkan';
+
+  @override
+  String get paymentVaTransferFrom => 'Transfer dari rekening BCA mana saja';
+
+  @override
+  String get paymentAccountHolder => 'Atas Nama';
+
+  @override
+  String get paymentType => 'Jenis';
+
+  @override
+  String get paymentAutoVerify =>
+      'Pembayaran akan diverifikasi otomatis. Pastikan nominal yang ditransfer sesuai dengan total tagihan agar pesanan dapat diproses.';
+
+  @override
+  String get supportNeedHelp => 'Butuh bantuan?';
+
+  @override
+  String get supportContactPhone => 'Hubungi tim kami di 021-1234-5678';
+
+  @override
+  String get notificationOrderUpdates => 'Update Pesanan';
+
+  @override
+  String get notificationOrderUpdatesDesc =>
+      'Notifikasi perubahan status pesanan';
+
+  @override
+  String get notificationPaymentDesc => 'Konfirmasi pembayaran';
+
+  @override
+  String get languageLabelId => 'ID';
+
+  @override
+  String get languageLabelEn => 'EN';
+
+  @override
+  String get privacyPolicy => 'Kebijakan Privasi';
+
+  @override
+  String get privacyPolicySubtitle => 'Baca kebijakan privasi kami';
 }

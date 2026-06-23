@@ -1880,6 +1880,12 @@ abstract class AppLocalizations {
   /// **'Berhasil logout'**
   String get logoutSuccess;
 
+  /// No description provided for @loggingOut.
+  ///
+  /// In id, this message translates to:
+  /// **'Sedang keluar...'**
+  String get loggingOut;
+
   /// No description provided for @myProjects.
   ///
   /// In id, this message translates to:

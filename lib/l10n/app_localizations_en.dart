@@ -951,6 +951,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logoutSuccess => 'Logged out successfully';
 
   @override
+  String get loggingOut => 'Logging out...';
+
+  @override
   String get myProjects => 'My Projects';
 
   @override

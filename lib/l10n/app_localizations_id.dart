@@ -955,6 +955,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get logoutSuccess => 'Berhasil logout';
 
   @override
+  String get loggingOut => 'Sedang keluar...';
+
+  @override
   String get myProjects => 'Proyek Saya';
 
   @override

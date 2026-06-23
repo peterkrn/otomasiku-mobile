@@ -1,10 +1,8 @@
 import '../../models/order.dart';
 import 'payment_repository.dart';
 
-const _simulatedTotalAmount = 500000;
-
 /// Fake implementation used in debug/test builds via Riverpod overrides.
-/// Extracted from [PaymentNotifier.build] kDebugMode block.
+/// Extracted from [PaymentPollingNotifier._fetchAndPoll] kDebugMode block.
 class FakePaymentRepository implements PaymentRepository {
   @override
   Future<Order> getPaymentStatus(String orderId) async {
@@ -13,9 +11,9 @@ class FakePaymentRepository implements PaymentRepository {
     return Order(
       id: orderId,
       orderNumber: 'SIM-$orderId',
-      status: 'processing',
+      status: 'confirmed',
       paymentStatus: 'paid',
-      totalAmount: _simulatedTotalAmount,
+      totalAmount: 0,
       shippingAddress: const OrderAddress(
         recipient: '',
         phone: '',

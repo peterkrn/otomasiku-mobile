@@ -103,7 +103,7 @@ Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
 };
 
 ProductImage _$ProductImageFromJson(Map<String, dynamic> json) => ProductImage(
-  id: const _ProductImageIdConverter().fromJson(json['id']),
+  id: (json['id'] as num).toInt(),
   url: json['url'] as String,
   path: json['path'] as String?,
   isPrimary: json['is_primary'] as bool,
@@ -112,7 +112,7 @@ ProductImage _$ProductImageFromJson(Map<String, dynamic> json) => ProductImage(
 
 Map<String, dynamic> _$ProductImageToJson(ProductImage instance) =>
     <String, dynamic>{
-      'id': const _ProductImageIdConverter().toJson(instance.id),
+      'id': instance.id,
       'url': instance.url,
       'path': instance.path,
       'is_primary': instance.isPrimary,

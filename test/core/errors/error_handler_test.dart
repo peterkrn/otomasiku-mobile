@@ -68,11 +68,6 @@ void main() {
   });
 
   group('translateErrorCode', () {
-    test('STOCK_CONFLICT reuses insufficient stock message with available count', () {
-      final msg = translateErrorCode('STOCK_CONFLICT', l10n, details: {'available': 2});
-      expect(msg, 'insufficientStock:2');
-    });
-
     test('OUT_OF_STOCK includes available count', () {
       final msg = translateErrorCode('OUT_OF_STOCK', l10n, details: {'available': 3});
       expect(msg, contains('3'));

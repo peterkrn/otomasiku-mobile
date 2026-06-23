@@ -10,7 +10,6 @@ import '../../../models/product.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/product_provider.dart';
 import '../../../shared/widgets/app_error_view.dart';
-import '../../../shared/widgets/otomasiku_brand_lockup.dart';
 import '../../../shared/widgets/shimmer_grid.dart';
 import '../widgets/hero_banner.dart';
 import '../widgets/product_card.dart';
@@ -62,19 +61,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         elevation: 0,
         titleSpacing: 16,
-        title: OtomasikuBrandLockup(
-          logoSize: 32,
-          showTagline: true,
-          spacing: 8,
-          titleStyle: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-          ),
-          taglineStyle: TextStyle(
-            fontSize: 8,
-            color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
-          ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: AppColors.mitsubishiRed,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [_Diamond(), _Diamond()],
+                    ),
+                    _Diamond(),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'MITSUBISHI',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                  ),
+                ),
+                Text(
+                  'Electric',
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
         actions: [
           _CartBadgeButton(),
@@ -263,6 +294,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Diamond extends StatelessWidget {
+  const _Diamond();
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.rotate(
+      angle: 0.785,
+      child: Container(
+        width: 6,
+        height: 6,
+        margin: const EdgeInsets.all(0.5),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
         ),
       ),
     );

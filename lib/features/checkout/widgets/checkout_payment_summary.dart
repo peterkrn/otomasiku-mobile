@@ -8,6 +8,8 @@ class CheckoutPaymentSummary extends StatefulWidget {
   final int subtotal;
   final int discount;
   final int total;
+  final bool termsAccepted;
+  final ValueChanged<bool> onTermsChanged;
   final bool isDark;
 
   const CheckoutPaymentSummary({
@@ -16,6 +18,8 @@ class CheckoutPaymentSummary extends StatefulWidget {
     required this.subtotal,
     required this.discount,
     required this.total,
+    required this.termsAccepted,
+    required this.onTermsChanged,
     required this.isDark,
   });
 
@@ -72,6 +76,36 @@ class _CheckoutPaymentSummaryState extends State<CheckoutPaymentSummary> {
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: AppColors.mitsubishiRed,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: Checkbox(
+                value: widget.termsAccepted,
+                onChanged: (v) => widget.onTermsChanged(v ?? false),
+                activeColor: AppColors.mitsubishiRed,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => widget.onTermsChanged(!widget.termsAccepted),
+                child: Text(
+                  l10n.termsAgree,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.textSecondary,
+                  ),
+                ),
               ),
             ),
           ],

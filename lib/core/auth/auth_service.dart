@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../config/env_config.dart';
 import 'token_storage.dart';
 
 enum AuthResultStatus { success, failure }
@@ -19,16 +18,6 @@ class AuthResult {
   bool get isSuccess => status == AuthResultStatus.success;
 }
 
-class AuthStateChangePayload {
-  final AuthChangeEvent event;
-  final Session? session;
-
-  const AuthStateChangePayload({
-    required this.event,
-    required this.session,
-  });
-}
-
 class AuthService {
   AuthService({
     required SupabaseClient supabase,
@@ -39,18 +28,7 @@ class AuthService {
   final SupabaseClient _supabase;
   final TokenStorage _tokenStorage;
 
-  String get _loginCallbackUrl => '${EnvConfig.deepLinkScheme}://login-callback';
-  String get _confirmEmailUrl => '${EnvConfig.deepLinkScheme}://confirm-email';
-
   bool get isAuthenticated => _supabase.auth.currentSession != null;
-  Session? get currentSession => _supabase.auth.currentSession;
-  Stream<AuthStateChangePayload> get authStateChanges =>
-      _supabase.auth.onAuthStateChange.map(
-        (data) => AuthStateChangePayload(
-          event: data.event,
-          session: data.session,
-        ),
-      );
 
   Future<AuthResult> login(String email, String password) async {
     try {
@@ -85,7 +63,7 @@ class AuthService {
         email: email,
         password: password,
         data: fullName != null ? {'full_name': fullName} : null,
-        emailRedirectTo: _confirmEmailUrl,
+        emailRedirectTo: 'io.otomasiku.app://confirm-email',
       );
       final session = response.session;
       if (session != null) {
@@ -100,37 +78,6 @@ class AuthService {
         status: AuthResultStatus.failure,
         errorCode: _mapAuthExceptionCode(e),
         errorMessage: e.message,
-      );
-    }
-  }
-
-  Future<AuthResult> signInWithGoogle() async {
-    try {
-      final response = await _supabase.auth.signInWithOAuth(
-        OAuthProvider.google,
-        redirectTo: _loginCallbackUrl,
-      );
-
-      if (response) {
-        return const AuthResult(status: AuthResultStatus.success);
-      }
-
-      return const AuthResult(
-        status: AuthResultStatus.failure,
-        errorCode: 'GOOGLE_SIGN_IN_FAILED',
-        errorMessage: 'Google sign-in was cancelled or failed',
-      );
-    } on AuthException catch (e) {
-      return AuthResult(
-        status: AuthResultStatus.failure,
-        errorCode: _mapAuthExceptionCode(e),
-        errorMessage: e.message,
-      );
-    } catch (e) {
-      return AuthResult(
-        status: AuthResultStatus.failure,
-        errorCode: 'UNKNOWN_ERROR',
-        errorMessage: e.toString(),
       );
     }
   }

@@ -7,7 +7,7 @@ part of 'order.dart';
 // **************************************************************************
 
 Order _$OrderFromJson(Map<String, dynamic> json) => Order(
-  id: const ToStringConverter().fromJson(json['id']),
+  id: const _ToStringConverter().fromJson(json['id']),
   orderNumber: json['orderNumber'] as String,
   status: json['status'] as String,
   paymentStatus: json['paymentStatus'] as String,
@@ -44,7 +44,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
 );
 
 Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
-  'id': const ToStringConverter().toJson(instance.id),
+  'id': const _ToStringConverter().toJson(instance.id),
   'orderNumber': instance.orderNumber,
   'status': instance.status,
   'paymentStatus': instance.paymentStatus,
@@ -65,11 +65,11 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'deliveredAt': instance.deliveredAt?.toIso8601String(),
   'createdAt': instance.createdAt.toIso8601String(),
   'updatedAt': instance.updatedAt.toIso8601String(),
-  'paymentProof': instance.paymentProof,
+  'paymentProof': instance.paymentProof?.toJson(),
 };
 
 OrderItem _$OrderItemFromJson(Map<String, dynamic> json) => OrderItem(
-  productId: const ToStringConverter().fromJson(json['productId']),
+  productId: const _ToStringConverter().fromJson(json['productId']),
   productName: json['productName'] as String,
   quantity: (json['quantity'] as num).toInt(),
   unitPrice: const BigIntStringConverter().fromJson(json['unitPrice']),
@@ -77,7 +77,7 @@ OrderItem _$OrderItemFromJson(Map<String, dynamic> json) => OrderItem(
 );
 
 Map<String, dynamic> _$OrderItemToJson(OrderItem instance) => <String, dynamic>{
-  'productId': const ToStringConverter().toJson(instance.productId),
+  'productId': const _ToStringConverter().toJson(instance.productId),
   'productName': instance.productName,
   'quantity': instance.quantity,
   'unitPrice': const BigIntStringConverter().toJson(instance.unitPrice),

@@ -7,8 +7,8 @@ part of 'cart_item.dart';
 // **************************************************************************
 
 CartItem _$CartItemFromJson(Map<String, dynamic> json) => CartItem(
-  id: const ToStringConverter().fromJson(json['id']),
-  productId: const ToStringConverter().fromJson(json['productId']),
+  id: const _ToStringConverter().fromJson(json['id']),
+  productId: const _ToStringConverter().fromJson(json['productId']),
   quantity: (json['quantity'] as num).toInt(),
   productSnapshot: CartProductSnapshot.fromJson(
     json['productSnapshot'] as Map<String, dynamic>,
@@ -18,8 +18,8 @@ CartItem _$CartItemFromJson(Map<String, dynamic> json) => CartItem(
 );
 
 Map<String, dynamic> _$CartItemToJson(CartItem instance) => <String, dynamic>{
-  'id': const ToStringConverter().toJson(instance.id),
-  'productId': const ToStringConverter().toJson(instance.productId),
+  'id': const _ToStringConverter().toJson(instance.id),
+  'productId': const _ToStringConverter().toJson(instance.productId),
   'quantity': instance.quantity,
   'productSnapshot': instance.productSnapshot,
   'createdAt': instance.createdAt.toIso8601String(),

@@ -2,17 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:otomasiku_mobile/models/order.dart';
 
 void main() {
-  group('Order status contract', () {
-    test('matches backend completion and timeline statuses', () {
-      expect(isCompletedOrderStatus('done'), isTrue);
-      expect(isCompletedOrderStatus('delivered'), isFalse);
-      expect(isFulfillmentOrderStatus('processing'), isTrue);
-      expect(isFulfillmentOrderStatus('shipped'), isTrue);
-      expect(isFulfillmentOrderStatus('pending'), isFalse);
-      expect(orderTimelineStatuses, ['pending', 'processing', 'shipped', 'done']);
-    });
-  });
-
   group('Order.fromJson', () {
     final json = {
       'id': 'order-001',

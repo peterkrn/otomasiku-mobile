@@ -73,7 +73,6 @@ String translateErrorCode(
       final available = details?['available'] ?? 0;
       return '${l10n.outOfStock} (${l10n.available}: $available)';
     case 'INSUFFICIENT_STOCK':
-    case 'STOCK_CONFLICT':
       final raw = details?['available'];
       final available = switch (raw) {
         int v => v,

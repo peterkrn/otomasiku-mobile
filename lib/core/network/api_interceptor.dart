@@ -72,7 +72,7 @@ class ApiInterceptor extends Interceptor {
 
     FirebaseCrashlytics.instance.recordError(
       err,
-      err.stackTrace,
+      StackTrace.current,
       reason: 'API Error: ${err.response?.statusCode}',
       information: ['uri', err.requestOptions.uri.toString()],
     );

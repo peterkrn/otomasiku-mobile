@@ -72,9 +72,7 @@ void main() async {
   runZonedGuarded(
     () => runApp(ProviderScope(child: const OtomasikuApp())),
     (error, stack) {
-      if (kDebugMode) {
-        debugPrint('[Zone] Uncaught error: $error');
-      }
+      debugPrint('[Zone] Uncaught error: $error');
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     },
   );

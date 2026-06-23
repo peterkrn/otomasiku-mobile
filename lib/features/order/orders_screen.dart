@@ -20,14 +20,6 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   final _scrollController = ScrollController();
   String _currentFilter = 'all';
 
-  void _handleBack() {
-    if (context.canPop()) {
-      context.pop();
-    } else {
-      context.goNamed(AppRoute.profile);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -72,7 +64,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-          onPressed: _handleBack,
+          onPressed: () => context.goNamed(AppRoute.profile),
         ),
         title: Text(l10n.myOrders),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
@@ -96,12 +88,20 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           ),
         ),
       ),
-      body: ordersAsync.when(
-        data: (orders) => _buildOrderList(l10n, orders, isDark),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => AppErrorView(
-          error: error,
-          onRetry: () => ref.read(orderListProvider.notifier).refresh(),
+      body: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop) {
+            context.goNamed(AppRoute.profile);
+          }
+        },
+        child: ordersAsync.when(
+          data: (orders) => _buildOrderList(l10n, orders, isDark),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => AppErrorView(
+            error: error,
+            onRetry: () => ref.read(orderListProvider.notifier).refresh(),
+          ),
         ),
       ),
     );

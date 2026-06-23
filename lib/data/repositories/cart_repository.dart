@@ -42,11 +42,8 @@ class CartRepositoryImpl implements CartRepository {
     }
 
     final data = apiResponse.data!;
-    final rawItems = data['items'];
-    if (rawItems is! List) throw ApiException(code: 'INVALID_RESPONSE', statusCode: 0);
-    final items = rawItems
-        .cast<Map<String, dynamic>>()
-        .map((e) => CartItem.fromJson(e))
+    final items = (data['items'] as List)
+        .map((e) => CartItem.fromJson(e as Map<String, dynamic>))
         .toList();
 
     return CartResponse(

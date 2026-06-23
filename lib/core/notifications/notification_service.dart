@@ -93,11 +93,11 @@ class NotificationService {
         message.hashCode,
         notification.title,
         notification.body,
-        NotificationDetails(
+        const NotificationDetails(
           android: AndroidNotificationDetails(
             'order_updates',
-            orderUpdatesChannel.name,
-            channelDescription: orderUpdatesChannel.description,
+            'Update Pesanan',
+            channelDescription: 'Notifikasi perubahan status pesanan',
             importance: Importance.high,
           ),
           iOS: DarwinNotificationDetails(),

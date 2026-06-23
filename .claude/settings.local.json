@@ -14,7 +14,8 @@
       "Bash(python *)",
       "Bash(dir /s \"C:\\\\Users\\\\peter\\\\.claude\\\\skills\\\\ui-ux-pro-max\\\\scripts\\\\search.py\")",
       "Bash(dir C:\\\\dev\\\\projects\\\\ *)",
-      "Bash(dart analyze *)"
+      "Bash(dart analyze *)",
+      "Bash(flutter build *)"
     ]
   },
   "skillOverrides": {

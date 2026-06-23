@@ -17,22 +17,16 @@ class CartState {
   final bool isLoading;
   final String? error;
 
-  const CartState({
-    required this.items,
-    this.isLoading = false,
-    this.error,
-  });
+  const CartState({required this.items, this.isLoading = false, this.error});
 
   int get totalItems => items.fold(0, (sum, item) => sum + item.quantity);
 
-  int get totalValue =>
-      items.fold(0, (sum, item) => sum + item.productSnapshot.price * item.quantity);
+  int get totalValue => items.fold(
+    0,
+    (sum, item) => sum + item.productSnapshot.price * item.quantity,
+  );
 
-  CartState copyWith({
-    List<CartItem>? items,
-    bool? isLoading,
-    String? error,
-  }) {
+  CartState copyWith({List<CartItem>? items, bool? isLoading, String? error}) {
     return CartState(
       items: items ?? this.items,
       isLoading: isLoading ?? this.isLoading,
@@ -72,24 +66,31 @@ class CartNotifier extends StateNotifier<CartState> {
     }
   }
 
-  Future<void> addItem(String productId, int quantity, {CartProductSnapshot? snapshot}) async {
+  Future<void> addItem(
+    String productId,
+    int quantity, {
+    CartProductSnapshot? snapshot,
+  }) async {
     final previousState = state;
     final idempotencyKey = const Uuid().v4();
+    final existingIndex = previousState.items.indexWhere(
+      (i) => i.productId == productId,
+    );
+    final previousItem = existingIndex >= 0
+        ? previousState.items[existingIndex]
+        : null;
     _markMutation();
 
     final optimisticItem = CartItem(
       id: _generateLocalId(),
       productId: productId,
       quantity: quantity,
-      productSnapshot: snapshot ?? const CartProductSnapshot(
-        name: '',
-        price: 0,
-        primaryImageUrl: '',
-      ),
+      productSnapshot:
+          snapshot ??
+          const CartProductSnapshot(name: '', price: 0, primaryImageUrl: ''),
       createdAt: DateTime.now(),
     );
 
-    final existingIndex = state.items.indexWhere((i) => i.productId == productId);
     if (existingIndex >= 0) {
       final updatedItems = List<CartItem>.from(state.items);
       final existing = updatedItems[existingIndex];
@@ -106,12 +107,23 @@ class CartNotifier extends StateNotifier<CartState> {
     }
 
     try {
-      final response = await _addItemWithRetry(
-        productId,
-        quantity,
-        idempotencyKey,
+      final response = previousItem != null && !_isLocalId(previousItem.id)
+          ? await _repository.updateItem(
+              cartItemId: previousItem.id,
+              quantity: previousItem.quantity + quantity,
+            )
+          : await _addItemWithRetry(
+              productId,
+              previousItem == null
+                  ? quantity
+                  : previousItem.quantity + quantity,
+              idempotencyKey,
+            );
+      _applyPersistedItemResponse(
+        productId: productId,
+        optimisticItemId: optimisticItem.id,
+        response: response,
       );
-      _applyAddItemResponse(productId, existingIndex, optimisticItem, response);
     } on ApiException catch (e) {
       if (e.code == 'CART_ITEM_ALREADY_EXISTS') {
         try {
@@ -176,14 +188,18 @@ class CartNotifier extends StateNotifier<CartState> {
     }
   }
 
-  void _applyAddItemResponse(String productId, int existingIndex, CartItem optimisticItem, CartItem response) {
-    final quantityOverride = existingIndex >= 0
-        ? _findItemByProductId(state.items, productId)?.quantity
-        : null;
-
+  void _applyPersistedItemResponse({
+    required String productId,
+    required String optimisticItemId,
+    required CartItem response,
+  }) {
+    final quantityOverride = _findItemByProductId(
+      state.items,
+      productId,
+    )?.quantity;
     _replaceItem(
       productId: productId,
-      optimisticItemId: optimisticItem.id,
+      optimisticItemId: optimisticItemId,
       response: response,
       quantityOverride: quantityOverride,
     );
@@ -310,7 +326,9 @@ class CartNotifier extends StateNotifier<CartState> {
   void removeItemsLocally(Set<String> cartItemIds) {
     _markMutation();
     state = state.copyWith(
-      items: state.items.where((item) => !cartItemIds.contains(item.id)).toList(),
+      items: state.items
+          .where((item) => !cartItemIds.contains(item.id))
+          .toList(),
     );
   }
 

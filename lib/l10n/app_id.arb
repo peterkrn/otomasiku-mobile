@@ -365,6 +365,7 @@
   "helpCenter": "Bantuan",
   "logoutConfirm": "Yakin ingin keluar?",
   "logoutSuccess": "Berhasil logout",
+  "loggingOut": "Sedang keluar...",
   "myProjects": "Proyek Saya",
   "activeProjects": "Proyek Aktif",
   "totalItems": "Total Item",

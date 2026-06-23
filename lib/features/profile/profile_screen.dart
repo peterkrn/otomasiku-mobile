@@ -367,15 +367,15 @@ class _LogoutDialogState extends State<_LogoutDialog> {
     return AlertDialog(
       title: Text(widget.l10n.logout),
       content: _isLoading
-          ? const Row(
+          ? Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-                SizedBox(width: 16),
-                Text('Sedang keluar...'),
+                const SizedBox(width: 16),
+                Text(widget.l10n.loggingOut),
               ],
             )
           : Text(widget.l10n.logoutConfirm),

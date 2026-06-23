@@ -365,6 +365,7 @@
   "helpCenter": "Help Center",
   "logoutConfirm": "Are you sure you want to logout?",
   "logoutSuccess": "Logged out successfully",
+  "loggingOut": "Logging out...",
   "myProjects": "My Projects",
   "activeProjects": "Active Projects",
   "totalItems": "Total Items",

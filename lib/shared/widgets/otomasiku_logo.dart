@@ -17,7 +17,7 @@ class OtomasikuLogo extends StatelessWidget {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Container(
+          errorBuilder: (context, error, stackTrace) => Container(
             color: const Color(0xFFE7192D),
             alignment: Alignment.center,
             child: Icon(

@@ -44,8 +44,11 @@ class ProductRepositoryImpl implements ProductRepository {
     }
 
     final data = apiResponse.data!;
-    final products = (data['data'] as List)
-        .map((e) => Product.fromJson(e as Map<String, dynamic>))
+    final rawData = data['data'];
+    if (rawData is! List) throw ApiException(code: 'INVALID_RESPONSE', statusCode: 0);
+    final products = rawData
+        .cast<Map<String, dynamic>>()
+        .map((e) => Product.fromJson(e))
         .toList();
 
     return ProductListResponse(
@@ -84,8 +87,11 @@ class ProductRepositoryImpl implements ProductRepository {
     if (!success || json['data'] == null) {
       throw ApiException(code: 'UNKNOWN', statusCode: response.statusCode ?? 200);
     }
-    return (json['data'] as List)
-        .map((e) => Brand.fromJson(e as Map<String, dynamic>))
+    final rawData = json['data'];
+    if (rawData is! List) throw ApiException(code: 'INVALID_RESPONSE', statusCode: 0);
+    return rawData
+        .cast<Map<String, dynamic>>()
+        .map((e) => Brand.fromJson(e))
         .toList();
   }
 
@@ -97,8 +103,11 @@ class ProductRepositoryImpl implements ProductRepository {
     if (!success || json['data'] == null) {
       throw ApiException(code: 'UNKNOWN', statusCode: response.statusCode ?? 200);
     }
-    return (json['data'] as List)
-        .map((e) => Category.fromJson(e as Map<String, dynamic>))
+    final rawData = json['data'];
+    if (rawData is! List) throw ApiException(code: 'INVALID_RESPONSE', statusCode: 0);
+    return rawData
+        .cast<Map<String, dynamic>>()
+        .map((e) => Category.fromJson(e))
         .toList();
   }
 }

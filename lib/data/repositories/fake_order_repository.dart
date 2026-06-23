@@ -1,6 +1,8 @@
 import '../../models/order.dart';
 import 'order_repository.dart';
 
+const _simulatedTotalAmount = 500000;
+
 /// Fake implementation used in debug/test builds via Riverpod overrides.
 /// Extracted from [OrderRepositoryImpl] and [orderDetailProvider] kDebugMode blocks.
 class FakeOrderRepository implements OrderRepository {
@@ -8,7 +10,12 @@ class FakeOrderRepository implements OrderRepository {
 
   @override
   Future<OrderListResponse> getOrders({int page = 1, int pageSize = 20}) async {
-    return OrderListResponse(data: List.from(_orders), total: _orders.length, page: page, pageSize: pageSize);
+    return OrderListResponse(
+      data: List.from(_orders),
+      total: _orders.length,
+      page: page,
+      pageSize: pageSize,
+    );
   }
 
   @override
@@ -33,7 +40,7 @@ class FakeOrderRepository implements OrderRepository {
     return CreateOrderResult(
       orderId: id,
       orderNumber: 'SIM-$id',
-      totalAmount: 1,
+      totalAmount: _simulatedTotalAmount,
     );
   }
 
@@ -44,21 +51,21 @@ class FakeOrderRepository implements OrderRepository {
   Future<void> confirmReceived(String orderId) async {}
 
   static Order _simulatedOrder(String id) => Order(
-        id: id,
-        orderNumber: 'SIM-$id',
-        status: 'processing',
-        paymentStatus: 'paid',
-        totalAmount: 0,
-        shippingAddress: const OrderAddress(
-          recipient: 'Peter Kurniawan',
-          phone: '081234567890',
-          street: 'Jl. Industri No. 45, Kawasan MM2100',
-          city: 'Bekasi',
-          province: 'Jawa Barat',
-          postalCode: '17530',
-        ),
-        items: const [],
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
+    id: id,
+    orderNumber: 'SIM-$id',
+    status: 'processing',
+    paymentStatus: 'paid',
+    totalAmount: _simulatedTotalAmount,
+    shippingAddress: const OrderAddress(
+      recipient: 'Peter Kurniawan',
+      phone: '081234567890',
+      street: 'Jl. Industri No. 45, Kawasan MM2100',
+      city: 'Bekasi',
+      province: 'Jawa Barat',
+      postalCode: '17530',
+    ),
+    items: const [],
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  );
 }

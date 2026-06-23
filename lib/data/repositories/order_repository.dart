@@ -4,6 +4,7 @@ import '../../core/errors/app_exception.dart';
 import '../../core/network/api_response.dart';
 import '../../core/utils/bigint_converter.dart';
 import '../../models/order.dart';
+import 'order_detail_parser.dart';
 
 abstract class OrderRepository {
   Future<OrderListResponse> getOrders({int page = 1, int pageSize = 20});
@@ -25,15 +26,14 @@ class OrderRepositoryImpl implements OrderRepository {
 
   @override
   Future<OrderListResponse> getOrders({int page = 1, int pageSize = 20}) async {
-    final response = await _dio.get('/orders', queryParameters: {
-      'page': page,
-      'pageSize': pageSize,
-    });
-    final apiResponse =
-        ApiResponse<Map<String, dynamic>>.fromJson(
-          response.data as Map<String, dynamic>,
-          null,
-        );
+    final response = await _dio.get(
+      '/orders',
+      queryParameters: {'page': page, 'pageSize': pageSize},
+    );
+    final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
+      response.data as Map<String, dynamic>,
+      null,
+    );
 
     if (!apiResponse.success || apiResponse.data == null) {
       throw ApiException(
@@ -44,8 +44,13 @@ class OrderRepositoryImpl implements OrderRepository {
     }
 
     final data = apiResponse.data!;
-    final orders = (data['data'] as List<dynamic>)
-        .map((e) => Order.fromJson(e as Map<String, dynamic>))
+    final rawData = data['data'];
+    if (rawData is! List) {
+      throw ApiException(code: 'INVALID_RESPONSE', statusCode: 0);
+    }
+    final orders = rawData
+        .cast<Map<String, dynamic>>()
+        .map((e) => Order.fromJson(e))
         .toList();
 
     return OrderListResponse(
@@ -59,11 +64,10 @@ class OrderRepositoryImpl implements OrderRepository {
   @override
   Future<Order> getOrderById(String id) async {
     final response = await _dio.get('/orders/$id');
-    final apiResponse =
-        ApiResponse<Map<String, dynamic>>.fromJson(
-          response.data as Map<String, dynamic>,
-          null,
-        );
+    final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
+      response.data as Map<String, dynamic>,
+      null,
+    );
 
     if (!apiResponse.success || apiResponse.data == null) {
       throw ApiException(
@@ -74,12 +78,7 @@ class OrderRepositoryImpl implements OrderRepository {
     }
 
     final data = apiResponse.data!;
-    final orderMap = data['order'] as Map<String, dynamic>;
-    orderMap['items'] = data['items'];
-    if (data['paymentProof'] != null) {
-      orderMap['paymentProof'] = data['paymentProof'];
-    }
-    return Order.fromJson(orderMap);
+    return parseOrderDetailData(data, statusCode: response.statusCode ?? 200);
   }
 
   @override
@@ -99,11 +98,10 @@ class OrderRepositoryImpl implements OrderRepository {
       },
       options: Options(headers: {'X-Idempotency-Key': idempotencyKey}),
     );
-    final apiResponse =
-        ApiResponse<Map<String, dynamic>>.fromJson(
-          response.data as Map<String, dynamic>,
-          null,
-        );
+    final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
+      response.data as Map<String, dynamic>,
+      null,
+    );
 
     if (!apiResponse.success || apiResponse.data == null) {
       throw ApiException(
@@ -134,9 +132,13 @@ class OrderRepositoryImpl implements OrderRepository {
       );
     }
 
-    final items = json['data'] as List<dynamic>;
-    return items
-        .map((e) => OrderStatusHistory.fromJson(e as Map<String, dynamic>))
+    final rawItems = json['data'];
+    if (rawItems is! List) {
+      throw ApiException(code: 'INVALID_RESPONSE', statusCode: 0);
+    }
+    return rawItems
+        .cast<Map<String, dynamic>>()
+        .map((e) => OrderStatusHistory.fromJson(e))
         .toList();
   }
 

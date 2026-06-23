@@ -21,6 +21,14 @@ class ShippingScreen extends ConsumerStatefulWidget {
 class _ShippingScreenState extends ConsumerState<ShippingScreen> {
   String? _selectedAddressId;
 
+  void _handleBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(AppRoute.profile);
+    }
+  }
+
   void _selectAddress(Address address) {
     if (!widget.isSelectable) return;
     setState(() => _selectedAddressId = address.id);
@@ -49,13 +57,7 @@ class _ShippingScreenState extends ConsumerState<ShippingScreen> {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : const Color(0xFFF3F4F6),
       appBar: AppBar(
-        leading: BackButton(onPressed: () {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.goNamed(AppRoute.home);
-          }
-        }),
+        leading: BackButton(onPressed: _handleBack),
         title: Text(
           l10n.shippingAddress,
           style: const TextStyle(fontWeight: FontWeight.bold),

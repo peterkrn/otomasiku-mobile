@@ -139,7 +139,8 @@ class Category {
 
 @JsonSerializable()
 class ProductImage {
-  final int id;
+  @_ProductImageIdConverter()
+  final String id;
   final String url;
   final String? path;
   @JsonKey(name: 'is_primary')
@@ -159,4 +160,14 @@ class ProductImage {
       _$ProductImageFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProductImageToJson(this);
+}
+
+class _ProductImageIdConverter implements JsonConverter<String, dynamic> {
+  const _ProductImageIdConverter();
+
+  @override
+  String fromJson(dynamic value) => value.toString();
+
+  @override
+  dynamic toJson(String value) => value;
 }

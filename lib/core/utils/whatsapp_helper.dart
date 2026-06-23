@@ -1,7 +1,13 @@
 import 'package:url_launcher/url_launcher.dart';
 
+import '../config/env_config.dart';
+
+// Messages are intentionally hardcoded (not localized) because:
+// 1. WhatsAppHelper has no BuildContext access
+// 2. All messages are addressed to Indonesian-speaking admin team
+// 3. This is a B2B app; admin communication defaults to Bahasa Indonesia
 class WhatsAppHelper {
-  static const _phone = '6281252078076';
+  static String get _phone => EnvConfig.whatsappNumber;
 
   static Future<void> openRfq({String? productName, String? quantity}) async {
     final buffer = StringBuffer('Halo, saya mau tanya terkait Otomasiku.');
@@ -12,8 +18,27 @@ class WhatsAppHelper {
       buffer.write('\nJumlah: $quantity unit');
     }
 
-    final message = Uri.encodeComponent(buffer.toString());
-    final url = Uri.parse('https://wa.me/$_phone?text=$message');
+    await _launch(_phone, buffer.toString());
+  }
+
+  /// Open WhatsApp with a pre-filled message asking the admin when an unpriced
+  /// product will become available for purchase.
+  static Future<void> openProductAvailabilityInquiry(
+    String productName, {
+    String locale = 'id',
+  }) async {
+    final String message = locale == 'id'
+        ? 'Halo Admin Otomasiku, saya ingin bertanya kapan produk "$productName" '
+            'akan tersedia untuk dipesan? Terima kasih.'
+        : 'Hello Otomasiku Admin, I would like to ask when the product '
+            '"$productName" will be available to order? Thank you.';
+
+    await _launch(_phone, message);
+  }
+
+  static Future<void> _launch(String phone, String message) async {
+    final encoded = Uri.encodeComponent(message);
+    final url = Uri.parse('https://wa.me/$phone?text=$encoded');
     await launchUrl(url, mode: LaunchMode.externalApplication);
   }
 }

@@ -104,6 +104,198 @@ abstract class AppLocalizations {
   /// **'Otomasiku'**
   String get appName;
 
+  /// No description provided for @landingEyebrow.
+  ///
+  /// In id, this message translates to:
+  /// **'Katalog otomasi industri untuk kebutuhan B2B dan B2C'**
+  String get landingEyebrow;
+
+  /// No description provided for @landingHeroBadge.
+  ///
+  /// In id, this message translates to:
+  /// **'Pemasok tepercaya untuk kebutuhan otomasi industri'**
+  String get landingHeroBadge;
+
+  /// No description provided for @landingHeadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Produk otomasi industri yang lebih mudah dicari, dibandingkan, dan dipesan.'**
+  String get landingHeadline;
+
+  /// No description provided for @landingSubheadline.
+  ///
+  /// In id, this message translates to:
+  /// **'Otomasiku membantu pelanggan industri menemukan produk yang dibutuhkan dengan harga khusus B2B, harga kompetitif untuk pembelian umum, dan dukungan admin saat proses pemesanan.'**
+  String get landingSubheadline;
+
+  /// No description provided for @landingViewCatalog.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Katalog'**
+  String get landingViewCatalog;
+
+  /// No description provided for @landingContactAdmin.
+  ///
+  /// In id, this message translates to:
+  /// **'Hubungi Admin'**
+  String get landingContactAdmin;
+
+  /// No description provided for @landingLanguageLabelId.
+  ///
+  /// In id, this message translates to:
+  /// **'ID'**
+  String get landingLanguageLabelId;
+
+  /// No description provided for @landingLanguageLabelEn.
+  ///
+  /// In id, this message translates to:
+  /// **'EN'**
+  String get landingLanguageLabelEn;
+
+  /// No description provided for @landingTrustSectionTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Alasan pelanggan percaya'**
+  String get landingTrustSectionTitle;
+
+  /// No description provided for @landingTrustSectionSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Kami menyusun pengalaman belanja yang jelas, sederhana, dan relevan untuk kebutuhan industri.'**
+  String get landingTrustSectionSubtitle;
+
+  /// No description provided for @landingTrustOriginalTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Produk original'**
+  String get landingTrustOriginalTitle;
+
+  /// No description provided for @landingTrustOriginalBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Fokus pada produk industri yang jelas identitas brand dan kategorinya.'**
+  String get landingTrustOriginalBody;
+
+  /// No description provided for @landingTrustB2bPriceTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Harga khusus B2B'**
+  String get landingTrustB2bPriceTitle;
+
+  /// No description provided for @landingTrustB2bPriceBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Pelanggan bisnis bisa berdiskusi dengan admin untuk kebutuhan pembelian proyek atau volume tertentu.'**
+  String get landingTrustB2bPriceBody;
+
+  /// No description provided for @landingTrustCompetitiveTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Harga kompetitif'**
+  String get landingTrustCompetitiveTitle;
+
+  /// No description provided for @landingTrustCompetitiveBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Untuk kebutuhan pembelian umum, kami menyiapkan penawaran yang tetap relevan untuk pasar otomasi industri.'**
+  String get landingTrustCompetitiveBody;
+
+  /// No description provided for @landingTrustVerificationTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Verifikasi pembayaran manual'**
+  String get landingTrustVerificationTitle;
+
+  /// No description provided for @landingTrustVerificationBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran dan pengiriman saat ini dipastikan kembali oleh admin agar detail pesanan tetap akurat.'**
+  String get landingTrustVerificationBody;
+
+  /// No description provided for @landingCatalogSectionTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Kategori utama'**
+  String get landingCatalogSectionTitle;
+
+  /// No description provided for @landingCatalogSectionSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Mulai dari komponen yang paling sering dicari untuk kebutuhan panel, mesin, dan kontrol industri.'**
+  String get landingCatalogSectionSubtitle;
+
+  /// No description provided for @landingHowTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Cara pemesanan'**
+  String get landingHowTitle;
+
+  /// No description provided for @landingHowSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Alur dibuat sederhana agar pelanggan bisa lanjut belanja atau konsultasi tanpa bingung.'**
+  String get landingHowSubtitle;
+
+  /// No description provided for @landingHowStep1Title.
+  ///
+  /// In id, this message translates to:
+  /// **'Jelajahi katalog'**
+  String get landingHowStep1Title;
+
+  /// No description provided for @landingHowStep1Body.
+  ///
+  /// In id, this message translates to:
+  /// **'Cari kategori atau produk yang dibutuhkan, lalu buka detail produk untuk melihat informasi utama.'**
+  String get landingHowStep1Body;
+
+  /// No description provided for @landingHowStep2Title.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk dan siapkan pesanan'**
+  String get landingHowStep2Title;
+
+  /// No description provided for @landingHowStep2Body.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambahkan produk ke keranjang, pilih alamat pengiriman, lalu lanjutkan checkout.'**
+  String get landingHowStep2Body;
+
+  /// No description provided for @landingHowStep3Title.
+  ///
+  /// In id, this message translates to:
+  /// **'Bayar dan tunggu verifikasi admin'**
+  String get landingHowStep3Title;
+
+  /// No description provided for @landingHowStep3Body.
+  ///
+  /// In id, this message translates to:
+  /// **'Upload bukti transfer QRIS, lalu admin akan memverifikasi pembayaran dan mengatur pengiriman secara manual.'**
+  String get landingHowStep3Body;
+
+  /// No description provided for @landingBrandTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Brand yang tersedia'**
+  String get landingBrandTitle;
+
+  /// No description provided for @landingBrandSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Saat ini katalog menampilkan brand industri yang sudah dikenal pelanggan kami.'**
+  String get landingBrandSubtitle;
+
+  /// No description provided for @landingFooterTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Butuh bantuan memilih produk?'**
+  String get landingFooterTitle;
+
+  /// No description provided for @landingFooterSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Tim admin dapat membantu Anda mulai dari pencarian produk, konfirmasi pesanan, hingga proses pembayaran.'**
+  String get landingFooterSubtitle;
+
   /// No description provided for @home.
   ///
   /// In id, this message translates to:
@@ -421,6 +613,72 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Berhasil disalin'**
   String get paymentCopied;
+
+  /// No description provided for @paymentQrisTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran QRIS'**
+  String get paymentQrisTitle;
+
+  /// No description provided for @paymentScanQris.
+  ///
+  /// In id, this message translates to:
+  /// **'Scan kode QRIS menggunakan aplikasi mobile banking atau e-wallet favorit Anda'**
+  String get paymentScanQris;
+
+  /// No description provided for @paymentQrisMerchant.
+  ///
+  /// In id, this message translates to:
+  /// **'PT Abadi Bangun Bersama (Otomasiku.com)'**
+  String get paymentQrisMerchant;
+
+  /// No description provided for @paymentQrisOnlyDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'QRIS PT Abadi Bangun Bersama dipilih otomatis untuk pembayaran pesanan ini.'**
+  String get paymentQrisOnlyDescription;
+
+  /// No description provided for @paymentQrisInstruction.
+  ///
+  /// In id, this message translates to:
+  /// **'Scan kode QRIS di bawah ini menggunakan aplikasi mobile banking atau e-wallet Anda, lalu upload bukti transfer setelah pembayaran berhasil.'**
+  String get paymentQrisInstruction;
+
+  /// No description provided for @paymentConfirmPaid.
+  ///
+  /// In id, this message translates to:
+  /// **'Saya Sudah Bayar'**
+  String get paymentConfirmPaid;
+
+  /// No description provided for @paymentPendingTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Menunggu Verifikasi'**
+  String get paymentPendingTitle;
+
+  /// No description provided for @paymentPendingSubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Admin akan memverifikasi pembayaran Anda'**
+  String get paymentPendingSubtitle;
+
+  /// No description provided for @paymentPendingDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran Anda akan diverifikasi secara manual oleh admin kami. Silakan tunggu konfirmasi melalui notifikasi.'**
+  String get paymentPendingDescription;
+
+  /// No description provided for @paymentViewOrder.
+  ///
+  /// In id, this message translates to:
+  /// **'Lihat Pesanan'**
+  String get paymentViewOrder;
+
+  /// No description provided for @paymentBackToShopping.
+  ///
+  /// In id, this message translates to:
+  /// **'Kembali Belanja'**
+  String get paymentBackToShopping;
 
   /// No description provided for @paymentCheckStatus.
   ///
@@ -977,7 +1235,7 @@ abstract class AppLocalizations {
   /// No description provided for @compareMaxError.
   ///
   /// In id, this message translates to:
-  /// **'Maksimal 2 produk untuk dibandingkan'**
+  /// **'Tidak dapat menambahkan produk ke perbandingan'**
   String get compareMaxError;
 
   /// No description provided for @compare.
@@ -991,6 +1249,60 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Hapus Semua'**
   String get clear;
+
+  /// No description provided for @compareEmptyHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambahkan produk untuk mulai membandingkan'**
+  String get compareEmptyHint;
+
+  /// No description provided for @compareAddProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Produk'**
+  String get compareAddProduct;
+
+  /// No description provided for @compareSpecProduct.
+  ///
+  /// In id, this message translates to:
+  /// **'PRODUK'**
+  String get compareSpecProduct;
+
+  /// No description provided for @compareSpecSeries.
+  ///
+  /// In id, this message translates to:
+  /// **'SERIES'**
+  String get compareSpecSeries;
+
+  /// No description provided for @compareSpecVariant.
+  ///
+  /// In id, this message translates to:
+  /// **'VARIAN'**
+  String get compareSpecVariant;
+
+  /// No description provided for @compareSpecUnit.
+  ///
+  /// In id, this message translates to:
+  /// **'SATUAN'**
+  String get compareSpecUnit;
+
+  /// No description provided for @compareSpecMinOrder.
+  ///
+  /// In id, this message translates to:
+  /// **'MIN ORDER'**
+  String get compareSpecMinOrder;
+
+  /// No description provided for @compareSpecStock.
+  ///
+  /// In id, this message translates to:
+  /// **'STOK'**
+  String get compareSpecStock;
+
+  /// No description provided for @compareSpecPrice.
+  ///
+  /// In id, this message translates to:
+  /// **'HARGA'**
+  String get compareSpecPrice;
 
   /// No description provided for @cartRemoveConfirm.
   ///
@@ -1231,6 +1543,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Estimasi 3-5 hari kerja'**
   String get shippingEstimate;
+
+  /// No description provided for @shippingManualDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengiriman diatur secara manual oleh admin setelah pembayaran Anda diverifikasi.'**
+  String get shippingManualDescription;
 
   /// No description provided for @freeShipping.
   ///
@@ -1670,6 +1988,24 @@ abstract class AppLocalizations {
   /// **'Nama Z-A'**
   String get sortNameDesc;
 
+  /// No description provided for @activeFiltersLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Filter aktif:'**
+  String get activeFiltersLabel;
+
+  /// No description provided for @noActiveFilters.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak ada filter aktif'**
+  String get noActiveFilters;
+
+  /// No description provided for @searchResultsCount.
+  ///
+  /// In id, this message translates to:
+  /// **'Ditemukan {count} produk'**
+  String searchResultsCount(int count);
+
   /// No description provided for @productsSelected.
   ///
   /// In id, this message translates to:
@@ -1705,6 +2041,24 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Rentang Daya'**
   String get filterPower;
+
+  /// No description provided for @powerRangeSmall.
+  ///
+  /// In id, this message translates to:
+  /// **'≤ 2.2 kW'**
+  String get powerRangeSmall;
+
+  /// No description provided for @powerRangeMedium.
+  ///
+  /// In id, this message translates to:
+  /// **'3.7–15 kW'**
+  String get powerRangeMedium;
+
+  /// No description provided for @powerRangeLarge.
+  ///
+  /// In id, this message translates to:
+  /// **'≥ 18.5 kW'**
+  String get powerRangeLarge;
 
   /// No description provided for @noProductsFound.
   ///
@@ -2294,6 +2648,12 @@ abstract class AppLocalizations {
   /// **'Nama Bank'**
   String get paymentBankName;
 
+  /// No description provided for @paymentBankNameCustom.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Bank'**
+  String get paymentBankNameCustom;
+
   /// No description provided for @paymentAccountName.
   ///
   /// In id, this message translates to:
@@ -2330,17 +2690,245 @@ abstract class AppLocalizations {
   /// **'Bukti transfer berhasil dikirim'**
   String get paymentProofUploaded;
 
+  /// No description provided for @paymentExpiredStockReleased.
+  ///
+  /// In id, this message translates to:
+  /// **'Stok untuk pesanan yang kedaluwarsa ini sudah dilepas kembali.'**
+  String get paymentExpiredStockReleased;
+
+  /// No description provided for @paymentExpiredCheckoutAgain.
+  ///
+  /// In id, this message translates to:
+  /// **'Silakan checkout lagi jika Anda masih membutuhkan item ini.'**
+  String get paymentExpiredCheckoutAgain;
+
   /// No description provided for @paymentFieldsRequired.
   ///
   /// In id, this message translates to:
   /// **'Semua kolom wajib diisi'**
   String get paymentFieldsRequired;
 
+  /// No description provided for @paymentLeaveTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Keluar dari pembayaran?'**
+  String get paymentLeaveTitle;
+
+  /// No description provided for @paymentLeaveMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Apakah Anda yakin mau keluar menu pembayaran ini?'**
+  String get paymentLeaveMessage;
+
+  /// No description provided for @exitAppTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Keluar dari aplikasi?'**
+  String get exitAppTitle;
+
+  /// No description provided for @exitAppMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Apakah Anda yakin ingin keluar?'**
+  String get exitAppMessage;
+
+  /// No description provided for @leave.
+  ///
+  /// In id, this message translates to:
+  /// **'Keluar'**
+  String get leave;
+
   /// No description provided for @productUnavailable.
   ///
   /// In id, this message translates to:
   /// **'Produk ini sedang tidak tersedia'**
   String get productUnavailable;
+
+  /// No description provided for @trackingNumber.
+  ///
+  /// In id, this message translates to:
+  /// **'Nomor Resi: {resi}'**
+  String trackingNumber(String resi);
+
+  /// No description provided for @paymentConfirmDialogTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi Pembayaran'**
+  String get paymentConfirmDialogTitle;
+
+  /// No description provided for @paymentConfirmDialogBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Dengan menekan konfirmasi, tim kami akan memverifikasi pembayaran Anda. Proses verifikasi membutuhkan waktu 1x24 jam.'**
+  String get paymentConfirmDialogBody;
+
+  /// No description provided for @confirmReceived.
+  ///
+  /// In id, this message translates to:
+  /// **'Pesanan Diterima'**
+  String get confirmReceived;
+
+  /// No description provided for @confirmReceivedDialog.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi bahwa pesanan sudah diterima?'**
+  String get confirmReceivedDialog;
+
+  /// No description provided for @confirmReceivedSuccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Pesanan berhasil dikonfirmasi'**
+  String get confirmReceivedSuccess;
+
+  /// No description provided for @productPriceNotSetTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Harga Belum Tersedia'**
+  String get productPriceNotSetTitle;
+
+  /// No description provided for @productPriceNotSetBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Produk ini belum memiliki harga. Silakan hubungi admin untuk info ketersediaan dan harga.'**
+  String get productPriceNotSetBody;
+
+  /// No description provided for @productPriceNotSetContactAdmin.
+  ///
+  /// In id, this message translates to:
+  /// **'Hubungi Admin via WhatsApp'**
+  String get productPriceNotSetContactAdmin;
+
+  /// No description provided for @contactAdmin.
+  ///
+  /// In id, this message translates to:
+  /// **'Hubungi Admin'**
+  String get contactAdmin;
+
+  /// No description provided for @loginSubtitle2.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk dengan akun Anda untuk mengakses katalog produk dan penawaran spesial.'**
+  String get loginSubtitle2;
+
+  /// No description provided for @registerNow.
+  ///
+  /// In id, this message translates to:
+  /// **'Daftar Sekarang'**
+  String get registerNow;
+
+  /// No description provided for @loginWithGoogle.
+  ///
+  /// In id, this message translates to:
+  /// **'Masuk dengan Google'**
+  String get loginWithGoogle;
+
+  /// No description provided for @errorInvalidEmail.
+  ///
+  /// In id, this message translates to:
+  /// **'Format email tidak valid'**
+  String get errorInvalidEmail;
+
+  /// No description provided for @registerSuccessTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Registrasi Berhasil!'**
+  String get registerSuccessTitle;
+
+  /// No description provided for @registerSuccessBody.
+  ///
+  /// In id, this message translates to:
+  /// **'Link konfirmasi telah dikirim ke {email}. Silakan cek email Anda dan klik link konfirmasi untuk mengaktifkan akun.'**
+  String registerSuccessBody(String email);
+
+  /// No description provided for @addressSaved.
+  ///
+  /// In id, this message translates to:
+  /// **'Alamat berhasil disimpan'**
+  String get addressSaved;
+
+  /// No description provided for @addressAdded.
+  ///
+  /// In id, this message translates to:
+  /// **'Alamat berhasil ditambahkan'**
+  String get addressAdded;
+
+  /// No description provided for @paymentVaTransferFrom.
+  ///
+  /// In id, this message translates to:
+  /// **'Transfer dari rekening BCA mana saja'**
+  String get paymentVaTransferFrom;
+
+  /// No description provided for @paymentAccountHolder.
+  ///
+  /// In id, this message translates to:
+  /// **'Atas Nama'**
+  String get paymentAccountHolder;
+
+  /// No description provided for @paymentType.
+  ///
+  /// In id, this message translates to:
+  /// **'Jenis'**
+  String get paymentType;
+
+  /// No description provided for @paymentAutoVerify.
+  ///
+  /// In id, this message translates to:
+  /// **'Pembayaran akan diverifikasi otomatis. Pastikan nominal yang ditransfer sesuai dengan total tagihan agar pesanan dapat diproses.'**
+  String get paymentAutoVerify;
+
+  /// No description provided for @supportNeedHelp.
+  ///
+  /// In id, this message translates to:
+  /// **'Butuh bantuan?'**
+  String get supportNeedHelp;
+
+  /// No description provided for @supportContactPhone.
+  ///
+  /// In id, this message translates to:
+  /// **'Hubungi tim kami di 021-1234-5678'**
+  String get supportContactPhone;
+
+  /// No description provided for @notificationOrderUpdates.
+  ///
+  /// In id, this message translates to:
+  /// **'Update Pesanan'**
+  String get notificationOrderUpdates;
+
+  /// No description provided for @notificationOrderUpdatesDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Notifikasi perubahan status pesanan'**
+  String get notificationOrderUpdatesDesc;
+
+  /// No description provided for @notificationPaymentDesc.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi pembayaran'**
+  String get notificationPaymentDesc;
+
+  /// No description provided for @languageLabelId.
+  ///
+  /// In id, this message translates to:
+  /// **'ID'**
+  String get languageLabelId;
+
+  /// No description provided for @languageLabelEn.
+  ///
+  /// In id, this message translates to:
+  /// **'EN'**
+  String get languageLabelEn;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In id, this message translates to:
+  /// **'Kebijakan Privasi'**
+  String get privacyPolicy;
+
+  /// No description provided for @privacyPolicySubtitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Baca kebijakan privasi kami'**
+  String get privacyPolicySubtitle;
 }
 
 class _AppLocalizationsDelegate

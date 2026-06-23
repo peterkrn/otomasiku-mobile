@@ -1,13 +1,22 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../core/converters/to_string_converter.dart';
+
 import '../core/utils/bigint_converter.dart';
 import 'payment_proof.dart';
 
 part 'order.g.dart';
 
+const orderTimelineStatuses = <String>['pending', 'processing', 'shipped', 'done'];
+
+bool isCompletedOrderStatus(String status) => status == 'done';
+
+bool isFulfillmentOrderStatus(String status) =>
+    status == 'processing' || status == 'shipped';
+
 @JsonSerializable()
 class Order {
-  @_ToStringConverter()
+  @ToStringConverter()
   final String id;
   final String orderNumber;
   final String status;
@@ -66,7 +75,7 @@ class Order {
 
 @JsonSerializable()
 class OrderItem {
-  @_ToStringConverter()
+  @ToStringConverter()
   final String productId;
   final String productName;
   final int quantity;
@@ -119,16 +128,7 @@ enum OrderStatus {
   pending,
   processing,
   shipped,
-  delivered,
+  done,
   cancelled,
 }
 
-class _ToStringConverter implements JsonConverter<String, dynamic> {
-  const _ToStringConverter();
-
-  @override
-  String fromJson(dynamic value) => value.toString();
-
-  @override
-  dynamic toJson(String value) => value;
-}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mitsubishi Red - brand primary color -->
+    <color name="ic_launcher_background">#E7192D</color>
+    <color name="otomasiku_red">#E7192D</color>
+</resources>

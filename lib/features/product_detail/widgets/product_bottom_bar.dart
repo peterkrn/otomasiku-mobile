@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/config/feature_flags.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/app_toast.dart';
 import '../../../l10n/app_localizations.dart';
@@ -56,7 +57,8 @@ class ProductBottomBar extends StatelessWidget {
               height: 48,
               decoration: BoxDecoration(
                 border: Border.all(
-                    color: isDark ? AppColors.darkBorder : AppColors.border),
+                  color: isDark ? AppColors.darkBorder : AppColors.border,
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -75,14 +77,18 @@ class ProductBottomBar extends StatelessWidget {
                         );
                       }
                     },
-                    icon: Icon(Icons.remove,
-                        color: isDark
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary),
+                    icon: Icon(
+                      Icons.remove,
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.textSecondary,
+                    ),
                     iconSize: 18,
                     padding: EdgeInsets.zero,
-                    constraints:
-                        const BoxConstraints(minWidth: 40, minHeight: 48),
+                    constraints: const BoxConstraints(
+                      minWidth: 40,
+                      minHeight: 48,
+                    ),
                   ),
                   SizedBox(
                     width: 40,
@@ -100,39 +106,48 @@ class ProductBottomBar extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: quantity < displayStock ? onIncrement : null,
-                    icon: Icon(Icons.add,
-                        color: isDark
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary),
+                    icon: Icon(
+                      Icons.add,
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.textSecondary,
+                    ),
                     iconSize: 18,
                     padding: EdgeInsets.zero,
-                    constraints:
-                        const BoxConstraints(minWidth: 40, minHeight: 48),
+                    constraints: const BoxConstraints(
+                      minWidth: 40,
+                      minHeight: 48,
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 8),
-            // Save to project
-            SizedBox(
-              width: 48,
-              height: 48,
-              child: OutlinedButton(
-                onPressed: onSaveToProject,
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(
-                      color: isDark ? AppColors.darkBorder : AppColors.border),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  padding: EdgeInsets.zero,
-                ),
-                child: Icon(Icons.bookmark_border,
+            if (isProjectFeatureEnabled) ...[
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 48,
+                height: 48,
+                child: OutlinedButton(
+                  onPressed: onSaveToProject,
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: isDark ? AppColors.darkBorder : AppColors.border,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: Icon(
+                    Icons.bookmark_border,
                     size: 20,
                     color: isDark
                         ? AppColors.darkTextSecondary
-                        : AppColors.textSecondary),
+                        : AppColors.textSecondary,
+                  ),
+                ),
               ),
-            ),
+            ],
             const SizedBox(width: 8),
             // Add to cart
             SizedBox(
@@ -147,15 +162,16 @@ class ProductBottomBar extends StatelessWidget {
                         : AppColors.mitsubishiRed,
                   ),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   padding: EdgeInsets.zero,
                 ),
                 child: Icon(
-                  isAddingToCart
-                      ? Icons.check
-                      : Icons.shopping_cart_outlined,
+                  isAddingToCart ? Icons.check : Icons.shopping_cart_outlined,
                   size: 20,
-                  color: isAddingToCart ? Colors.green : AppColors.mitsubishiRed,
+                  color: isAddingToCart
+                      ? Colors.green
+                      : AppColors.mitsubishiRed,
                 ),
               ),
             ),
@@ -169,7 +185,8 @@ class ProductBottomBar extends StatelessWidget {
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -177,7 +194,9 @@ class ProductBottomBar extends StatelessWidget {
                     Text(
                       l10n.buy,
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     const Icon(Icons.arrow_forward, size: 16),

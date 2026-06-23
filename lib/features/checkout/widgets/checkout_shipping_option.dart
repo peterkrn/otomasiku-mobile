@@ -44,7 +44,7 @@ class CheckoutShippingOption extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  l10n.shippingEstimate,
+                  l10n.shippingManualDescription,
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
@@ -53,13 +53,10 @@ class CheckoutShippingOption extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            l10n.freeShipping,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: AppColors.success,
-            ),
+          const Icon(
+            Icons.local_shipping_outlined,
+            color: AppColors.mitsubishiRed,
+            size: 20,
           ),
         ],
       ),

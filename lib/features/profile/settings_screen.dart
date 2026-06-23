@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
+import 'package:url_launcher/url_launcher.dart';
+import '../../core/config/env_config.dart';
 import '../../core/constants/app_colors.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
@@ -65,6 +67,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             _buildSectionTitle(l10n.security, isDark),
             const SizedBox(height: 8),
             _buildPasswordSection(authState, isDark, l10n),
+            const SizedBox(height: 24),
+            _buildSectionTitle(l10n.privacyPolicy, isDark),
+            const SizedBox(height: 8),
+            _buildPrivacyPolicySection(isDark, l10n),
             const SizedBox(height: 96),
           ],
         ),
@@ -438,7 +444,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     try {
       await Supabase.instance.client.auth.resetPasswordForEmail(
         email,
-        redirectTo: 'io.otomasiku.app://login-callback',
+        redirectTo: '${EnvConfig.deepLinkScheme}://login-callback',
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -510,9 +516,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
             trailing: SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'id', label: Text('ID')),
-                ButtonSegment(value: 'en', label: Text('EN')),
+              segments: [
+                ButtonSegment(value: 'id', label: Text(l10n.languageLabelId)),
+                ButtonSegment(value: 'en', label: Text(l10n.languageLabelEn)),
               ],
               selected: {currentLocale.languageCode},
               onSelectionChanged: (selected) {
@@ -522,6 +528,48 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPrivacyPolicySection(bool isDark, AppLocalizations l10n) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+      ),
+      child: ListTile(
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.blue.withValues(alpha: isDark ? 0.2 : 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.privacy_tip_outlined, color: Colors.blue, size: 20),
+        ),
+        title: Text(
+          l10n.privacyPolicy,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+          ),
+        ),
+        subtitle: Text(
+          l10n.privacyPolicySubtitle,
+          style: TextStyle(
+            fontSize: 12,
+            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+          ),
+        ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () async {
+          final uri = Uri.parse(EnvConfig.privacyPolicyUrl);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+        },
       ),
     );
   }

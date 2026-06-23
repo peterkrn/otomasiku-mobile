@@ -1,10 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../core/converters/to_string_converter.dart';
+
 part 'address.g.dart';
 
 @JsonSerializable()
 class Address {
-  @_ToStringConverter()
+  @ToStringConverter()
   final String id;
   final String label;
   final String recipient;
@@ -39,12 +41,3 @@ class Address {
   String get fullLabel => '$label - $fullAddress';
 }
 
-class _ToStringConverter implements JsonConverter<String, dynamic> {
-  const _ToStringConverter();
-
-  @override
-  String fromJson(dynamic value) => value.toString();
-
-  @override
-  dynamic toJson(String value) => value;
-}

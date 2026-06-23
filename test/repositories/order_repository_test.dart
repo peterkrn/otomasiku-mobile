@@ -38,6 +38,7 @@ class _FakeOrderRepository implements OrderRepository {
   String? createFailCode;
   int createCalls = 0;
   int getByIdCalls = 0;
+  List<String>? lastCartItemIds;
 
   _FakeOrderRepository({
     Map<String, Order>? orders,
@@ -62,10 +63,12 @@ class _FakeOrderRepository implements OrderRepository {
   @override
   Future<CreateOrderResult> createOrder({
     required String addressId,
+    required List<String> cartItemIds,
     String? notes,
     required String idempotencyKey,
   }) async {
     createCalls++;
+    lastCartItemIds = cartItemIds;
     if (createShouldFail) {
       throw ApiException(code: createFailCode ?? 'SERVER_ERROR', statusCode: 500);
     }
@@ -76,6 +79,9 @@ class _FakeOrderRepository implements OrderRepository {
 
   @override
   Future<List<OrderStatusHistory>> getStatusHistory(String orderId) async => [];
+
+  @override
+  Future<void> confirmReceived(String orderId) async {}
 }
 
 // ---------------------------------------------------------------------------
@@ -94,6 +100,7 @@ void main() {
 
       final result = await repo.createOrder(
         addressId: 'addr-1',
+        cartItemIds: const ['item-1'],
         idempotencyKey: 'key-1',
       );
 
@@ -106,7 +113,11 @@ void main() {
       final repo = _FakeOrderRepository(createShouldFail: true, createFailCode: 'SERVER_ERROR');
 
       expect(
-        () => repo.createOrder(addressId: 'addr-1', idempotencyKey: 'key-1'),
+        () => repo.createOrder(
+          addressId: 'addr-1',
+          cartItemIds: const ['item-1'],
+          idempotencyKey: 'key-1',
+        ),
         throwsA(isA<ApiException>().having((e) => e.code, 'code', 'SERVER_ERROR')),
       );
     });
@@ -118,7 +129,11 @@ void main() {
       );
 
       expect(
-        () => repo.createOrder(addressId: 'addr-1', idempotencyKey: 'dup-key'),
+        () => repo.createOrder(
+          addressId: 'addr-1',
+          cartItemIds: const ['item-1'],
+          idempotencyKey: 'dup-key',
+        ),
         throwsA(isA<ApiException>().having((e) => e.code, 'code', 'IDEMPOTENCY_KEY_EXISTS')),
       );
     });
@@ -126,11 +141,20 @@ void main() {
     test('each call with unique key creates a new order', () async {
       final repo = _FakeOrderRepository();
 
-      final r1 = await repo.createOrder(addressId: 'addr-1', idempotencyKey: 'key-1');
-      final r2 = await repo.createOrder(addressId: 'addr-1', idempotencyKey: 'key-2');
+      final r1 = await repo.createOrder(
+        addressId: 'addr-1',
+        cartItemIds: const ['item-1'],
+        idempotencyKey: 'key-1',
+      );
+      final r2 = await repo.createOrder(
+        addressId: 'addr-1',
+        cartItemIds: const ['item-2'],
+        idempotencyKey: 'key-2',
+      );
 
       expect(r1.orderId, isNot(r2.orderId));
       expect(repo.createCalls, 2);
+      expect(repo.lastCartItemIds, const ['item-2']);
     });
   });
 

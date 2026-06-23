@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_router.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/product.dart';
 import '../../../providers/product_provider.dart';
 
@@ -13,6 +14,8 @@ class _BannerData {
   final String subtitle;
   final List<Color> gradient;
   final String? categorySlug;
+  /// Exact product slug in the database — preferred match.
+  final String? productSlug;
 
   const _BannerData({
     required this.badge,
@@ -20,6 +23,7 @@ class _BannerData {
     required this.subtitle,
     required this.gradient,
     this.categorySlug,
+    this.productSlug,
   });
 }
 
@@ -35,27 +39,32 @@ class _HeroBannerState extends ConsumerState<HeroBanner> {
   Timer? _autoSlideTimer;
   int _currentPage = 0;
 
+  // Banners mapped to real products in the Supabase database.
+  // Each banner matches an actual published product by slug.
   static const _banners = [
     _BannerData(
       badge: 'New Arrival',
-      title: 'Melsec iQ-R Series',
-      subtitle: 'Next-generation PLC dengan performa tinggi untuk industri 4.0',
-      gradient: [Color(0xFF1e293b), Color(0xFF0f172a), AppColors.mitsubishiRed],
-      categorySlug: 'plc',
+      title: 'GOT Simple GT2104',
+      subtitle: 'HMI touchscreen Mitsubishi 4.3" dengan visualisasi data real-time',
+      gradient: [Color(0xFF2d1b4e), Color(0xFF1a0f2e), AppColors.mitsubishiRed],
+      categorySlug: 'hmi',
+      productSlug: 'got-simple-gt2104-wtbd-4-3',
     ),
     _BannerData(
       badge: 'Best Seller',
-      title: 'FR-E800 Series',
-      subtitle: 'Inverter compact dengan fitur IoT built-in untuk efisiensi energi',
-      gradient: [Color(0xFF1e3a5f), Color(0xFF0d253f), Color(0xFF005A8C)],
+      title: 'FR-E840 Series',
+      subtitle: 'Inverter Mitsubishi compact dengan fitur IoT built-in untuk efisiensi energi',
+      gradient: [Color(0xFF1e3a5f), Color(0xFF0d253f), AppColors.mitsubishiRed],
       categorySlug: 'inverter',
+      productSlug: 'fr-e840-0015-2-60',
     ),
     _BannerData(
       badge: 'Promo',
-      title: 'GOT2000 Series',
-      subtitle: 'HMI touchscreen dengan visualisasi data real-time',
-      gradient: [Color(0xFF2d1b4e), Color(0xFF1a0f2e), Color(0xFF7c3aed)],
-      categorySlug: 'hmi',
+      title: 'VLT AutomationDrive FC 302',
+      subtitle: 'Variable frequency drive Danfoss untuk aplikasi industri berat',
+      gradient: [Color(0xFF1e3a5f), Color(0xFF0d253f), Color(0xFF005A8C)],
+      categorySlug: 'inverter',
+      productSlug: 'vlt-automationdrive-fc-302-4-0kw',
     ),
   ];
 
@@ -87,6 +96,8 @@ class _HeroBannerState extends ConsumerState<HeroBanner> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Column(
       children: [
         SizedBox(
@@ -94,7 +105,7 @@ class _HeroBannerState extends ConsumerState<HeroBanner> {
           child: PageView.builder(
             controller: _pageController,
             onPageChanged: (index) => setState(() => _currentPage = index % _banners.length),
-            itemBuilder: (context, index) => _buildBannerCard(_banners[index % _banners.length]),
+            itemBuilder: (context, index) => _buildBannerCard(_banners[index % _banners.length], l10n),
           ),
         ),
         const SizedBox(height: 8),
@@ -119,7 +130,7 @@ class _HeroBannerState extends ConsumerState<HeroBanner> {
     );
   }
 
-  Widget _buildBannerCard(_BannerData banner) {
+  Widget _buildBannerCard(_BannerData banner, AppLocalizations l10n) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 2),
       clipBehavior: Clip.hardEdge,
@@ -191,12 +202,15 @@ class _HeroBannerState extends ConsumerState<HeroBanner> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   elevation: 0,
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Lihat Detail', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-                    SizedBox(width: 8),
-                    Icon(Icons.arrow_forward, size: 14),
+                    Text(
+                      l10n.viewDetails,
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.arrow_forward, size: 14),
                   ],
                 ),
               ),
@@ -207,21 +221,50 @@ class _HeroBannerState extends ConsumerState<HeroBanner> {
     );
   }
 
+  /// Matches the banner to a real product using a 3-tier strategy:
+  /// 1. Exact slug match (preferred — maps to a specific DB product)
+  /// 2. Name substring match (title appears in product name)
+  /// 3. Category fallback (first product in the category)
   void _onBannerTap(_BannerData banner) {
-    // Try to find a matching product from the loaded list
     final productsAsync = ref.read(productListProvider);
-    if (productsAsync.hasValue) {
-      final products = productsAsync.requireValue;
-      Product? match;
+    if (!productsAsync.hasValue) {
+      // No products loaded yet — fallback to search filtered by category
       if (banner.categorySlug != null) {
-        match = products.where((p) => p.category.slug == banner.categorySlug).firstOrNull;
+        ref.read(productFilterProvider.notifier).state = ref.read(productFilterProvider).copyWith(
+          category: banner.categorySlug,
+        );
       }
-      if (match != null) {
-        context.pushNamed(AppRoute.productDetail, pathParameters: {'id': match.idString});
-        return;
-      }
+      context.go('/search');
+      return;
     }
-    // Fallback: navigate to search with category filter
+
+    final products = productsAsync.requireValue;
+    Product? match;
+
+    // Tier 1: exact product slug match
+    if (banner.productSlug != null) {
+      match = products.where((p) => p.slug == banner.productSlug).firstOrNull;
+    }
+
+    // Tier 2: name substring match (per-banner fallback patterns)
+    if (match == null && banner.categorySlug != null) {
+      final categoryProducts = products.where((p) => p.category.slug == banner.categorySlug).toList();
+      match = categoryProducts.where((p) => p.name.contains('GT2104')).firstOrNull;
+      match ??= categoryProducts.where((p) => p.name.contains('E840')).firstOrNull;
+      match ??= categoryProducts.where((p) => p.name.contains('FC 302')).firstOrNull;
+    }
+
+    // Tier 3: first product in the category
+    if (match == null && banner.categorySlug != null) {
+      match = products.where((p) => p.category.slug == banner.categorySlug).firstOrNull;
+    }
+
+    if (match != null) {
+      context.pushNamed(AppRoute.productDetail, pathParameters: {'id': match.idString});
+      return;
+    }
+
+    // Ultimate fallback: search filtered by category
     if (banner.categorySlug != null) {
       ref.read(productFilterProvider.notifier).state = ref.read(productFilterProvider).copyWith(
         category: banner.categorySlug,

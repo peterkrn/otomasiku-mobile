@@ -7,19 +7,19 @@ part of 'payment_proof.dart';
 // **************************************************************************
 
 PaymentProof _$PaymentProofFromJson(Map<String, dynamic> json) => PaymentProof(
-      id: json['id'] as String,
-      orderId: json['orderId'] as String,
-      imageUrl: json['imageUrl'] as String,
-      bankName: json['bankName'] as String,
-      accountName: json['accountName'] as String,
-      amount: const BigIntStringConverter().fromJson(json['amount']),
-      status: json['status'] as String,
-      rejectReason: json['rejectReason'] as String?,
-      uploadedAt: DateTime.parse(json['uploadedAt'] as String),
-      verifiedAt: json['verifiedAt'] == null
-          ? null
-          : DateTime.parse(json['verifiedAt'] as String),
-    );
+  id: json['id'] as String,
+  orderId: json['orderId'] as String,
+  imageUrl: json['imageUrl'] as String,
+  bankName: json['bankName'] as String,
+  accountName: json['accountName'] as String,
+  amount: const BigIntStringConverter().fromJson(json['amount']),
+  status: json['status'] as String,
+  rejectReason: json['rejectReason'] as String?,
+  uploadedAt: DateTime.parse(json['uploadedAt'] as String),
+  verifiedAt: json['verifiedAt'] == null
+      ? null
+      : DateTime.parse(json['verifiedAt'] as String),
+);
 
 Map<String, dynamic> _$PaymentProofToJson(PaymentProof instance) =>
     <String, dynamic>{

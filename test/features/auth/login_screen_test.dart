@@ -279,7 +279,7 @@ void main() {
 
     final googleButton = find.widgetWithText(
       OutlinedButton,
-      'Masuk dengan Google',
+      'Sign in with Google',
     );
 
     expect(googleButton, findsOneWidget);
@@ -328,7 +328,7 @@ void main() {
       expect(find.text('Home Placeholder'), findsNothing);
 
       await tester.tap(
-        find.widgetWithText(OutlinedButton, 'Masuk dengan Google'),
+        find.widgetWithText(OutlinedButton, 'Sign in with Google'),
       );
       await tester.pumpAndSettle();
 

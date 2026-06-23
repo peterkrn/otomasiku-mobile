@@ -21,53 +21,76 @@ Order _order({
   String status = 'pending',
   String paymentStatus = 'unpaid',
   String orderNumber = 'ORD-001',
+  int totalAmount = 250000,
 }) {
   return Order(
     id: 'order-1',
     orderNumber: orderNumber,
     status: status,
     paymentStatus: paymentStatus,
-    totalAmount: 250000,
+    totalAmount: totalAmount,
     createdAt: DateTime(2026, 6, 11),
     updatedAt: DateTime(2026, 6, 11),
   );
 }
 
 void main() {
-  testWidgets('pending payment screen does not overflow on narrow phones with long order numbers', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(320, 800);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
+  testWidgets(
+    'pending payment screen keeps the routed total when the refreshed order total is smaller but still non-zero',
+    (tester) async {
+      const checkoutTotal = 2000000;
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          paymentRepositoryProvider.overrideWithValue(
-            _FakePaymentRepository(
-              _order(
-                orderNumber: 'cfe6be4b-2b75-416c-bd32-b5427b911234',
-              ),
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            paymentRepositoryProvider.overrideWithValue(
+              _FakePaymentRepository(_order(totalAmount: 500000)),
+            ),
+          ],
+          child: const TestApp(
+            child: PaymentPendingScreen(
+              orderId: 'order-1',
+              totalAmount: checkoutTotal,
             ),
           ),
-        ],
-        child: const TestApp(
-          child: PaymentPendingScreen(orderId: 'order-1'),
         ),
-      ),
-    );
+      );
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    expect(find.text('Order Number'), findsOneWidget);
-    expect(
-      find.text('cfe6be4b-2b75-416c-bd32-b5427b911234'),
-      findsOneWidget,
-    );
-    expect(tester.takeException(), isNull);
-  });
+      expect(find.text('Rp. 2.000.000'), findsOneWidget);
+      expect(find.text('Rp. 500.000'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'pending payment screen does not overflow on narrow phones with long order numbers',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            paymentRepositoryProvider.overrideWithValue(
+              _FakePaymentRepository(
+                _order(orderNumber: 'cfe6be4b-2b75-416c-bd32-b5427b911234'),
+              ),
+            ),
+          ],
+          child: const TestApp(child: PaymentPendingScreen(orderId: 'order-1')),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Order Number'), findsOneWidget);
+      expect(find.text('cfe6be4b-2b75-416c-bd32-b5427b911234'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('expired orders explain that stock has been released', (
     tester,
@@ -76,17 +99,20 @@ void main() {
       ProviderScope(
         overrides: [
           paymentRepositoryProvider.overrideWithValue(
-            _FakePaymentRepository(_order(status: 'cancelled', paymentStatus: 'expired')),
+            _FakePaymentRepository(
+              _order(status: 'cancelled', paymentStatus: 'expired'),
+            ),
           ),
         ],
-        child: const TestApp(
-          child: PaymentPendingScreen(orderId: 'order-1'),
-        ),
+        child: const TestApp(child: PaymentPendingScreen(orderId: 'order-1')),
       ),
     );
 
     await tester.pumpAndSettle();
 
-    expect(find.text('Stock has been released for this expired order.'), findsOneWidget);
+    expect(
+      find.text('Stock has been released for this expired order.'),
+      findsOneWidget,
+    );
   });
 }

@@ -2,6 +2,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../config/env_config.dart';
 
+// Messages are intentionally hardcoded (not localized) because:
+// 1. WhatsAppHelper has no BuildContext access
+// 2. All messages are addressed to Indonesian-speaking admin team
+// 3. This is a B2B app; admin communication defaults to Bahasa Indonesia
 class WhatsAppHelper {
   static String get _phone => EnvConfig.whatsappNumber;
 

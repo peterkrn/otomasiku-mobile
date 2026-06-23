@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../l10n/app_localizations.dart';
+import '../../models/order.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/order_provider.dart';
 import '../../providers/address_provider.dart';
@@ -19,9 +20,10 @@ class ProfileScreen extends ConsumerWidget {
 
     final orders = ordersAsync.valueOrNull ?? [];
     final totalOrders = orders.length;
-    final completedOrders = orders.where((o) => o.status == 'delivered').length;
-    final processingOrders = orders.where((o) =>
-      o.status == 'processing' || o.status == 'shipped').length;
+    final completedOrders =
+        orders.where((o) => isCompletedOrderStatus(o.status)).length;
+    final processingOrders =
+        orders.where((o) => isFulfillmentOrderStatus(o.status)).length;
 
     final addressCount = addressesAsync.valueOrNull?.length ?? 0;
 

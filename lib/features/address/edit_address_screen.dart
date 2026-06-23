@@ -108,7 +108,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
         ref.invalidate(addressListProvider);
         AppToast.show(
           context,
-          _isEditing ? 'Alamat berhasil disimpan' : 'Alamat berhasil ditambahkan',
+          _isEditing ? AppLocalizations.of(context).addressSaved : AppLocalizations.of(context).addressAdded,
           isError: false,
         );
         context.pop();

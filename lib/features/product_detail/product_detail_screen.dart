@@ -161,7 +161,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
         onIncrement: () => setState(() => _quantity++),
         onSaveToProject: () => _saveToProject(product, l10n),
         onAddToCart: () => _addToCart(product, l10n),
-        onBuyNow: () => _buyNow(product, l10n, displayStock),
+        onBuyNow: () {
+          _buyNow(product, l10n, displayStock);
+        },
         isDark: isDark,
       ),
     );
@@ -538,7 +540,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     });
   }
 
-  void _buyNow(Product product, AppLocalizations l10n, int displayStock) {
+  Future<void> _buyNow(
+    Product product,
+    AppLocalizations l10n,
+    int displayStock,
+  ) async {
     if (!ref.read(authProvider).isAuthenticated) {
       AppToast.show(context, AppLocalizations.of(context).notLoggedIn, isError: true, bottomOffset: 100);
       return;
@@ -561,7 +567,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
       return;
     }
 
-    ref.read(cartProvider.notifier).addItem(
+    await ref.read(cartProvider.notifier).addItem(
       product.idString,
       _quantity,
       snapshot: CartProductSnapshot(
@@ -570,16 +576,37 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
         primaryImageUrl: product.primaryImageUrl,
       ),
     );
-    Future.microtask(() {
-      if (!mounted) return;
-      final cartItems = ref.read(cartProvider).items;
-      final matchingItem = cartItems.where((item) => item.productId == product.idString).toList();
-      if (matchingItem.isNotEmpty) {
-        matchingItem.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        ref.read(selectedCartItemsProvider.notifier).state = {matchingItem.first.id};
+
+    if (!mounted) return;
+
+    final cartState = ref.read(cartProvider);
+    final matchingItem = cartState.items
+        .where((item) => item.productId == product.idString)
+        .toList();
+
+    if (cartState.error != null || matchingItem.isEmpty) {
+      AppToast.show(
+        context,
+        l10n.errorGeneric,
+        isError: true,
+        bottomOffset: 100,
+      );
+      return;
+    }
+
+    matchingItem.sort((a, b) {
+      final aIsLocal = a.id.startsWith('local-');
+      final bIsLocal = b.id.startsWith('local-');
+      if (aIsLocal != bIsLocal) {
+        return aIsLocal ? 1 : -1;
       }
-      context.pushNamed(AppRoute.checkout);
+      return b.createdAt.compareTo(a.createdAt);
     });
+
+    ref.read(selectedCartItemsProvider.notifier).state = {
+      matchingItem.first.id,
+    };
+    context.pushNamed(AppRoute.checkout);
   }
 
   void _saveToProject(Product product, AppLocalizations l10n) {

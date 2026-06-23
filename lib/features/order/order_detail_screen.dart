@@ -56,12 +56,21 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     );
   }
 
-  Widget _buildScreen(BuildContext context, WidgetRef ref, AppLocalizations l10n, Order order, bool isDark) {
+  Widget _buildScreen(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    Order order,
+    bool isDark,
+  ) {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+          icon: Icon(
+            Icons.arrow_back,
+            color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+          ),
           onPressed: _handleBack,
         ),
         title: Column(
@@ -72,14 +81,18 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.normal,
-                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                color: isDark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.textSecondary,
               ),
             ),
           ],
         ),
         centerTitle: true,
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
-        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+        foregroundColor: isDark
+            ? AppColors.darkTextPrimary
+            : AppColors.textPrimary,
         elevation: 0,
         actions: [
           IconButton(
@@ -169,11 +182,7 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
               color: Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              statusInfo.icon,
-              color: Colors.white,
-              size: 24,
-            ),
+            child: Icon(statusInfo.icon, color: Colors.white, size: 24),
           ),
         ],
       ),
@@ -196,7 +205,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.border,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,7 +257,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     final proof = order.paymentProof;
     final viewState = resolvePaymentProofViewState(order);
     final shouldShowSection =
-        proof != null || order.paymentStatus == 'unpaid' || order.paymentStatus == 'expired';
+        proof != null ||
+        order.paymentStatus == 'unpaid' ||
+        order.paymentStatus == 'expired';
 
     if (!shouldShowSection) {
       return const SizedBox.shrink();
@@ -262,7 +275,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
         icon = Icons.verified_rounded;
         accentColor = AppColors.success;
         title = l10n.paymentProofApproved;
-        subtitle = proof == null ? null : CurrencyFormatter.format(proof.amount);
+        subtitle = proof == null
+            ? null
+            : CurrencyFormatter.format(proof.amount);
         break;
       case PaymentProofViewState.pendingReview:
         icon = Icons.hourglass_top_rounded;
@@ -286,7 +301,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
         icon = Icons.upload_file_outlined;
         accentColor = AppColors.mitsubishiRed;
         title = l10n.paymentUploadProof;
-        subtitle = order.vaExpiresAt == null ? null : _formatDate(order.vaExpiresAt!);
+        subtitle = order.vaExpiresAt == null
+            ? null
+            : _formatDate(order.vaExpiresAt!);
         break;
     }
 
@@ -295,7 +312,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.border,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,7 +340,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                        color: isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.textPrimary,
                       ),
                     ),
                     if (subtitle != null && subtitle.isNotEmpty)
@@ -329,7 +350,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                         subtitle,
                         style: TextStyle(
                           fontSize: 12,
-                          color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.textSecondary,
                         ),
                       ),
                   ],
@@ -355,7 +378,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                 onPressed: () => context.goNamed(
                   AppRoute.payment,
                   pathParameters: {'orderId': order.id},
-                  queryParameters: {'totalAmount': order.totalAmount.toString()},
+                  queryParameters: {
+                    'totalAmount': order.totalAmount.toString(),
+                  },
                 ),
                 icon: const Icon(Icons.upload_file_outlined),
                 label: Text(
@@ -383,7 +408,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
           label,
           style: TextStyle(
             fontSize: 13,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+            color: isDark
+                ? AppColors.darkTextSecondary
+                : AppColors.textSecondary,
           ),
         ),
         Flexible(
@@ -401,21 +428,26 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     );
   }
 
-  Widget _buildStaticTimeline(String currentStatus, AppLocalizations l10n, bool isDark) {
-    final statuses = ['pending', 'confirmed', 'processing', 'shipped', 'done'];
-    final currentStatusIndex = statuses.indexOf(currentStatus);
+  Widget _buildStaticTimeline(
+    String currentStatus,
+    AppLocalizations l10n,
+    bool isDark,
+  ) {
+    final currentStatusIndex = orderTimelineStatuses.indexOf(currentStatus);
     if (currentStatusIndex < 0) return const SizedBox.shrink();
 
     return Column(
-      children: statuses.asMap().entries.map((entry) {
+      children: orderTimelineStatuses.asMap().entries.map((entry) {
         final index = entry.key;
         final status = entry.value;
         final isCompleted = index <= currentStatusIndex;
         final isCurrent = index == currentStatusIndex;
-        final isLast = index == statuses.length - 1;
+        final isLast = index == orderTimelineStatuses.length - 1;
 
         return _buildTimelineItem(
-          icon: isCurrent ? Icons.circle : (isCompleted ? Icons.check : Icons.circle_outlined),
+          icon: isCurrent
+              ? Icons.circle
+              : (isCompleted ? Icons.check : Icons.circle_outlined),
           label: _getStatusLabel(status, l10n),
           subtitle: '',
           isCompleted: isCompleted,
@@ -468,7 +500,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                 Expanded(
                   child: Container(
                     width: 2,
-                    color: isCompleted ? dotColor : (isDark ? AppColors.darkBorder : AppColors.border),
+                    color: isCompleted
+                        ? dotColor
+                        : (isDark ? AppColors.darkBorder : AppColors.border),
                   ),
                 ),
             ],
@@ -486,8 +520,12 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: isCompleted || isCurrent
-                          ? (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary)
-                          : (isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+                          ? (isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.textPrimary)
+                          : (isDark
+                                ? AppColors.darkTextTertiary
+                                : AppColors.textTertiary),
                     ),
                   ),
                   if (subtitle.isNotEmpty) ...[
@@ -496,7 +534,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                       subtitle,
                       style: TextStyle(
                         fontSize: 12,
-                        color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                        color: isDark
+                            ? AppColors.darkTextSecondary
+                            : AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -515,7 +555,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.border,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -530,7 +572,10 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
           ),
           const SizedBox(height: 12),
           ...?order.items?.map((item) => _buildOrderItem(item, isDark)),
-          Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.divider),
+          Divider(
+            height: 24,
+            color: isDark ? AppColors.darkBorder : AppColors.divider,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -539,7 +584,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                  color: isDark
+                      ? AppColors.darkTextPrimary
+                      : AppColors.textPrimary,
                 ),
               ),
               Text(
@@ -562,7 +609,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.divider),
+          bottom: BorderSide(
+            color: isDark ? AppColors.darkBorder : AppColors.divider,
+          ),
         ),
       ),
       child: Row(
@@ -572,10 +621,14 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
             child: Container(
               width: 56,
               height: 56,
-              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+              color: isDark
+                  ? AppColors.darkSurfaceVariant
+                  : AppColors.surfaceVariant,
               child: Icon(
                 Icons.inventory_2,
-                color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                color: isDark
+                    ? AppColors.darkTextTertiary
+                    : AppColors.textTertiary,
               ),
             ),
           ),
@@ -589,7 +642,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -597,7 +652,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                   '${item.quantity} unit × ${CurrencyFormatter.format(item.unitPrice)}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -606,7 +663,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.textPrimary,
                   ),
                 ),
               ],
@@ -617,7 +676,12 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     );
   }
 
-  Widget _buildShippingInfoSection(Order order, AppLocalizations l10n, bool isDark, WidgetRef ref) {
+  Widget _buildShippingInfoSection(
+    Order order,
+    AppLocalizations l10n,
+    bool isDark,
+    WidgetRef ref,
+  ) {
     Address? address;
     if (order.shippingAddress == null && order.addressId != null) {
       final addresses = ref.watch(addressListProvider).valueOrNull ?? [];
@@ -635,7 +699,8 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     if (orderAddr != null) {
       recipient = orderAddr.recipient;
       street = orderAddr.street;
-      cityLine = '${orderAddr.city}, ${orderAddr.province} ${orderAddr.postalCode}';
+      cityLine =
+          '${orderAddr.city}, ${orderAddr.province} ${orderAddr.postalCode}';
       phone = orderAddr.phone;
     } else if (address != null) {
       recipient = address.recipient;
@@ -656,32 +721,36 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.border,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.local_shipping_outlined, size: 20, color: AppColors.mitsubishiRed),
+              Icon(
+                Icons.local_shipping_outlined,
+                size: 20,
+                color: AppColors.mitsubishiRed,
+              ),
               const SizedBox(width: 8),
               Text(
                 l10n.shippingInfo,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                  color: isDark
+                      ? AppColors.darkTextPrimary
+                      : AppColors.textPrimary,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
           if (hasAddress) ...[
-            _buildShippingRow(
-              Icons.person_outline,
-              recipient,
-              isDark,
-            ),
+            _buildShippingRow(Icons.person_outline, recipient, isDark),
             const SizedBox(height: 12),
             _buildShippingRow(
               Icons.location_on_outlined,
@@ -689,20 +758,21 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
               isDark,
             ),
             const SizedBox(height: 12),
-            _buildShippingRow(
-              Icons.phone_outlined,
-              phone,
-              isDark,
-            ),
+            _buildShippingRow(Icons.phone_outlined, phone, isDark),
           ] else
             Text(
               '-',
               style: TextStyle(
-                color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                color: isDark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.textSecondary,
               ),
             ),
           const SizedBox(height: 12),
-          Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.divider),
+          Divider(
+            height: 1,
+            color: isDark ? AppColors.darkBorder : AppColors.divider,
+          ),
           const SizedBox(height: 12),
           if (order.resiNumber != null && order.resiNumber!.isNotEmpty)
             Row(
@@ -719,7 +789,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -731,7 +803,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                 Icon(
                   Icons.info_outline,
                   size: 14,
-                  color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                  color: isDark
+                      ? AppColors.darkTextTertiary
+                      : AppColors.textTertiary,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -739,7 +813,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
                     l10n.trackingNote,
                     style: TextStyle(
                       fontSize: 12,
-                      color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                      color: isDark
+                          ? AppColors.darkTextTertiary
+                          : AppColors.textTertiary,
                     ),
                   ),
                 ),
@@ -772,7 +848,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
               style: TextStyle(
                 fontSize: 13,
                 height: 1.4,
-                color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                color: isDark
+                    ? AppColors.darkTextPrimary
+                    : AppColors.textPrimary,
               ),
             ),
           ),
@@ -781,7 +859,13 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, WidgetRef ref, AppLocalizations l10n, bool isDark, Order order) {
+  Widget _buildActionButtons(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    bool isDark,
+    Order order,
+  ) {
     return Column(
       children: [
         if (order.status == 'shipped')
@@ -790,17 +874,24 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: _isConfirming ? null : () => _confirmReceived(context, ref, l10n, order),
+                onPressed: _isConfirming
+                    ? null
+                    : () => _confirmReceived(context, ref, l10n, order),
                 icon: _isConfirming
                     ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Icon(Icons.check_circle_outline),
                 label: Text(l10n.confirmReceived),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _isConfirming ? AppColors.success.withValues(alpha: 0.6) : AppColors.success,
+                  backgroundColor: _isConfirming
+                      ? AppColors.success.withValues(alpha: 0.6)
+                      : AppColors.success,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
@@ -812,25 +903,9 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
           ),
         SizedBox(
           width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: () => AppToast.show(context, l10n.comingSoon, isError: false),
-            icon: const Icon(Icons.receipt_long),
-            label: Text(l10n.downloadInvoice),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-              side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: () => AppToast.show(context, l10n.comingSoon, isError: false),
+            onPressed: () =>
+                AppToast.show(context, l10n.comingSoon, isError: false),
             icon: const Icon(Icons.headset_mic),
             label: Text(l10n.contactSupport),
             style: ElevatedButton.styleFrom(
@@ -847,7 +922,12 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
     );
   }
 
-  Future<void> _confirmReceived(BuildContext context, WidgetRef ref, AppLocalizations l10n, Order order) async {
+  Future<void> _confirmReceived(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    Order order,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -861,7 +941,10 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
-            child: Text(l10n.confirm, style: const TextStyle(color: Colors.white)),
+            child: Text(
+              l10n.confirm,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -899,8 +982,18 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
 
   String _getMonthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
     ];
     return months[month - 1];
   }

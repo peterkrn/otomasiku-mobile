@@ -10,6 +10,7 @@ import '../../core/widgets/app_toast.dart';
 import '../../models/order.dart';
 import '../../providers/payment_provider.dart';
 import '../../shared/widgets/app_error_view.dart';
+import 'payment_total_resolver.dart';
 import 'widgets/bukti_transfer_card.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
@@ -25,7 +26,12 @@ class PaymentScreen extends ConsumerStatefulWidget {
 class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   void _copyAmount(AppLocalizations l10n, int amount) {
     Clipboard.setData(ClipboardData(text: amount.toString()));
-    AppToast.show(context, l10n.paymentCopied, isError: false, bottomOffset: 160);
+    AppToast.show(
+      context,
+      l10n.paymentCopied,
+      isError: false,
+      bottomOffset: 160,
+    );
   }
 
   Future<void> _attemptLeavePayment() async {
@@ -75,7 +81,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
+        backgroundColor: isDark
+            ? AppColors.darkBackground
+            : AppColors.background,
         appBar: AppBar(
           leading: IconButton(
             onPressed: _attemptLeavePayment,
@@ -83,7 +91,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           ),
           title: Text(l10n.payment),
           backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
-          foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+          foregroundColor: isDark
+              ? AppColors.darkTextPrimary
+              : AppColors.textPrimary,
           elevation: 0,
         ),
         body: orderAsync.when(
@@ -99,7 +109,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   Widget _buildContent(Order order, AppLocalizations l10n, bool isDark) {
-    final displayTotal = order.totalAmount > 0 ? order.totalAmount : widget.totalAmount;
+    final displayTotal = resolvePaymentDisplayTotal(
+      order: order,
+      routedTotalAmount: widget.totalAmount,
+    );
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -111,15 +124,14 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           const SizedBox(height: 16),
           BuktiTransferCard(
             order: order,
+            displayTotal: displayTotal,
             isDark: isDark,
             onUploadSuccess: () {
               if (!mounted) return;
               context.goNamed(
                 AppRoute.paymentPending,
                 pathParameters: {'orderId': widget.orderId},
-                queryParameters: {
-                  'totalAmount': displayTotal.toString(),
-                },
+                queryParameters: {'totalAmount': displayTotal.toString()},
               );
             },
           ),
@@ -140,7 +152,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.border,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,8 +170,12 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           const SizedBox(height: 16),
           _buildInfoRow(l10n.orderNumber, order.orderNumber, isDark),
           const SizedBox(height: 12),
-          _buildInfoRow(l10n.total, CurrencyFormatter.format(displayTotal), isDark,
-              valueColor: AppColors.mitsubishiRed),
+          _buildInfoRow(
+            l10n.total,
+            CurrencyFormatter.format(displayTotal),
+            isDark,
+            valueColor: AppColors.mitsubishiRed,
+          ),
         ],
       ),
     );
@@ -169,7 +187,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.border,
+        ),
       ),
       child: Column(
         children: [
@@ -178,7 +198,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 20),
@@ -193,22 +215,35 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 width: double.infinity,
                 height: 320,
                 decoration: BoxDecoration(
-                  color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+                  color: isDark
+                      ? AppColors.darkSurfaceVariant
+                      : AppColors.surfaceVariant,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+                  border: Border.all(
+                    color: isDark ? AppColors.darkBorder : AppColors.border,
+                  ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.qr_code_2, size: 48,
-                        color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+                    Icon(
+                      Icons.qr_code_2,
+                      size: 48,
+                      color: isDark
+                          ? AppColors.darkTextTertiary
+                          : AppColors.textTertiary,
+                    ),
                     const SizedBox(height: 8),
-                    Text('QRIS',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                        )),
+                    Text(
+                      'QRIS',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: isDark
+                            ? AppColors.darkTextSecondary
+                            : AppColors.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -244,7 +279,11 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     color: AppColors.mitsubishiRed.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: const Icon(Icons.copy, size: 14, color: AppColors.mitsubishiRed),
+                  child: const Icon(
+                    Icons.copy,
+                    size: 14,
+                    color: AppColors.mitsubishiRed,
+                  ),
                 ),
               ),
             ],
@@ -254,7 +293,12 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, bool isDark, {Color? valueColor}) {
+  Widget _buildInfoRow(
+    String label,
+    String value,
+    bool isDark, {
+    Color? valueColor,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -262,7 +306,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+            color: isDark
+                ? AppColors.darkTextSecondary
+                : AppColors.textSecondary,
           ),
         ),
         Text(
@@ -270,7 +316,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: valueColor ?? (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+            color:
+                valueColor ??
+                (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
           ),
         ),
       ],

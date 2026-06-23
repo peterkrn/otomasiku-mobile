@@ -24,11 +24,13 @@ class BuktiTransferCard extends ConsumerStatefulWidget {
     super.key,
     required this.order,
     required this.isDark,
+    this.displayTotal = 0,
     this.onUploadSuccess,
   });
 
   final Order order;
   final bool isDark;
+  final int displayTotal;
   final VoidCallback? onUploadSuccess;
 
   @override
@@ -45,6 +47,9 @@ class _BuktiTransferCardState extends ConsumerState<BuktiTransferCard> {
   bool _isSubmitting = false;
   late String _selectedBankName;
 
+  int get _resolvedTotalAmount =>
+      widget.displayTotal > 0 ? widget.displayTotal : widget.order.totalAmount;
+
   @override
   void initState() {
     super.initState();
@@ -55,11 +60,11 @@ class _BuktiTransferCardState extends ConsumerState<BuktiTransferCard> {
         : paymentBankOther;
     _customBankNameController.text =
         paymentBankRequiresCustomName(_selectedBankName)
-            ? existingBankName
-            : '';
+        ? existingBankName
+        : '';
     _accountNameController.text = proof?.accountName ?? '';
     _amountController.text = CurrencyFormatter.formatEditable(
-      widget.order.totalAmount.toString(),
+      _resolvedTotalAmount.toString(),
     );
   }
 
@@ -162,7 +167,9 @@ class _BuktiTransferCardState extends ConsumerState<BuktiTransferCard> {
             TextField(
               controller: _amountController,
               readOnly: true,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9,]')),
                 const RupiahInputFormatter(),
@@ -409,7 +416,7 @@ class _BuktiTransferCardState extends ConsumerState<BuktiTransferCard> {
         ? _customBankNameController.text.trim()
         : _selectedBankName;
     final accountName = _accountNameController.text.trim();
-    final amount = widget.order.totalAmount;
+    final amount = _resolvedTotalAmount;
 
     if (_selectedImage == null ||
         bankName.isEmpty ||
@@ -422,7 +429,9 @@ class _BuktiTransferCardState extends ConsumerState<BuktiTransferCard> {
     setState(() => _isSubmitting = true);
 
     try {
-      await ref.read(paymentProofRepositoryProvider).uploadProof(
+      await ref
+          .read(paymentProofRepositoryProvider)
+          .uploadProof(
             orderId: widget.order.id,
             imageFile: _selectedImage!,
             bankName: bankName,

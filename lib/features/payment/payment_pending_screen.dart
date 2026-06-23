@@ -11,6 +11,7 @@ import '../../core/widgets/app_toast.dart';
 import '../../models/order.dart';
 import '../../providers/payment_provider.dart';
 import 'payment_proof_state.dart';
+import 'payment_total_resolver.dart';
 
 class PaymentPendingScreen extends ConsumerStatefulWidget {
   final String orderId;
@@ -23,7 +24,8 @@ class PaymentPendingScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<PaymentPendingScreen> createState() => _PaymentPendingScreenState();
+  ConsumerState<PaymentPendingScreen> createState() =>
+      _PaymentPendingScreenState();
 }
 
 class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
@@ -93,93 +95,117 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-        backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.close, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-            onPressed: _handleBack,
+      backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.close,
+            color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
           ),
-          backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
-          elevation: 0,
+          onPressed: _handleBack,
         ),
-        body: SafeArea(
-          child: RefreshIndicator(
-            onRefresh: _onRefresh,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  const SizedBox(height: 0),
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: AppColors.warning.withValues(alpha: isDark ? 0.2 : 0.1),
-                      shape: BoxShape.circle,
+        backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                const SizedBox(height: 0),
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: AppColors.warning.withValues(
+                      alpha: isDark ? 0.2 : 0.1,
                     ),
-                    child: const Icon(
-                      Icons.hourglass_top,
-                      size: 72,
-                      color: AppColors.warning,
-                    ),
+                    shape: BoxShape.circle,
                   ),
-                  const SizedBox(height: 24),
-                  orderAsync.when(
-                    data: (order) => Column(
-                      children: [
-                        _buildStatusCopy(order, l10n, isDark),
-                        const SizedBox(height: 32),
-                        _buildOrderInfoCard(
-                          order,
-                          order.totalAmount > 0
-                              ? order.totalAmount
-                              : widget.totalAmount,
-                          l10n,
-                          isDark,
-                        ),
-                      ],
-                    ),
-                    loading: () => const SizedBox(
-                      height: 100,
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-                    error: (_, _) => Column(
-                      children: [
-                        _buildFallbackCopy(l10n, isDark),
-                        const SizedBox(height: 32),
-                        _buildOrderInfoCardSimple(
-                          l10n,
-                          widget.totalAmount,
-                          isDark,
-                        ),
-                      ],
-                    ),
+                  child: const Icon(
+                    Icons.hourglass_top,
+                    size: 72,
+                    color: AppColors.warning,
                   ),
-                  const SizedBox(height: 32),
-                  _buildActionButtons(context, l10n, isDark, orderAsync.valueOrNull),
-                ],
-              ),
+                ),
+                const SizedBox(height: 24),
+                orderAsync.when(
+                  data: (order) => Column(
+                    children: [
+                      _buildStatusCopy(order, l10n, isDark),
+                      const SizedBox(height: 32),
+                      _buildOrderInfoCard(
+                        order,
+                        resolvePaymentDisplayTotal(
+                          order: order,
+                          routedTotalAmount: widget.totalAmount,
+                        ),
+                        l10n,
+                        isDark,
+                      ),
+                    ],
+                  ),
+                  loading: () => const SizedBox(
+                    height: 100,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (_, _) => Column(
+                    children: [
+                      _buildFallbackCopy(l10n, isDark),
+                      const SizedBox(height: 32),
+                      _buildOrderInfoCardSimple(
+                        l10n,
+                        widget.totalAmount,
+                        isDark,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+                _buildActionButtons(
+                  context,
+                  l10n,
+                  isDark,
+                  orderAsync.valueOrNull,
+                ),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    );
   }
 
-  Widget _buildOrderInfoCard(Order order, int displayTotal, AppLocalizations l10n, bool isDark) {
+  Widget _buildOrderInfoCard(
+    Order order,
+    int displayTotal,
+    AppLocalizations l10n,
+    bool isDark,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.surfaceVariant,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.border,
+        ),
       ),
       child: Column(
         children: [
           _buildInfoRow(l10n.orderNumber, order.orderNumber, isDark),
-          Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.border),
+          Divider(
+            height: 24,
+            color: isDark ? AppColors.darkBorder : AppColors.border,
+          ),
           _buildInfoRow(l10n.orderDate, _formatDate(order.createdAt), isDark),
-          Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.border),
+          Divider(
+            height: 24,
+            color: isDark ? AppColors.darkBorder : AppColors.border,
+          ),
           _buildInfoRow(
             l10n.total,
             CurrencyFormatter.format(displayTotal),
@@ -191,21 +217,33 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
     );
   }
 
-  Widget _buildOrderInfoCardSimple(AppLocalizations l10n, int displayTotal, bool isDark) {
+  Widget _buildOrderInfoCardSimple(
+    AppLocalizations l10n,
+    int displayTotal,
+    bool isDark,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.surfaceVariant,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.border,
+        ),
       ),
       child: Column(
         children: [
           _buildInfoRow(l10n.orderNumber, widget.orderId, isDark),
-          Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.border),
+          Divider(
+            height: 24,
+            color: isDark ? AppColors.darkBorder : AppColors.border,
+          ),
           _buildInfoRow(l10n.orderDate, _formatDate(DateTime.now()), isDark),
           if (displayTotal > 0) ...[
-            Divider(height: 24, color: isDark ? AppColors.darkBorder : AppColors.border),
+            Divider(
+              height: 24,
+              color: isDark ? AppColors.darkBorder : AppColors.border,
+            ),
             _buildInfoRow(
               l10n.total,
               CurrencyFormatter.format(displayTotal),
@@ -218,7 +256,12 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, bool isDark, {Color? valueColor}) {
+  Widget _buildInfoRow(
+    String label,
+    String value,
+    bool isDark, {
+    Color? valueColor,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -228,7 +271,9 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
             label,
             style: TextStyle(
               fontSize: 14,
-              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+              color: isDark
+                  ? AppColors.darkTextSecondary
+                  : AppColors.textSecondary,
             ),
           ),
         ),
@@ -242,7 +287,9 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: valueColor ?? (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
+              color:
+                  valueColor ??
+                  (isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
             ),
           ),
         ),
@@ -256,8 +303,9 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
     bool isDark,
     Order? order,
   ) {
-    final viewState =
-        order == null ? PaymentProofViewState.pendingReview : resolvePaymentProofViewState(order);
+    final viewState = order == null
+        ? PaymentProofViewState.pendingReview
+        : resolvePaymentProofViewState(order);
     final isRejected = viewState == PaymentProofViewState.rejected;
 
     return Column(
@@ -270,7 +318,9 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
                 context.goNamed(
                   AppRoute.payment,
                   pathParameters: {'orderId': widget.orderId},
-                  queryParameters: {'totalAmount': widget.totalAmount.toString()},
+                  queryParameters: {
+                    'totalAmount': widget.totalAmount.toString(),
+                  },
                 );
                 return;
               }
@@ -283,7 +333,9 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
               backgroundColor: AppColors.mitsubishiRed,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: Text(
               isRejected ? l10n.paymentReupload : l10n.paymentViewOrder,
@@ -297,10 +349,16 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
           child: OutlinedButton(
             onPressed: () => context.goNamed(AppRoute.home),
             style: OutlinedButton.styleFrom(
-              foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-              side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
+              foregroundColor: isDark
+                  ? AppColors.darkTextPrimary
+                  : AppColors.textPrimary,
+              side: BorderSide(
+                color: isDark ? AppColors.darkBorder : AppColors.border,
+              ),
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: Text(
               l10n.paymentBackToShopping,
@@ -367,7 +425,9 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
           subtitle,
           style: TextStyle(
             fontSize: 16,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+            color: isDark
+                ? AppColors.darkTextSecondary
+                : AppColors.textSecondary,
           ),
           textAlign: TextAlign.center,
         ),
@@ -377,7 +437,9 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
             l10n.paymentPendingDescription,
             style: TextStyle(
               fontSize: 14,
-              color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+              color: isDark
+                  ? AppColors.darkTextTertiary
+                  : AppColors.textTertiary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -387,7 +449,9 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
             l10n.paymentExpiredCheckoutAgain,
             style: TextStyle(
               fontSize: 14,
-              color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+              color: isDark
+                  ? AppColors.darkTextTertiary
+                  : AppColors.textTertiary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -413,7 +477,9 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
           l10n.paymentPendingSubtitle,
           style: TextStyle(
             fontSize: 16,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+            color: isDark
+                ? AppColors.darkTextSecondary
+                : AppColors.textSecondary,
           ),
           textAlign: TextAlign.center,
         ),
@@ -448,7 +514,20 @@ class _PaymentPendingScreenState extends ConsumerState<PaymentPendingScreen> {
   }
 
   String _getMonthName(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
+    ];
     return months[month - 1];
   }
 }

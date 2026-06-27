@@ -119,7 +119,7 @@ class CompareScreen extends ConsumerWidget {
     const tableBorderWidth = 1.0;
     const labelColumnWidth = 80.0;
     const productColumnWidth = 140.0;
-    const showAddColumn = true;
+    final showAddColumn = products.isNotEmpty;
 
     final totalColumns = products.length + (showAddColumn ? 1 : 0);
     final contentWidth = labelColumnWidth + totalColumns * productColumnWidth;

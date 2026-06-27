@@ -26,7 +26,7 @@ class TieredPricingWidget extends StatelessWidget {
     final tierPrice1 = product.price;
     final tierPrice2 = product.hasDiscount
         ? product.price
-        : (product.price * 0.92).round();
+        : (product.price * 92) ~/ 100;
     final savings = tierPrice1 - tierPrice2;
 
     return Container(

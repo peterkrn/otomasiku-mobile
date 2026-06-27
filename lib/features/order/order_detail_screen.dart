@@ -12,6 +12,7 @@ import '../../providers/address_provider.dart';
 import '../../providers/order_provider.dart';
 import '../../providers/repository_providers.dart';
 import '../../shared/widgets/app_error_view.dart';
+import '../../core/utils/error_handler.dart';
 import '../payment/payment_proof_state.dart';
 
 class OrderDetailScreen extends ConsumerStatefulWidget {
@@ -962,7 +963,11 @@ class _OrderDetailScreenState extends ConsumerState<OrderDetailScreen> {
       }
     } catch (e) {
       if (context.mounted) {
-        AppToast.show(context, e.toString(), isError: true);
+        AppToast.show(
+          context,
+          errorMessageFor(e, l10n.asErrorL10n),
+          isError: true,
+        );
       }
     } finally {
       if (mounted) {

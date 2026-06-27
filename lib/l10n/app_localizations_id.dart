@@ -1517,4 +1517,83 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get privacyPolicySubtitle => 'Baca kebijakan privasi kami';
+
+  @override
+  String get deleteAccount => 'Hapus Akun';
+
+  @override
+  String get deleteAccountWarning =>
+      'Tindakan ini tidak dapat dibatalkan. Semua data akun Anda akan dihapus secara permanen.';
+
+  @override
+  String get whatHappensWhenYouDelete =>
+      'Apa yang terjadi saat Anda menghapus akun?';
+
+  @override
+  String get dataDeletedImmediately => 'Dihapus segera';
+
+  @override
+  String get dataDeletedProfile => 'Profil pengguna dan informasi pribadi';
+
+  @override
+  String get dataDeletedAddresses => 'Alamat pengiriman yang disimpan';
+
+  @override
+  String get dataDeletedPaymentMethods => 'Metode pembayaran tersimpan';
+
+  @override
+  String get dataDeletedCart => 'Item di keranjang belanja';
+
+  @override
+  String get dataDeletedProjectFavorites =>
+      'Proyek, favorit, dan bookmark produk';
+
+  @override
+  String get dataRetainedTemporarily => 'Disimpan sementara';
+
+  @override
+  String get dataRetainedOrders => 'Detail metode pembayaran';
+
+  @override
+  String get dataRetainedTransactions => 'Catatan alamat pengiriman';
+
+  @override
+  String get dataRetainedPeriod => 'Data ini akan dianonimkan setelah 30 hari';
+
+  @override
+  String get dataRetainedOrdersPermanent =>
+      'Riwayat pesanan dan catatan transaksi (anonim)';
+
+  @override
+  String get dataRetainedTransactionsPermanent => 'Catatan pembayaran (anonim)';
+
+  @override
+  String get dataRetainedPeriodPermanent =>
+      'Disimpan permanen untuk kepatuhan hukum, pajak, dan akuntansi sesuai peraturan Indonesia';
+
+  @override
+  String get dataRetainedPermanently => 'Disimpan permanen (tanpa identitas)';
+
+  @override
+  String get dataRetainedAnonymizedStats =>
+      'Statistik penjualan anonim untuk analisis bisnis';
+
+  @override
+  String get confirmDeleteAccount =>
+      'Saya memahami dan ingin menghapus akun saya secara permanen';
+
+  @override
+  String get deleteMyAccountPermanently => 'Hapus Akun Saya Secara Permanen';
+
+  @override
+  String get deleteAccountSupport =>
+      'Jika Anda membutuhkan bantuan, hubungi support di support@otomasiku.id';
+
+  @override
+  String get accountDeletedSuccess =>
+      'Akun Anda berhasil dihapus. Terima kasih telah menggunakan Otomasiku.';
+
+  @override
+  String get errorDeleteAccount =>
+      'Gagal menghapus akun. Silakan coba lagi nanti.';
 }

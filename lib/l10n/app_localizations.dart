@@ -2935,6 +2935,144 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Baca kebijakan privasi kami'**
   String get privacyPolicySubtitle;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Akun'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountWarning.
+  ///
+  /// In id, this message translates to:
+  /// **'Tindakan ini tidak dapat dibatalkan. Semua data akun Anda akan dihapus secara permanen.'**
+  String get deleteAccountWarning;
+
+  /// No description provided for @whatHappensWhenYouDelete.
+  ///
+  /// In id, this message translates to:
+  /// **'Apa yang terjadi saat Anda menghapus akun?'**
+  String get whatHappensWhenYouDelete;
+
+  /// No description provided for @dataDeletedImmediately.
+  ///
+  /// In id, this message translates to:
+  /// **'Dihapus segera'**
+  String get dataDeletedImmediately;
+
+  /// No description provided for @dataDeletedProfile.
+  ///
+  /// In id, this message translates to:
+  /// **'Profil pengguna dan informasi pribadi'**
+  String get dataDeletedProfile;
+
+  /// No description provided for @dataDeletedAddresses.
+  ///
+  /// In id, this message translates to:
+  /// **'Alamat pengiriman yang disimpan'**
+  String get dataDeletedAddresses;
+
+  /// No description provided for @dataDeletedPaymentMethods.
+  ///
+  /// In id, this message translates to:
+  /// **'Metode pembayaran tersimpan'**
+  String get dataDeletedPaymentMethods;
+
+  /// No description provided for @dataDeletedCart.
+  ///
+  /// In id, this message translates to:
+  /// **'Item di keranjang belanja'**
+  String get dataDeletedCart;
+
+  /// No description provided for @dataDeletedProjectFavorites.
+  ///
+  /// In id, this message translates to:
+  /// **'Proyek, favorit, dan bookmark produk'**
+  String get dataDeletedProjectFavorites;
+
+  /// No description provided for @dataRetainedTemporarily.
+  ///
+  /// In id, this message translates to:
+  /// **'Disimpan sementara'**
+  String get dataRetainedTemporarily;
+
+  /// No description provided for @dataRetainedOrders.
+  ///
+  /// In id, this message translates to:
+  /// **'Detail metode pembayaran'**
+  String get dataRetainedOrders;
+
+  /// No description provided for @dataRetainedTransactions.
+  ///
+  /// In id, this message translates to:
+  /// **'Catatan alamat pengiriman'**
+  String get dataRetainedTransactions;
+
+  /// No description provided for @dataRetainedPeriod.
+  ///
+  /// In id, this message translates to:
+  /// **'Data ini akan dianonimkan setelah 30 hari'**
+  String get dataRetainedPeriod;
+
+  /// No description provided for @dataRetainedOrdersPermanent.
+  ///
+  /// In id, this message translates to:
+  /// **'Riwayat pesanan dan catatan transaksi (anonim)'**
+  String get dataRetainedOrdersPermanent;
+
+  /// No description provided for @dataRetainedTransactionsPermanent.
+  ///
+  /// In id, this message translates to:
+  /// **'Catatan pembayaran (anonim)'**
+  String get dataRetainedTransactionsPermanent;
+
+  /// No description provided for @dataRetainedPeriodPermanent.
+  ///
+  /// In id, this message translates to:
+  /// **'Disimpan permanen untuk kepatuhan hukum, pajak, dan akuntansi sesuai peraturan Indonesia'**
+  String get dataRetainedPeriodPermanent;
+
+  /// No description provided for @dataRetainedPermanently.
+  ///
+  /// In id, this message translates to:
+  /// **'Disimpan permanen (tanpa identitas)'**
+  String get dataRetainedPermanently;
+
+  /// No description provided for @dataRetainedAnonymizedStats.
+  ///
+  /// In id, this message translates to:
+  /// **'Statistik penjualan anonim untuk analisis bisnis'**
+  String get dataRetainedAnonymizedStats;
+
+  /// No description provided for @confirmDeleteAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Saya memahami dan ingin menghapus akun saya secara permanen'**
+  String get confirmDeleteAccount;
+
+  /// No description provided for @deleteMyAccountPermanently.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Akun Saya Secara Permanen'**
+  String get deleteMyAccountPermanently;
+
+  /// No description provided for @deleteAccountSupport.
+  ///
+  /// In id, this message translates to:
+  /// **'Jika Anda membutuhkan bantuan, hubungi support di support@otomasiku.id'**
+  String get deleteAccountSupport;
+
+  /// No description provided for @accountDeletedSuccess.
+  ///
+  /// In id, this message translates to:
+  /// **'Akun Anda berhasil dihapus. Terima kasih telah menggunakan Otomasiku.'**
+  String get accountDeletedSuccess;
+
+  /// No description provided for @errorDeleteAccount.
+  ///
+  /// In id, this message translates to:
+  /// **'Gagal menghapus akun. Silakan coba lagi nanti.'**
+  String get errorDeleteAccount;
 }
 
 class _AppLocalizationsDelegate

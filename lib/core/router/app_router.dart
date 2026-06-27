@@ -16,6 +16,7 @@ import '../../features/home/screens/home_screen.dart';
 import '../../features/search/search_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/profile/edit_profile_screen.dart';
+import '../../features/profile/delete_account_screen.dart';
 import '../../features/product_detail/product_detail_screen.dart';
 import '../../features/checkout/checkout_screen.dart';
 import '../../features/cart/cart_screen.dart';
@@ -63,6 +64,7 @@ abstract class AppRoute {
   static const String orders = 'orders';
   static const String editProfile = 'editProfile';
   static const String settings = 'settings';
+  static const String deleteAccount = 'deleteAccount';
   static const String landing = 'landing';
 }
 
@@ -337,6 +339,12 @@ final GoRouter appRouter = GoRouter(
       name: AppRoute.settings,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      path: '/delete-account',
+      name: AppRoute.deleteAccount,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const DeleteAccountScreen(),
     ),
   ],
 );

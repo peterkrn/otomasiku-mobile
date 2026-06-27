@@ -5,6 +5,8 @@ import '../../../core/constants/app_colors.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../core/router/app_router.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../core/utils/error_handler.dart';
+import '../../../shared/widgets/app_error_view.dart';
 
 /// Register screen for Otomasiku Marketplace
 /// Matches ui-otomasiku-marketplace/login.html style
@@ -447,7 +449,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     });
 
     if (authState.errorCode != null) {
-      _showSnackBar(authState.errorCode!);
+      _showSnackBar(translateErrorCode(authState.errorCode!, l10n.asErrorL10n));
       return;
     }
 

@@ -304,6 +304,9 @@ class _MockProfileRepository implements ProfileRepository {
 
   @override
   Future<void> removeDeviceToken(String fcmToken) async {}
+
+  @override
+  Future<void> deleteAccount() async {}
 }
 
 Session _testSession() {

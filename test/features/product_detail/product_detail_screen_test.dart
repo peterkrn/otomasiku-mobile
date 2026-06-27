@@ -21,7 +21,7 @@ import 'package:otomasiku_mobile/providers/auth_provider.dart';
 import 'package:otomasiku_mobile/providers/cart_provider.dart';
 import 'package:otomasiku_mobile/providers/repository_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'
-    show AuthChangeEvent, Session, User;
+    show Session, User;
 
 class _RouterTestApp extends StatelessWidget {
   const _RouterTestApp({required this.router});
@@ -197,6 +197,11 @@ class _FakeAuthService implements AuthService {
     return const AuthResult(status: AuthResultStatus.failure);
   }
 
+  @override
+  Future<AuthResult> deleteAccount() async {
+    return const AuthResult(status: AuthResultStatus.success);
+  }
+
   Future<void> dispose() async {
     await _authStateController.close();
   }
@@ -228,6 +233,9 @@ class _FakeProfileRepository implements ProfileRepository {
   Future<UserProfile> updateProfile(ProfileInput input) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> deleteAccount() async {}
 }
 
 class _FakeTokenStorage implements TokenStorage {

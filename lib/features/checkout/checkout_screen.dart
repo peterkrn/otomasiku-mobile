@@ -65,7 +65,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       if (defaultAddr != null && mounted) {
         setState(() => _selectedAddressId = defaultAddr.id);
       }
-    } catch (_) {}
+    } catch (e) {
+      if (mounted) {
+        AppToast.show(
+          context,
+          AppLocalizations.of(context)!.errorLoadAddress,
+          isError: true,
+        );
+      }
+    }
   }
 
   bool _isNavigating = false;

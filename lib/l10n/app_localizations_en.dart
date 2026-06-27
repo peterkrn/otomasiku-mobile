@@ -1512,4 +1512,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicySubtitle => 'Read our privacy policy';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountWarning =>
+      'This action cannot be undone. All your account data will be permanently deleted.';
+
+  @override
+  String get whatHappensWhenYouDelete =>
+      'What happens when you delete your account';
+
+  @override
+  String get dataDeletedImmediately => 'Deleted immediately';
+
+  @override
+  String get dataDeletedProfile => 'User profile and personal information';
+
+  @override
+  String get dataDeletedAddresses => 'Saved shipping addresses';
+
+  @override
+  String get dataDeletedPaymentMethods => 'Saved payment methods';
+
+  @override
+  String get dataDeletedCart => 'Shopping cart items';
+
+  @override
+  String get dataDeletedProjectFavorites =>
+      'Projects, favorites, and product bookmarks';
+
+  @override
+  String get dataRetainedTemporarily => 'Retained temporarily';
+
+  @override
+  String get dataRetainedOrders => 'Payment method details';
+
+  @override
+  String get dataRetainedTransactions => 'Shipping address records';
+
+  @override
+  String get dataRetainedPeriod => 'This data will be anonymized after 30 days';
+
+  @override
+  String get dataRetainedOrdersPermanent =>
+      'Order history and transaction records (anonymized)';
+
+  @override
+  String get dataRetainedTransactionsPermanent =>
+      'Payment records (anonymized)';
+
+  @override
+  String get dataRetainedPeriodPermanent =>
+      'Retained permanently for legal, tax, and accounting compliance as required by Indonesian law';
+
+  @override
+  String get dataRetainedPermanently => 'Permanently retained (anonymized)';
+
+  @override
+  String get dataRetainedAnonymizedStats =>
+      'Anonymized sales statistics for business analytics';
+
+  @override
+  String get confirmDeleteAccount =>
+      'I understand and want to permanently delete my account';
+
+  @override
+  String get deleteMyAccountPermanently => 'Permanently Delete My Account';
+
+  @override
+  String get deleteAccountSupport =>
+      'If you need assistance, contact support at support@otomasiku.id';
+
+  @override
+  String get accountDeletedSuccess =>
+      'Your account has been deleted. Thank you for using Otomasiku.';
+
+  @override
+  String get errorDeleteAccount =>
+      'Failed to delete account. Please try again later.';
 }

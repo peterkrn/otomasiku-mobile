@@ -261,6 +261,44 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthState(isBootstrapped: true);
   }
 
+  Future<bool> deleteAccount() async {
+    state = state.copyWith(isLoading: true, errorCode: null);
+
+    try {
+      // Clean up user data first
+      final fcmToken = await _tokenStorage.getFcmToken();
+      if (fcmToken != null) {
+        await _profileRepository.removeDeviceToken(fcmToken);
+      }
+      await FirebaseMessaging.instance.deleteToken();
+      await _tokenStorage.clearFcmToken();
+
+      // Call backend to anonymize profile + delete auth user (while session is still valid)
+      await _profileRepository.deleteAccount();
+
+      // Sign out locally and clear tokens
+      final result = await _authService.deleteAccount();
+
+      if (result.isSuccess) {
+        await RememberedRouteStore.instance.clear();
+        state = const AuthState(isBootstrapped: true, isLoading: false);
+        return true;
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          errorCode: result.errorCode,
+        );
+        return false;
+      }
+    } catch (_) {
+      state = state.copyWith(
+        isLoading: false,
+        errorCode: 'DELETE_ACCOUNT_FAILED',
+      );
+      return false;
+    }
+  }
+
   void clearError() {
     state = state.copyWith(errorCode: null);
   }

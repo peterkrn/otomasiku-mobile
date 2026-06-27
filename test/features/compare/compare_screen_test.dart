@@ -96,8 +96,8 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    await container.read(compareProvider.notifier).toggle('1');
-    await container.read(compareProvider.notifier).toggle('2');
+    container.read(compareProvider.notifier).toggle('1');
+    container.read(compareProvider.notifier).toggle('2');
 
     await tester.pumpWidget(
       UncontrolledProviderScope(

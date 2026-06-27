@@ -63,6 +63,11 @@ class _FakeAuthService implements AuthService {
     return googleResult;
   }
 
+  @override
+  Future<AuthResult> deleteAccount() async {
+    return const AuthResult(status: AuthResultStatus.success);
+  }
+
   void emitSignedIn(Session session) {
     _currentSession = session;
     _authStateController.add(
@@ -101,6 +106,9 @@ class _FakeProfileRepository implements ProfileRepository {
   Future<UserProfile> updateProfile(ProfileInput input) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> deleteAccount() async {}
 }
 
 class _FakeTokenStorage implements TokenStorage {

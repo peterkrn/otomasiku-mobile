@@ -7,7 +7,7 @@ import '../../core/utils/currency_formatter.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/order.dart';
 import '../../providers/order_provider.dart';
-import '../../shared/widgets/retry_widget.dart';
+import '../../shared/widgets/app_error_view.dart';
 
 class OrdersScreen extends ConsumerStatefulWidget {
   const OrdersScreen({super.key});
@@ -19,6 +19,14 @@ class OrdersScreen extends ConsumerStatefulWidget {
 class _OrdersScreenState extends ConsumerState<OrdersScreen> {
   final _scrollController = ScrollController();
   String _currentFilter = 'all';
+
+  void _handleBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(AppRoute.profile);
+    }
+  }
 
   @override
   void initState() {
@@ -64,7 +72,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary),
-          onPressed: () => context.goNamed(AppRoute.profile),
+          onPressed: _handleBack,
         ),
         title: Text(l10n.myOrders),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
@@ -88,20 +96,12 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           ),
         ),
       ),
-      body: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) {
-          if (!didPop) {
-            context.goNamed(AppRoute.profile);
-          }
-        },
-        child: ordersAsync.when(
-          data: (orders) => _buildOrderList(l10n, orders, isDark),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => RetryWidget(
-            message: l10n.errorGeneric,
-            onRetry: () => ref.read(orderListProvider.notifier).refresh(),
-          ),
+      body: ordersAsync.when(
+        data: (orders) => _buildOrderList(l10n, orders, isDark),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => AppErrorView(
+          error: error,
+          onRetry: () => ref.read(orderListProvider.notifier).refresh(),
         ),
       ),
     );
@@ -424,7 +424,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
         );
       case 'cancelled':
         return _StatusInfo(
-          label: 'Dibatalkan',
+          label: l10n.cancelled,
           icon: Icons.cancel,
           color: AppColors.mitsubishiRed,
           bgColor: AppColors.mitsubishiRed.withValues(alpha: 0.1),

@@ -5,7 +5,31 @@
       "mcp__context7__resolve-library-id",
       "WebSearch",
       "Bash(flutter analyze:*)",
-      "mcp__context7__query-docs"
+      "mcp__context7__query-docs",
+      "Bash(Remove-Item *)",
+      "Bash(git checkout *)",
+      "Bash(rm -rf docs/skills/database docs/skills/api docs/skills/payment docs/skills/testing docs/skills/sdd)",
+      "Bash(./rtk.exe git *)",
+      "Bash(Test-Path *)",
+      "Bash(python *)",
+      "Bash(dir /s \"C:\\\\Users\\\\peter\\\\.claude\\\\skills\\\\ui-ux-pro-max\\\\scripts\\\\search.py\")",
+      "Bash(dir C:\\\\dev\\\\projects\\\\ *)",
+      "Bash(dart analyze *)",
+      "Bash(flutter build *)"
     ]
+  },
+  "skillOverrides": {
+    "accessibility": "off",
+    "best-practices": "off",
+    "core-web-vitals": "off",
+    "diagnose": "off",
+    "improve-codebase-architecture": "off",
+    "requesting-code-review": "off",
+    "seo": "off",
+    "supabase": "off",
+    "supabase-postgres-best-practices": "off",
+    "web-quality-audit": "off",
+    "test-driven-development": "off",
+    "verification-before-completion": "off"
   }
 }

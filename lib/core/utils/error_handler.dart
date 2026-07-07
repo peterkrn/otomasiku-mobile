@@ -1,125 +1,123 @@
-/// Translates error codes from Express backend to localized strings
-/// Used when backend returns error.code instead of full messages
+import '../errors/app_exception.dart';
+
+/// Minimal l10n contract required by [errorMessageFor] and [translateErrorCode].
+/// Implemented by the generated AppLocalizations class via extension.
+abstract interface class ErrorL10n {
+  // AppException type messages
+  String get errorOffline;
+  String get errorTimeout;
+  String get errorSessionExpired;
+  String get errorServer;
+  String get errorGeneric;
+
+  // Backend API error code messages
+  String get errorInvalidCredentials;
+  String get errorUserNotFound;
+  String get errorDuplicateEntry;
+  String get errorWeakPassword;
+  String get errorUnauthorized;
+  String get errorProductNotFound;
+  String get outOfStock;
+  String get available;
+  String insufficientStock(int count);
+  String get orderNotFound;
+  String get errorOrderPaid;
+  String get cancelled;
+  String get errorPaymentFailed;
+  String get errorBcaVaExpired;
+  String get errorInvalidAmount;
+  String get errorCartEmpty;
+  String get errorInvalidQuantity;
+  String get errorValidation;
+  String get errorServiceUnavailable;
+}
+
+/// Maps a thrown [error] object to a localized user-facing string.
+String errorMessageFor(Object error, ErrorL10n l10n) {
+  return switch (error) {
+    NetworkException() => l10n.errorOffline,
+    TimeoutException() => l10n.errorTimeout,
+    SessionExpiredException() => l10n.errorSessionExpired,
+    ServerException() => l10n.errorServer,
+    ApiException(:final code, :final details) =>
+      translateErrorCode(code, l10n, details: details),
+    _ => l10n.errorGeneric,
+  };
+}
+
+/// Translates error codes from Express backend to localized strings.
+/// Accepts [ErrorL10n] so the active locale is always respected.
 /// Source: docs/AI_RULES.md — "No hardcoded error text from Express"
 String translateErrorCode(
   String code,
-  Map<String, String> l10n, {
+  ErrorL10n l10n, {
   Map<String, dynamic>? details,
 }) {
-  // Default fallbacks for each error code
-  String fallback(String key) {
-    switch (key) {
-      case 'error_invalid_credentials':
-        return 'Email atau kata sandi salah';
-      case 'error_user_not_found':
-        return 'Pengguna tidak ditemukan';
-      case 'error_email_in_use':
-        return 'Email sudah terdaftar';
-      case 'error_weak_password':
-        return 'Kata sandi minimal 6 karakter';
-      case 'error_unauthorized':
-        return 'Tidak memiliki akses';
-      case 'error_product_not_found':
-        return 'Produk tidak ditemukan';
-      case 'error_out_of_stock':
-        return 'Stok habis';
-      case 'error_available':
-        return 'tersedia';
-      case 'error_insufficient_stock':
-        return 'Stok tidak cukup';
-      case 'error_order_not_found':
-        return 'Pesanan tidak ditemukan';
-      case 'error_order_paid':
-        return 'Pesanan sudah dibayar';
-      case 'error_order_cancelled':
-        return 'Pesanan sudah dibatalkan';
-      case 'error_payment_failed':
-        return 'Pembayaran gagal';
-      case 'error_va_expired':
-        return 'Kode VA sudah kedaluwarsa';
-      case 'error_invalid_amount':
-        return 'Nominal tidak valid';
-      case 'error_cart_empty':
-        return 'Keranjang kosong';
-      case 'error_invalid_quantity':
-        return 'Jumlah tidak valid';
-      case 'error_invalid_input':
-        return 'Input tidak valid';
-      case 'error_internal':
-        return 'Terjadi kesalahan pada server';
-      case 'error_service_unavailable':
-        return 'Layanan sedang tidak tersedia';
-      case 'error_unknown':
-      default:
-        return 'Terjadi kesalahan. Silakan coba lagi.';
-    }
-  }
-
   switch (code) {
     // Auth errors
     case 'INVALID_CREDENTIALS':
-      return l10n['error_invalid_credentials'] ?? fallback('error_invalid_credentials');
+      return l10n.errorInvalidCredentials;
     case 'USER_NOT_FOUND':
-      return l10n['error_user_not_found'] ?? fallback('error_user_not_found');
+      return l10n.errorUserNotFound;
     case 'EMAIL_ALREADY_IN_USE':
-      return l10n['error_email_in_use'] ?? fallback('error_email_in_use');
+      return l10n.errorDuplicateEntry;
     case 'WEAK_PASSWORD':
-      return l10n['error_weak_password'] ?? fallback('error_weak_password');
+      return l10n.errorWeakPassword;
     case 'UNAUTHORIZED':
-      return l10n['error_unauthorized'] ?? fallback('error_unauthorized');
+      return l10n.errorUnauthorized;
 
     // Product errors
     case 'PRODUCT_NOT_FOUND':
-      return l10n['error_product_not_found'] ?? fallback('error_product_not_found');
+      return l10n.errorProductNotFound;
     case 'OUT_OF_STOCK':
       final available = details?['available'] ?? 0;
-      final outOfStock = l10n['error_out_of_stock'] ?? fallback('error_out_of_stock');
-      final availableText = l10n['error_available'] ?? fallback('error_available');
-      return '$outOfStock ($availableText: $available)';
+      return '${l10n.outOfStock} (${l10n.available}: $available)';
     case 'INSUFFICIENT_STOCK':
-      final available2 = details?['available'] ?? 0;
-      final insufficientStock = l10n['error_insufficient_stock'] ?? fallback('error_insufficient_stock');
-      final availableText2 = l10n['error_available'] ?? fallback('error_available');
-      return '$insufficientStock ($availableText2: $available2)';
+    case 'STOCK_CONFLICT':
+      final raw = details?['available'];
+      final available = switch (raw) {
+        int v => v,
+        num v => v.toInt(),
+        String v => int.tryParse(v) ?? 0,
+        _ => 0,
+      };
+      return l10n.insufficientStock(available);
 
     // Order errors
     case 'ORDER_NOT_FOUND':
-      return l10n['error_order_not_found'] ?? fallback('error_order_not_found');
+      return l10n.orderNotFound;
     case 'ORDER_ALREADY_PAID':
-      return l10n['error_order_paid'] ?? fallback('error_order_paid');
+      return l10n.errorOrderPaid;
     case 'ORDER_CANCELLED':
-      return l10n['error_order_cancelled'] ?? fallback('error_order_cancelled');
+      return l10n.cancelled;
 
     // Payment errors
     case 'PAYMENT_FAILED':
-      return l10n['error_payment_failed'] ?? fallback('error_payment_failed');
+      return l10n.errorPaymentFailed;
     case 'VA_EXPIRED':
-      return l10n['error_va_expired'] ?? fallback('error_va_expired');
+      return l10n.errorBcaVaExpired;
     case 'INVALID_AMOUNT':
-      return l10n['error_invalid_amount'] ?? fallback('error_invalid_amount');
+      return l10n.errorInvalidAmount;
 
     // Cart errors
     case 'CART_EMPTY':
-      return l10n['error_cart_empty'] ?? fallback('error_cart_empty');
+      return l10n.errorCartEmpty;
     case 'INVALID_QUANTITY':
-      return l10n['error_invalid_quantity'] ?? fallback('error_invalid_quantity');
+      return l10n.errorInvalidQuantity;
 
     // Validation errors
     case 'VALIDATION_ERROR':
-      final field = details?['field'] ?? '';
-      final message = details?['message'] ?? '';
-      return '$field: $message';
     case 'INVALID_INPUT':
-      return l10n['error_invalid_input'] ?? fallback('error_invalid_input');
+      return l10n.errorValidation;
 
     // Server errors
     case 'INTERNAL_ERROR':
-      return l10n['error_internal'] ?? fallback('error_internal');
+      return l10n.errorServer;
     case 'SERVICE_UNAVAILABLE':
-      return l10n['error_service_unavailable'] ?? fallback('error_service_unavailable');
+      return l10n.errorServiceUnavailable;
 
     // Default
     default:
-      return l10n['error_unknown'] ?? fallback('error_unknown');
+      return l10n.errorGeneric;
   }
 }

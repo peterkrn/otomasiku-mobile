@@ -1,12 +1,22 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../core/converters/to_string_converter.dart';
+
 import '../core/utils/bigint_converter.dart';
+import 'payment_proof.dart';
 
 part 'order.g.dart';
 
+const orderTimelineStatuses = <String>['pending', 'processing', 'shipped', 'done'];
+
+bool isCompletedOrderStatus(String status) => status == 'done';
+
+bool isFulfillmentOrderStatus(String status) =>
+    status == 'processing' || status == 'shipped';
+
 @JsonSerializable()
 class Order {
-  @_ToStringConverter()
+  @ToStringConverter()
   final String id;
   final String orderNumber;
   final String status;
@@ -15,15 +25,25 @@ class Order {
   @BigIntStringConverter()
   final int totalAmount;
 
+  @NullableBigIntStringConverter()
+  final int? subtotal;
+
+  @NullableBigIntStringConverter()
+  final int? shippingCost;
+
   final String? vaNumber;
   final DateTime? vaExpiresAt;
   final String? addressId;
   final OrderAddress? shippingAddress;
   final List<OrderItem>? items;
   final String? notes;
+  final String? adminNotes;
   final String? resiNumber;
+  final DateTime? shippedAt;
+  final DateTime? deliveredAt;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final PaymentProof? paymentProof;
 
   const Order({
     required this.id,
@@ -31,15 +51,21 @@ class Order {
     required this.status,
     required this.paymentStatus,
     required this.totalAmount,
+    this.subtotal,
+    this.shippingCost,
     this.vaNumber,
     this.vaExpiresAt,
     this.addressId,
     this.shippingAddress,
     this.items,
     this.notes,
+    this.adminNotes,
     this.resiNumber,
+    this.shippedAt,
+    this.deliveredAt,
     required this.createdAt,
     required this.updatedAt,
+    this.paymentProof,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
@@ -49,7 +75,7 @@ class Order {
 
 @JsonSerializable()
 class OrderItem {
-  @_ToStringConverter()
+  @ToStringConverter()
   final String productId;
   final String productName;
   final int quantity;
@@ -102,16 +128,7 @@ enum OrderStatus {
   pending,
   processing,
   shipped,
-  delivered,
+  done,
   cancelled,
 }
 
-class _ToStringConverter implements JsonConverter<String, dynamic> {
-  const _ToStringConverter();
-
-  @override
-  String fromJson(dynamic value) => value.toString();
-
-  @override
-  dynamic toJson(String value) => value;
-}

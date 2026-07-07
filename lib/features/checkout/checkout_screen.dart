@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +10,9 @@ import '../../../core/widgets/app_toast.dart';
 import '../../../providers/address_provider.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/order_provider.dart';
+import '../../../providers/product_provider.dart';
+import '../../../core/utils/error_handler.dart';
+import '../../../shared/widgets/app_error_view.dart';
 import 'widgets/address_selector.dart';
 import 'widgets/checkout_bottom_bar.dart';
 import 'widgets/checkout_order_item.dart';
@@ -25,8 +30,15 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 
 class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   final _notesController = TextEditingController();
-  bool _termsAccepted = false;
   String? _selectedAddressId;
+
+  void _handleBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(AppRoute.cart);
+    }
+  }
 
   @override
   void initState() {
@@ -53,7 +65,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       if (defaultAddr != null && mounted) {
         setState(() => _selectedAddressId = defaultAddr.id);
       }
-    } catch (_) {}
+    } catch (e) {
+      if (mounted) {
+        AppToast.show(
+          context,
+          AppLocalizations.of(context)!.errorLoadAddress,
+          isError: true,
+        );
+      }
+    }
   }
 
   bool _isNavigating = false;
@@ -69,9 +89,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final l10n = AppLocalizations.of(context);
     final cartItems = ref.watch(selectedCartItemsListProvider);
     final subtotal = cartItems.fold(
-        0, (sum, item) => sum + item.productSnapshot.price * item.quantity);
-    final totalItems =
-        cartItems.fold(0, (sum, item) => sum + item.quantity);
+      0,
+      (sum, item) => sum + item.productSnapshot.price * item.quantity,
+    );
+    final totalItems = cartItems.fold(0, (sum, item) => sum + item.quantity);
     final createOrderState = ref.watch(orderCreateProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -81,23 +102,26 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
-        leading: BackButton(onPressed: () {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.goNamed(AppRoute.home);
-          }
-        }),
+        leading: BackButton(onPressed: _handleBack),
         title: Text(l10n.checkout),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
-        foregroundColor:
-            isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+        foregroundColor: isDark
+            ? AppColors.darkTextPrimary
+            : AppColors.textPrimary,
         elevation: 0,
       ),
       body: cartItems.isEmpty && !_isNavigating
           ? _buildEmptyCart(l10n, isDark)
-          : _buildBody(context, l10n, cartItems, totalItems, subtotal,
-              discount, total, isDark),
+          : _buildBody(
+              context,
+              l10n,
+              cartItems,
+              totalItems,
+              subtotal,
+              discount,
+              total,
+              isDark,
+            ),
       bottomNavigationBar: cartItems.isEmpty && !_isNavigating
           ? null
           : CheckoutBottomBar(
@@ -114,23 +138,27 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.shopping_cart_outlined,
-              size: 64,
-              color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
+          Icon(
+            Icons.shopping_cart_outlined,
+            size: 64,
+            color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+          ),
           const SizedBox(height: 16),
-          Text(l10n.emptyCart,
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: isDark
-                      ? AppColors.darkTextPrimary
-                      : AppColors.textPrimary)),
+          Text(
+            l10n.emptyCart,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+            ),
+          ),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () => context.goNamed(AppRoute.home),
             style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.mitsubishiRed,
-                foregroundColor: Colors.white),
+              backgroundColor: AppColors.mitsubishiRed,
+              foregroundColor: Colors.white,
+            ),
             child: Text(l10n.cartStartShopping),
           ),
         ],
@@ -158,14 +186,18 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             trailing: l10n.itemCount(items.length),
             isDark: isDark,
             child: Column(
-              children: items.asMap().entries
-                  .map((entry) => CheckoutOrderItem(
-                        item: entry.value,
-                        index: entry.key,
-                        totalItems: items.length,
-                        onRemove: () => _removeItem(entry.value.id),
-                        isDark: isDark,
-                      ))
+              children: items
+                  .asMap()
+                  .entries
+                  .map(
+                    (entry) => CheckoutOrderItem(
+                      item: entry.value,
+                      index: entry.key,
+                      totalItems: items.length,
+                      onRemove: () => _removeItem(entry.value.id),
+                      isDark: isDark,
+                    ),
+                  )
                   .toList(),
             ),
           ),
@@ -208,8 +240,6 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               subtotal: subtotal,
               discount: discount,
               total: total,
-              termsAccepted: _termsAccepted,
-              onTermsChanged: (v) => setState(() => _termsAccepted = v),
               isDark: isDark,
             ),
           ),
@@ -220,38 +250,35 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   }
 
   void _removeItem(String cartItemId) {
-    final cartState = ref.read(cartProvider);
-    final item = cartState.items.firstWhere((i) => i.id == cartItemId);
     ref.read(cartProvider.notifier).removeItem(cartItemId);
     final selected = Set<String>.from(ref.read(selectedCartItemsProvider))
-      ..remove(item.productId);
+      ..remove(cartItemId);
     ref.read(selectedCartItemsProvider.notifier).state = selected;
   }
 
   int _calculateDiscount(List items) => 0;
 
   Future<void> _createInvoice(AppLocalizations l10n) async {
-    if (!_termsAccepted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l10n.pleaseAcceptTerms),
-        backgroundColor: AppColors.mitsubishiRed,
-      ));
-      return;
-    }
-
     if (_selectedAddressId == null) {
-      AppToast.show(context, 'Silakan pilih alamat pengiriman',
-          isError: true, bottomOffset: 100);
+      AppToast.show(
+        context,
+        l10n.pleaseSelectShippingAddress,
+        isError: true,
+        bottomOffset: 100,
+      );
       return;
     }
 
-    final errorMsg = l10n.errorGeneric;
     final router = GoRouter.of(context);
     final messenger = ScaffoldMessenger.of(context);
 
     try {
-      final result = await ref.read(orderCreateProvider.notifier).createOrder(
+      final selectedCartItemIds = ref.read(selectedCartItemsProvider).toList();
+      final result = await ref
+          .read(orderCreateProvider.notifier)
+          .createOrder(
             addressId: _selectedAddressId!,
+            cartItemIds: selectedCartItemIds,
             notes: _notesController.text.isNotEmpty
                 ? _notesController.text
                 : null,
@@ -259,21 +286,24 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
       if (!context.mounted) return;
       setState(() => _isNavigating = true);
-      router.pushNamed(AppRoute.payment,
-          pathParameters: {'orderId': result.orderId},
-          queryParameters: {'totalAmount': result.totalAmount.toString()});
-      // Clear cart after navigation to avoid empty cart flash
-      ref.read(cartProvider.notifier).clearCart();
+      ref
+          .read(cartProvider.notifier)
+          .removeItemsLocally(selectedCartItemIds.toSet());
       ref.read(selectedCartItemsProvider.notifier).state = {};
+      ref.invalidate(productListProvider);
+      unawaited(ref.read(productListProvider.notifier).refresh());
+      router.pushNamed(
+        AppRoute.payment,
+        pathParameters: {'orderId': result.orderId},
+        queryParameters: {'totalAmount': result.totalAmount.toString()},
+      );
     } on Exception catch (e) {
-      messenger.showSnackBar(SnackBar(
-        content: Text(
-          e.toString().contains('INSUFFICIENT_STOCK')
-              ? 'Stok tidak mencukupi. Silakan periksa kembali keranjang Anda.'
-              : errorMsg,
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(errorMessageFor(e, l10n.asErrorL10n)),
+          backgroundColor: AppColors.mitsubishiRed,
         ),
-        backgroundColor: AppColors.mitsubishiRed,
-      ));
+      );
     }
   }
 }

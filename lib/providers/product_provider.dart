@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/errors/app_exception.dart';
 import '../data/repositories/product_repository.dart';
 import '../models/product.dart';
 import 'repository_providers.dart';
@@ -11,6 +12,7 @@ final productListProvider =
 class ProductListNotifier extends AsyncNotifier<List<Product>> {
   int _page = 1;
   bool _hasMore = true;
+  bool _isLoadingMore = false;
   DateTime? _lastFetchedAt;
   ProductFilter? _lastFilter;
 
@@ -32,25 +34,43 @@ class ProductListNotifier extends AsyncNotifier<List<Product>> {
     _page = 1;
     _hasMore = true;
     _lastFilter = filter;
-    final response =
-        await ref.read(productRepositoryProvider).getProducts(filter.copyWith(page: 1));
-    _hasMore = response.data.length < response.total;
-    _lastFetchedAt = DateTime.now();
-    return response.data;
+    try {
+      final response =
+          await ref.read(productRepositoryProvider).getProducts(filter.copyWith(page: 1));
+      _hasMore = response.data.length < response.total;
+      _lastFetchedAt = DateTime.now();
+      return response.data;
+    } catch (e) {
+      // Preserve cached data only for transient errors and same filter context
+      if (!filterChanged &&
+          _isTransient(e) &&
+          state.hasValue &&
+          state.requireValue.isNotEmpty) {
+        return state.requireValue;
+      }
+      rethrow;
+    }
   }
 
+  bool _isTransient(Object e) =>
+      e is NetworkException || e is TimeoutException || e is ServerException;
+
   Future<void> loadMore() async {
-    if (!_hasMore) return;
+    if (!_hasMore || _isLoadingMore) return;
+    _isLoadingMore = true;
     final filter = ref.read(productFilterProvider);
     _page++;
     try {
       final response =
           await ref.read(productRepositoryProvider).getProducts(filter.copyWith(page: _page));
-      _hasMore = response.data.length < response.total;
-      state = AsyncData([...state.value ?? [], ...response.data]);
+      final accumulated = <Product>[...state.value ?? [], ...response.data];
+      _hasMore = accumulated.length < response.total;
+      state = AsyncData(accumulated);
     } catch (e, st) {
       _page--;
       state = AsyncError(e, st);
+    } finally {
+      _isLoadingMore = false;
     }
   }
 
@@ -72,9 +92,9 @@ class ProductListNotifier extends AsyncNotifier<List<Product>> {
 }
 
 /// Returns product from list cache if available, otherwise fetches from API.
+/// Use a one-time read to avoid re-trigger loops while the list provider is still loading.
 final productDetailProvider =
     FutureProvider.family<Product, String>((ref, id) async {
-  // Check list cache first to avoid extra API call
   final listState = ref.read(productListProvider);
   if (listState.hasValue) {
     final cached = listState.requireValue.where((p) => p.idString == id).firstOrNull;

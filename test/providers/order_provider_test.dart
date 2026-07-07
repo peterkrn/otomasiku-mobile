@@ -20,22 +20,25 @@ const _kAddress = OrderAddress(
   postalCode: '12345',
 );
 
-Order _order({String id = 'order-1', String status = 'processing', String paymentStatus = 'pending'}) =>
-    Order(
-      id: id,
-      orderNumber: 'ORD-001',
-      status: status,
-      paymentStatus: paymentStatus,
-      totalAmount: 500000,
-      shippingAddress: _kAddress,
-      items: const [],
-      createdAt: DateTime(2026),
-      updatedAt: DateTime(2026),
-    );
+Order _order({
+  String id = 'order-1',
+  String status = 'processing',
+  String paymentStatus = 'pending',
+}) => Order(
+  id: id,
+  orderNumber: 'ORD-001',
+  status: status,
+  paymentStatus: paymentStatus,
+  totalAmount: 500000,
+  shippingAddress: _kAddress,
+  items: const [],
+  createdAt: DateTime(2026),
+  updatedAt: DateTime(2026),
+);
 
 ProviderContainer _container(_MockOrderRepository repo) => ProviderContainer(
-      overrides: [orderRepositoryProvider.overrideWithValue(repo)],
-    );
+  overrides: [orderRepositoryProvider.overrideWithValue(repo)],
+);
 
 // ---------------------------------------------------------------------------
 // Mock
@@ -46,21 +49,39 @@ class _MockOrderRepository implements OrderRepository {
   bool createShouldFail;
   int getByIdCalls = 0;
   int createCalls = 0;
+  List<String>? lastCartItemIds;
+  final List<Object>? getByIdResponses;
 
   _MockOrderRepository({
     Map<String, Order>? orders,
     this.createShouldFail = false,
+    this.getByIdResponses,
   }) : _orders = orders ?? {};
 
   @override
   Future<OrderListResponse> getOrders({int page = 1, int pageSize = 20}) async {
     final items = _orders.values.toList();
-    return OrderListResponse(data: items, total: items.length, page: page, pageSize: pageSize);
+    return OrderListResponse(
+      data: items,
+      total: items.length,
+      page: page,
+      pageSize: pageSize,
+    );
   }
 
   @override
   Future<Order> getOrderById(String id) async {
     getByIdCalls++;
+    if (getByIdResponses != null && getByIdCalls <= getByIdResponses!.length) {
+      final scripted = getByIdResponses![getByIdCalls - 1];
+      if (scripted is Order) {
+        return scripted;
+      }
+      if (scripted is ApiException) {
+        throw scripted;
+      }
+      throw StateError('Unsupported scripted response: $scripted');
+    }
     final order = _orders[id];
     if (order == null) {
       throw ApiException(code: 'ORDER_NOT_FOUND', statusCode: 404);
@@ -71,11 +92,15 @@ class _MockOrderRepository implements OrderRepository {
   @override
   Future<CreateOrderResult> createOrder({
     required String addressId,
+    required List<String> cartItemIds,
     String? notes,
     required String idempotencyKey,
   }) async {
     createCalls++;
-    if (createShouldFail) throw ApiException(code: 'SERVER_ERROR', statusCode: 500);
+    lastCartItemIds = cartItemIds;
+    if (createShouldFail) {
+      throw ApiException(code: 'SERVER_ERROR', statusCode: 500);
+    }
     const result = CreateOrderResult(
       orderId: 'order-new',
       orderNumber: 'ORD-NEW',
@@ -87,6 +112,9 @@ class _MockOrderRepository implements OrderRepository {
 
   @override
   Future<List<OrderStatusHistory>> getStatusHistory(String orderId) async => [];
+
+  @override
+  Future<void> confirmReceived(String orderId) async {}
 }
 
 // ---------------------------------------------------------------------------
@@ -99,7 +127,9 @@ void main() {
   // -------------------------------------------------------------------------
   group('Bug #11 — orderDetailProvider handles sim- IDs in kDebugMode', () {
     test('returns order from repository for real order IDs', () async {
-      final repo = _MockOrderRepository(orders: {'order-1': _order(id: 'order-1')});
+      final repo = _MockOrderRepository(
+        orders: {'order-1': _order(id: 'order-1')},
+      );
       final container = _container(repo);
       addTearDown(container.dispose);
 
@@ -116,7 +146,9 @@ void main() {
 
       expect(
         () => container.read(orderDetailProvider('unknown-id').future),
-        throwsA(isA<ApiException>().having((e) => e.code, 'code', 'ORDER_NOT_FOUND')),
+        throwsA(
+          isA<ApiException>().having((e) => e.code, 'code', 'ORDER_NOT_FOUND'),
+        ),
       );
     });
 
@@ -131,10 +163,63 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final order = await container.read(orderDetailProvider('sim-12345').future);
+      final order = await container.read(
+        orderDetailProvider('sim-12345').future,
+      );
 
       expect(order.id, 'sim-12345');
       expect(order.paymentStatus, 'paid'); // FakeOrderRepository returns 'paid'
+    });
+
+    test(
+      'FakeOrderRepository keeps simulated totals consistent and non-placeholder',
+      () async {
+        final repo = FakeOrderRepository();
+
+        final result = await repo.createOrder(
+          addressId: 'addr-1',
+          cartItemIds: const ['item-1'],
+          idempotencyKey: 'key-1',
+        );
+        final order = await repo.getOrderById(result.orderId);
+
+        expect(result.totalAmount, greaterThan(0));
+        expect(order.totalAmount, greaterThan(0));
+        expect(result.totalAmount, order.totalAmount);
+      },
+    );
+
+    test('retries once when the order is not ready yet', () async {
+      final repo = _MockOrderRepository(
+        getByIdResponses: [
+          const ApiException(code: 'ORDER_NOT_READY', statusCode: 503),
+          _order(id: 'order-1'),
+        ],
+      );
+      final container = _container(repo);
+      addTearDown(container.dispose);
+
+      final order = await container.read(orderDetailProvider('order-1').future);
+
+      expect(order.id, 'order-1');
+      expect(repo.getByIdCalls, 2);
+    });
+
+    test('retries multiple times when the order is still warming up', () async {
+      final repo = _MockOrderRepository(
+        getByIdResponses: [
+          const ApiException(code: 'ORDER_NOT_READY', statusCode: 503),
+          const ApiException(code: 'ORDER_NOT_READY', statusCode: 503),
+          _order(id: 'order-1'),
+        ],
+      );
+      final container = _container(repo);
+      addTearDown(container.dispose);
+
+      final order = await container.read(orderDetailProvider('order-1').future);
+
+      expect(order.id, 'order-1');
+      expect(repo.getByIdCalls, 3);
     });
   });
 
@@ -143,10 +228,12 @@ void main() {
   // -------------------------------------------------------------------------
   group('orderListProvider', () {
     test('builds with orders from repository', () async {
-      final repo = _MockOrderRepository(orders: {
-        'order-1': _order(id: 'order-1'),
-        'order-2': _order(id: 'order-2', status: 'delivered'),
-      });
+      final repo = _MockOrderRepository(
+        orders: {
+          'order-1': _order(id: 'order-1'),
+          'order-2': _order(id: 'order-2', status: 'done'),
+        },
+      );
       final container = _container(repo);
       addTearDown(container.dispose);
 
@@ -185,7 +272,9 @@ void main() {
       addTearDown(container.dispose);
 
       expect(
-        () => container.read(orderCreateProvider.notifier).createOrder(addressId: 'addr-1'),
+        () => container
+            .read(orderCreateProvider.notifier)
+            .createOrder(addressId: 'addr-1', cartItemIds: const ['item-1']),
         throwsA(isA<ApiException>()),
       );
 
@@ -202,9 +291,15 @@ void main() {
       final container = _container(repo);
       addTearDown(container.dispose);
 
-      final result = await container.read(orderCreateProvider.notifier).createOrder(addressId: 'addr-1');
+      final result = await container
+          .read(orderCreateProvider.notifier)
+          .createOrder(
+            addressId: 'addr-1',
+            cartItemIds: const ['item-1', 'item-2'],
+          );
 
       expect(result.orderId, isNotEmpty);
+      expect(repo.lastCartItemIds, const ['item-1', 'item-2']);
       final state = container.read(orderCreateProvider);
       expect(state.result, isNotNull);
       expect(state.isLoading, false);

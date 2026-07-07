@@ -225,11 +225,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         ),
       );
       context.goNamed(AppRoute.home);
-    } on AuthException catch (e) {
+    } on AuthException catch (_) {
       if (!mounted) return;
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message), backgroundColor: AppColors.mitsubishiRed),
+        SnackBar(content: Text(AppLocalizations.of(context).errorGeneric), backgroundColor: AppColors.mitsubishiRed),
       );
     }
   }

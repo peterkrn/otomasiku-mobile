@@ -139,16 +139,35 @@ class Category {
 
 @JsonSerializable()
 class ProductImage {
+  @_ProductImageIdConverter()
+  final String id;
   final String url;
+  final String? path;
+  @JsonKey(name: 'is_primary')
   final bool isPrimary;
+  @JsonKey(name: 'sort_order')
+  final int sortOrder;
 
   const ProductImage({
+    required this.id,
     required this.url,
+    this.path,
     required this.isPrimary,
+    required this.sortOrder,
   });
 
   factory ProductImage.fromJson(Map<String, dynamic> json) =>
       _$ProductImageFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProductImageToJson(this);
+}
+
+class _ProductImageIdConverter implements JsonConverter<String, dynamic> {
+  const _ProductImageIdConverter();
+
+  @override
+  String fromJson(dynamic value) => value.toString();
+
+  @override
+  dynamic toJson(String value) => value;
 }

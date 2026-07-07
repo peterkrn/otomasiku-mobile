@@ -30,9 +30,11 @@ class AddressRepositoryImpl implements AddressRepository {
       );
     }
 
-    final dataList = json['data'] as List;
-    return dataList
-        .map((e) => Address.fromJson(e as Map<String, dynamic>))
+    final rawData = json['data'];
+    if (rawData is! List) throw ApiException(code: 'INVALID_RESPONSE', statusCode: 0);
+    return rawData
+        .cast<Map<String, dynamic>>()
+        .map((e) => Address.fromJson(e))
         .toList();
   }
 

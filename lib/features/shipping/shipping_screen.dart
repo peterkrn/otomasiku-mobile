@@ -7,6 +7,7 @@ import '../../core/router/app_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/address.dart';
 import '../../providers/address_provider.dart';
+import '../../shared/widgets/app_error_view.dart';
 
 class ShippingScreen extends ConsumerStatefulWidget {
   final bool isSelectable;
@@ -19,6 +20,14 @@ class ShippingScreen extends ConsumerStatefulWidget {
 
 class _ShippingScreenState extends ConsumerState<ShippingScreen> {
   String? _selectedAddressId;
+
+  void _handleBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(AppRoute.profile);
+    }
+  }
 
   void _selectAddress(Address address) {
     if (!widget.isSelectable) return;
@@ -48,13 +57,7 @@ class _ShippingScreenState extends ConsumerState<ShippingScreen> {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : const Color(0xFFF3F4F6),
       appBar: AppBar(
-        leading: BackButton(onPressed: () {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.goNamed(AppRoute.home);
-          }
-        }),
+        leading: BackButton(onPressed: _handleBack),
         title: Text(
           l10n.shippingAddress,
           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -65,32 +68,9 @@ class _ShippingScreenState extends ConsumerState<ShippingScreen> {
       ),
       body: addressesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.error_outline, size: 48, color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.errorGeneric,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => ref.invalidate(addressListProvider),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.mitsubishiRed,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: Text(l10n.retry),
-                ),
-              ],
-            ),
-          ),
+        error: (error, stack) => AppErrorView(
+          error: error,
+          onRetry: () => ref.invalidate(addressListProvider),
         ),
         data: (addresses) {
           if (addresses.isEmpty) {

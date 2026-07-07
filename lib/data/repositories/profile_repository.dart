@@ -12,6 +12,7 @@ abstract class ProfileRepository {
   Future<String> uploadAvatar(File imageFile);
   Future<void> registerDeviceToken(String fcmToken);
   Future<void> removeDeviceToken(String fcmToken);
+  Future<void> deleteAccount();
 }
 
 class ProfileRepositoryImpl implements ProfileRepository {
@@ -90,6 +91,11 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<void> removeDeviceToken(String fcmToken) async {
     await _dio.delete('/me/devices', data: {'fcmToken': fcmToken});
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    await _dio.delete('/me');
   }
 }
 

@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'
+    show AuthChangeEvent, Session, Supabase;
 
 import '../core/auth/auth_service.dart';
 import '../core/auth/token_storage.dart';
+import '../core/router/remembered_route_store.dart';
 import '../data/repositories/auth_repository.dart';
 import '../data/repositories/profile_repository.dart';
 import '../models/user_profile.dart';
@@ -91,6 +95,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     VoidCallback? onAuthenticated,
   })  : _onAuthenticated = onAuthenticated,
         super(const AuthState()) {
+    _authStateSubscription = _authService.authStateChanges.listen(
+      _handleAuthStateChange,
+    );
     _init();
   }
 
@@ -99,6 +106,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final ProfileRepository _profileRepository;
   final TokenStorage _tokenStorage;
   final VoidCallback? _onAuthenticated;
+  late final StreamSubscription<AuthStateChangePayload> _authStateSubscription;
+  bool _awaitingGoogleOAuth = false;
 
   void _init() {
     if (_authService.isAuthenticated) {
@@ -107,10 +116,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         if (!rememberMe) {
           await _authService.logout();
           await _tokenStorage.setRememberMe(true);
-          state = const AuthState();
+          state = const AuthState(isBootstrapped: true);
           return;
         }
-        final session = Supabase.instance.client.auth.currentSession;
+        final session = _authService.currentSession;
         state = state.copyWith(
           isAuthenticated: true,
           userId: session?.user.id,
@@ -122,7 +131,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
         await _loadProfile();
         _onAuthenticated?.call();
       });
+      return;
     }
+
+    Future.microtask(() {
+      state = state.copyWith(isBootstrapped: true, isLoading: false);
+    });
   }
 
   Future<void> _loadProfile() async {
@@ -166,6 +180,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> signInWithGoogle() async {
+    state = state.copyWith(isLoading: true, errorCode: null);
+    _awaitingGoogleOAuth = true;
+
+    final result = await _authService.signInWithGoogle();
+
+    if (result.isSuccess) {
+      state = state.copyWith(isLoading: false, errorCode: null);
+    } else {
+      _awaitingGoogleOAuth = false;
+      state = state.copyWith(
+        isLoading: false,
+        errorCode: result.errorCode ?? 'GOOGLE_SIGN_IN_FAILED',
+      );
+    }
+  }
+
   Future<void> _registerFcmToken() async {
     try {
       final fcmToken = await FirebaseMessaging.instance.getToken();
@@ -188,8 +219,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final result = await _authService.register(email, password, name);
 
     if (result.isSuccess) {
-      final session = Supabase.instance.client.auth.currentSession;
-      if (session != null) {
+        final session = _authService.currentSession;
+        if (session != null) {
         // Email confirmation disabled — user is logged in immediately
         _updateFromSession();
         await _bootstrap();
@@ -225,8 +256,47 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (_) {
       // Non-fatal
     }
+    await RememberedRouteStore.instance.clear();
     await _authService.logout();
-    state = const AuthState();
+    state = const AuthState(isBootstrapped: true);
+  }
+
+  Future<bool> deleteAccount() async {
+    state = state.copyWith(isLoading: true, errorCode: null);
+
+    try {
+      // Clean up user data first
+      final fcmToken = await _tokenStorage.getFcmToken();
+      if (fcmToken != null) {
+        await _profileRepository.removeDeviceToken(fcmToken);
+      }
+      await FirebaseMessaging.instance.deleteToken();
+      await _tokenStorage.clearFcmToken();
+
+      // Call backend to anonymize profile + delete auth user (while session is still valid)
+      await _profileRepository.deleteAccount();
+
+      // Sign out locally and clear tokens
+      final result = await _authService.deleteAccount();
+
+      if (result.isSuccess) {
+        await RememberedRouteStore.instance.clear();
+        state = const AuthState(isBootstrapped: true, isLoading: false);
+        return true;
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          errorCode: result.errorCode,
+        );
+        return false;
+      }
+    } catch (_) {
+      state = state.copyWith(
+        isLoading: false,
+        errorCode: 'DELETE_ACCOUNT_FAILED',
+      );
+      return false;
+    }
   }
 
   void clearError() {
@@ -234,8 +304,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   void _updateFromSession() {
-    final session = Supabase.instance.client.auth.currentSession;
+    final session = _authService.currentSession;
     if (session == null) return;
+    _applySession(session);
+  }
+
+  void _applySession(Session session) {
     state = state.copyWith(
       isAuthenticated: true,
       isLoading: false,
@@ -243,6 +317,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
       email: session.user.email,
       name: session.user.userMetadata?['full_name'] as String?,
     );
+  }
+
+  Future<void> _handleAuthStateChange(AuthStateChangePayload payload) async {
+    if (!_awaitingGoogleOAuth) return;
+
+    if (payload.event == AuthChangeEvent.signedIn && payload.session != null) {
+      _awaitingGoogleOAuth = false;
+      _applySession(payload.session!);
+      await _bootstrap();
+      state = state.copyWith(isBootstrapped: true);
+      await _loadProfile();
+      await _registerFcmToken();
+      _onAuthenticated?.call();
+    }
   }
 
   Future<void> _bootstrap() async {
@@ -267,5 +355,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await _profileRepository.updateProfile(input);
     // Re-fetch full profile (PATCH returns partial object)
     await refreshProfile();
+  }
+
+  @override
+  void dispose() {
+    _authStateSubscription.cancel();
+    super.dispose();
   }
 }

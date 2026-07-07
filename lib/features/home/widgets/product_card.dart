@@ -12,6 +12,7 @@ import '../../../providers/auth_provider.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/compare_provider.dart';
 import '../../../shared/widgets/product_image.dart' as product_image;
+import '../../../shared/widgets/product_price_not_set_dialog.dart';
 import 'stock_badge.dart';
 
 class ProductCard extends ConsumerStatefulWidget {
@@ -234,8 +235,16 @@ child: product_image.ProductNetworkImage(
     if (!ref.read(authProvider).isAuthenticated) {
       AppToast.show(
         context,
-        'Anda belum login. Silakan login terlebih dahulu.',
+        AppLocalizations.of(context).notLoggedIn,
         isError: true,
+      );
+      return;
+    }
+    if (widget.product.price <= 0) {
+      showProductPriceNotSetDialog(
+        context: context,
+        productName: widget.product.name,
+        locale: Localizations.localeOf(context).languageCode,
       );
       return;
     }
@@ -255,7 +264,7 @@ child: product_image.ProductNetworkImage(
 
     AppToast.show(
       context,
-      '${widget.product.name} ditambahkan ke keranjang',
+      AppLocalizations.of(context).addedToCart(widget.product.name),
       isError: false,
     );
 

@@ -12,6 +12,118 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'Otomasiku';
 
   @override
+  String get landingEyebrow =>
+      'Industrial automation catalog for B2B and B2C needs';
+
+  @override
+  String get landingHeroBadge =>
+      'A trusted supplier for industrial automation needs';
+
+  @override
+  String get landingHeadline =>
+      'Industrial automation products that are easier to find, compare, and order.';
+
+  @override
+  String get landingSubheadline =>
+      'Otomasiku helps industrial customers find what they need with B2B pricing support, competitive pricing for general purchases, and admin assistance during ordering.';
+
+  @override
+  String get landingViewCatalog => 'View Catalog';
+
+  @override
+  String get landingContactAdmin => 'Contact Admin';
+
+  @override
+  String get landingLanguageLabelId => 'ID';
+
+  @override
+  String get landingLanguageLabelEn => 'EN';
+
+  @override
+  String get landingTrustSectionTitle => 'Why customers trust us';
+
+  @override
+  String get landingTrustSectionSubtitle =>
+      'We are shaping a shopping experience that feels clear, simple, and relevant for industrial purchasing.';
+
+  @override
+  String get landingTrustOriginalTitle => 'Original products';
+
+  @override
+  String get landingTrustOriginalBody =>
+      'We focus on industrial products with clear brand and category identity.';
+
+  @override
+  String get landingTrustB2bPriceTitle => 'B2B pricing support';
+
+  @override
+  String get landingTrustB2bPriceBody =>
+      'Business customers can coordinate with admin for project purchases or larger-volume needs.';
+
+  @override
+  String get landingTrustCompetitiveTitle => 'Competitive pricing';
+
+  @override
+  String get landingTrustCompetitiveBody =>
+      'For general purchases, we aim to keep pricing relevant and competitive for the industrial automation market.';
+
+  @override
+  String get landingTrustVerificationTitle => 'Manual payment verification';
+
+  @override
+  String get landingTrustVerificationBody =>
+      'Payments and shipping are currently reconfirmed by admin so order details stay accurate.';
+
+  @override
+  String get landingCatalogSectionTitle => 'Main categories';
+
+  @override
+  String get landingCatalogSectionSubtitle =>
+      'Start with the components most often needed for industrial panels, machinery, and control systems.';
+
+  @override
+  String get landingHowTitle => 'How ordering works';
+
+  @override
+  String get landingHowSubtitle =>
+      'The flow is kept simple so customers can keep moving without second-guessing the next step.';
+
+  @override
+  String get landingHowStep1Title => 'Browse the catalog';
+
+  @override
+  String get landingHowStep1Body =>
+      'Search by category or product, then open the product detail page to review the key information.';
+
+  @override
+  String get landingHowStep2Title => 'Sign in and prepare the order';
+
+  @override
+  String get landingHowStep2Body =>
+      'Add products to cart, choose a shipping address, and continue to checkout.';
+
+  @override
+  String get landingHowStep3Title => 'Pay and wait for admin verification';
+
+  @override
+  String get landingHowStep3Body =>
+      'Upload your QRIS transfer proof, then admin will verify the payment and arrange shipping manually.';
+
+  @override
+  String get landingBrandTitle => 'Available brands';
+
+  @override
+  String get landingBrandSubtitle =>
+      'The catalog currently highlights industrial brands already familiar to many customers.';
+
+  @override
+  String get landingFooterTitle => 'Need help choosing a product?';
+
+  @override
+  String get landingFooterSubtitle =>
+      'Our admin team can help with product selection, order confirmation, and the payment process.';
+
+  @override
   String get home => 'Home';
 
   @override
@@ -175,6 +287,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentCopied => 'Copied to clipboard';
 
   @override
+  String get paymentQrisTitle => 'QRIS Payment';
+
+  @override
+  String get paymentScanQris =>
+      'Scan the QRIS code using your mobile banking app or e-wallet';
+
+  @override
+  String get paymentQrisMerchant => 'PT Abadi Bangun Bersama (Otomasiku.com)';
+
+  @override
+  String get paymentQrisOnlyDescription =>
+      'QRIS for PT Abadi Bangun Bersama is pre-selected for this order.';
+
+  @override
+  String get paymentQrisInstruction =>
+      'Scan the QRIS code below using your mobile banking app or e-wallet, then upload your transfer proof after the payment succeeds.';
+
+  @override
+  String get paymentConfirmPaid => 'I Have Paid';
+
+  @override
+  String get paymentPendingTitle => 'Awaiting Verification';
+
+  @override
+  String get paymentPendingSubtitle => 'Admin will verify your payment';
+
+  @override
+  String get paymentPendingDescription =>
+      'Your payment will be verified manually by our admin. Please wait for confirmation via notification.';
+
+  @override
+  String get paymentViewOrder => 'View Order';
+
+  @override
+  String get paymentBackToShopping => 'Continue Shopping';
+
+  @override
   String get paymentCheckStatus => 'Check Status';
 
   @override
@@ -302,6 +451,71 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorLoadingProductDetail => 'Failed to load product details';
 
   @override
+  String get errorOffline =>
+      'No internet connection. Please check your network.';
+
+  @override
+  String get errorTimeout => 'Request timed out. Please try again.';
+
+  @override
+  String get errorSessionExpired =>
+      'Your session has expired. Please log in again.';
+
+  @override
+  String get errorServer => 'Server error. Please try again later.';
+
+  @override
+  String get errorLoadAddress => 'Failed to load addresses.';
+
+  @override
+  String get errorImageLoad => 'Failed to load image.';
+
+  @override
+  String get notLoggedIn => 'You are not logged in. Please log in to continue.';
+
+  @override
+  String get addressSaveFailed => 'Failed to save address. Please try again.';
+
+  @override
+  String get goToLogin => 'Go to Login';
+
+  @override
+  String get cancelled => 'Cancelled';
+
+  @override
+  String get errorWeakPassword => 'Password must be at least 6 characters.';
+
+  @override
+  String get errorUnauthorized => 'You do not have access.';
+
+  @override
+  String get errorProductNotFound => 'Product not found.';
+
+  @override
+  String get errorOrderPaid => 'Order has already been paid.';
+
+  @override
+  String get errorPaymentFailed => 'Payment failed.';
+
+  @override
+  String get errorInvalidAmount => 'Invalid payment amount.';
+
+  @override
+  String get errorCartEmpty => 'Your cart is empty.';
+
+  @override
+  String get errorInvalidQuantity => 'Invalid quantity.';
+
+  @override
+  String get errorServiceUnavailable => 'Service is currently unavailable.';
+
+  @override
+  String get pleaseSelectShippingAddress => 'Please select a shipping address.';
+
+  @override
+  String get paymentTimeExpired => 'Payment time has expired.';
+
+  @override
   String get loadMore => 'Load more';
 
   @override
@@ -392,13 +606,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get added => '✓ Added';
 
   @override
-  String get compareMaxError => 'Maximum 2 products for comparison';
+  String get compareMaxError => 'Unable to add product to comparison';
 
   @override
   String get compare => 'Compare';
 
   @override
   String get clear => 'Clear All';
+
+  @override
+  String get compareEmptyHint => 'Add products to start comparing';
+
+  @override
+  String get compareAddProduct => 'Add Product';
+
+  @override
+  String get compareSpecProduct => 'PRODUCT';
+
+  @override
+  String get compareSpecSeries => 'SERIES';
+
+  @override
+  String get compareSpecVariant => 'VARIANT';
+
+  @override
+  String get compareSpecUnit => 'UNIT';
+
+  @override
+  String get compareSpecMinOrder => 'MIN ORDER';
+
+  @override
+  String get compareSpecStock => 'STOCK';
+
+  @override
+  String get compareSpecPrice => 'PRICE';
 
   @override
   String get cartRemoveConfirm => 'Remove this item from cart?';
@@ -535,6 +776,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shippingEstimate => 'Est. 3-5 business days';
+
+  @override
+  String get shippingManualDescription =>
+      'Shipping is arranged manually by our admin after your payment has been verified.';
 
   @override
   String get freeShipping => 'FREE';
@@ -706,6 +951,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logoutSuccess => 'Logged out successfully';
 
   @override
+  String get loggingOut => 'Logging out...';
+
+  @override
   String get myProjects => 'My Projects';
 
   @override
@@ -760,6 +1008,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortNameDesc => 'Name Z-A';
 
   @override
+  String get activeFiltersLabel => 'Active filters:';
+
+  @override
+  String get noActiveFilters => 'No active filters';
+
+  @override
+  String searchResultsCount(int count) {
+    return 'Found $count products';
+  }
+
+  @override
   String get productsSelected => 'Products selected';
 
   @override
@@ -776,6 +1035,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filterPower => 'Power Range';
+
+  @override
+  String get powerRangeSmall => '≤ 2.2 kW';
+
+  @override
+  String get powerRangeMedium => '3.7–15 kW';
+
+  @override
+  String get powerRangeLarge => '≥ 18.5 kW';
 
   @override
   String get noProductsFound => 'No products found';
@@ -1070,4 +1338,258 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sendResetLink => 'Send Reset Link';
+
+  @override
+  String get paymentUploadProof => 'Upload Transfer Proof';
+
+  @override
+  String get paymentProofPending => 'Awaiting Admin Verification';
+
+  @override
+  String get paymentProofApproved => 'Payment Confirmed';
+
+  @override
+  String paymentProofRejectedReason(String reason) {
+    return 'Rejected: $reason';
+  }
+
+  @override
+  String get paymentReupload => 'Re-upload';
+
+  @override
+  String get paymentBankName => 'Bank Name';
+
+  @override
+  String get paymentBankNameCustom => 'Bank Name';
+
+  @override
+  String get paymentAccountName => 'Sender Account Name';
+
+  @override
+  String get paymentAmount => 'Transfer Amount';
+
+  @override
+  String get paymentPickImage => 'Gallery';
+
+  @override
+  String get paymentTakePhoto => 'Camera';
+
+  @override
+  String get paymentSubmitProof => 'Submit Transfer Proof';
+
+  @override
+  String get paymentProofUploaded => 'Transfer proof submitted successfully';
+
+  @override
+  String get paymentExpiredStockReleased =>
+      'Stock has been released for this expired order.';
+
+  @override
+  String get paymentExpiredCheckoutAgain =>
+      'Please checkout again if you still need these items.';
+
+  @override
+  String get paymentFieldsRequired => 'All fields are required';
+
+  @override
+  String get paymentLeaveTitle => 'Leave payment?';
+
+  @override
+  String get paymentLeaveMessage =>
+      'Are you sure you want to leave this payment screen?';
+
+  @override
+  String get exitAppTitle => 'Exit the app?';
+
+  @override
+  String get exitAppMessage => 'Are you sure you want to exit?';
+
+  @override
+  String get leave => 'Leave';
+
+  @override
+  String get productUnavailable => 'This product is currently unavailable';
+
+  @override
+  String trackingNumber(String resi) {
+    return 'Tracking No: $resi';
+  }
+
+  @override
+  String get paymentConfirmDialogTitle => 'Confirm Payment';
+
+  @override
+  String get paymentConfirmDialogBody =>
+      'By confirming, our team will verify your payment. The verification process takes up to 1x24 hours.';
+
+  @override
+  String get confirmReceived => 'Order Received';
+
+  @override
+  String get confirmReceivedDialog =>
+      'Confirm that the order has been received?';
+
+  @override
+  String get confirmReceivedSuccess => 'Order confirmed successfully';
+
+  @override
+  String get productPriceNotSetTitle => 'Price Not Available';
+
+  @override
+  String get productPriceNotSetBody =>
+      'This product does not have a price yet. Please contact admin for availability and pricing.';
+
+  @override
+  String get productPriceNotSetContactAdmin => 'Contact Admin via WhatsApp';
+
+  @override
+  String get contactAdmin => 'Contact Admin';
+
+  @override
+  String get loginSubtitle2 =>
+      'Sign in to your account to access the product catalog and special offers.';
+
+  @override
+  String get registerNow => 'Register Now';
+
+  @override
+  String get loginWithGoogle => 'Sign in with Google';
+
+  @override
+  String get errorInvalidEmail => 'Invalid email format';
+
+  @override
+  String get registerSuccessTitle => 'Registration Successful!';
+
+  @override
+  String registerSuccessBody(String email) {
+    return 'A confirmation link has been sent to $email. Please check your email and click the confirmation link to activate your account.';
+  }
+
+  @override
+  String get addressSaved => 'Address saved successfully';
+
+  @override
+  String get addressAdded => 'Address added successfully';
+
+  @override
+  String get paymentVaTransferFrom => 'Transfer from any BCA account';
+
+  @override
+  String get paymentAccountHolder => 'Account Holder';
+
+  @override
+  String get paymentType => 'Type';
+
+  @override
+  String get paymentAutoVerify =>
+      'Payment will be verified automatically. Make sure the transferred amount matches the total bill so the order can be processed.';
+
+  @override
+  String get supportNeedHelp => 'Need help?';
+
+  @override
+  String get supportContactPhone => 'Contact us at 021-1234-5678';
+
+  @override
+  String get notificationOrderUpdates => 'Order Updates';
+
+  @override
+  String get notificationOrderUpdatesDesc =>
+      'Notifications for order status changes';
+
+  @override
+  String get notificationPaymentDesc => 'Payment confirmation';
+
+  @override
+  String get languageLabelId => 'ID';
+
+  @override
+  String get languageLabelEn => 'EN';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get privacyPolicySubtitle => 'Read our privacy policy';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountWarning =>
+      'This action cannot be undone. All your account data will be permanently deleted.';
+
+  @override
+  String get whatHappensWhenYouDelete =>
+      'What happens when you delete your account';
+
+  @override
+  String get dataDeletedImmediately => 'Deleted immediately';
+
+  @override
+  String get dataDeletedProfile => 'User profile and personal information';
+
+  @override
+  String get dataDeletedAddresses => 'Saved shipping addresses';
+
+  @override
+  String get dataDeletedPaymentMethods => 'Saved payment methods';
+
+  @override
+  String get dataDeletedCart => 'Shopping cart items';
+
+  @override
+  String get dataDeletedProjectFavorites =>
+      'Projects, favorites, and product bookmarks';
+
+  @override
+  String get dataRetainedTemporarily => 'Retained temporarily';
+
+  @override
+  String get dataRetainedOrders => 'Payment method details';
+
+  @override
+  String get dataRetainedTransactions => 'Shipping address records';
+
+  @override
+  String get dataRetainedPeriod => 'This data will be anonymized after 30 days';
+
+  @override
+  String get dataRetainedOrdersPermanent =>
+      'Order history and transaction records (anonymized)';
+
+  @override
+  String get dataRetainedTransactionsPermanent =>
+      'Payment records (anonymized)';
+
+  @override
+  String get dataRetainedPeriodPermanent =>
+      'Retained permanently for legal, tax, and accounting compliance as required by Indonesian law';
+
+  @override
+  String get dataRetainedPermanently => 'Permanently retained (anonymized)';
+
+  @override
+  String get dataRetainedAnonymizedStats =>
+      'Anonymized sales statistics for business analytics';
+
+  @override
+  String get confirmDeleteAccount =>
+      'I understand and want to permanently delete my account';
+
+  @override
+  String get deleteMyAccountPermanently => 'Permanently Delete My Account';
+
+  @override
+  String get deleteAccountSupport =>
+      'If you need assistance, contact support at support@otomasiku.id';
+
+  @override
+  String get accountDeletedSuccess =>
+      'Your account has been deleted. Thank you for using Otomasiku.';
+
+  @override
+  String get errorDeleteAccount =>
+      'Failed to delete account. Please try again later.';
 }

@@ -16,6 +16,8 @@ import '../../providers/product_provider.dart';
 import '../../providers/project_provider.dart';
 import '../../models/project.dart';
 import '../../shared/widgets/product_image.dart' as product_image;
+import '../../shared/widgets/app_error_view.dart';
+import '../../shared/widgets/product_price_not_set_dialog.dart';
 import 'widgets/product_bottom_bar.dart';
 import 'widgets/tiered_pricing_widget.dart';
 
@@ -34,6 +36,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
   int _quantity = 1;
   bool _isAddingToCart = false;
   int? _selectedTierMin;
+  int _currentImagePage = 0;
+
+  void _handleBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(AppRoute.home);
+    }
+  }
 
   @override
   void initState() {
@@ -56,22 +67,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     return productAsync.when(
       data: (product) => _buildProductScreen(product, l10n, isDark),
       loading: () => _buildLoadingScreen(l10n, isDark),
-      error: (error, _) => _buildErrorScreen(l10n, isDark),
+      error: (error, _) => _buildErrorScreen(error, l10n, isDark),
     );
   }
 
   Widget _buildLoadingScreen(AppLocalizations l10n, bool isDark) {
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.goNamed(AppRoute.home);
-            }
-          },
-        ),
+        leading: BackButton(onPressed: _handleBack),
         title: Text(l10n.productDetail),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
@@ -85,45 +88,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     );
   }
 
-  Widget _buildErrorScreen(AppLocalizations l10n, bool isDark) {
+  Widget _buildErrorScreen(Object error, AppLocalizations l10n, bool isDark) {
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.goNamed(AppRoute.home);
-            }
-          },
-        ),
+        leading: BackButton(onPressed: _handleBack),
         title: Text(l10n.productDetail),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
         elevation: 0,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 64, color: AppColors.mitsubishiRed),
-            const SizedBox(height: 16),
-            Text(
-              l10n.errorLoadingProductDetail,
-              style: TextStyle(fontSize: 16, color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => ref.refresh(productDetailProvider(widget.productId)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.mitsubishiRed,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: Text(l10n.retry),
-            ),
-          ],
-        ),
+      body: AppErrorView(
+        error: error,
+        onRetry: () => ref.refresh(productDetailProvider(widget.productId)),
       ),
     );
   }
@@ -137,15 +113,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.goNamed(AppRoute.home);
-            }
-          },
-        ),
+        leading: BackButton(onPressed: _handleBack),
         title: Text(l10n.productDetail),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
@@ -160,24 +128,28 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildImageSection(product, l10n, isDark),
-            _buildProductInfo(product, l10n, displayStock, isDark),
-            TieredPricingWidget(
-              product: product,
-              quantity: _quantity,
-              onTierSelected: (minQty) => setState(() {
-                _selectedTierMin = minQty;
-                _quantity = minQty;
-              }),
-              onRfqTap: () => _showRFQDialog(product, l10n),
-              isDark: isDark,
-            ),
-            _buildTabs(product, l10n, isDark),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () => ref.read(productListProvider.notifier).refresh(),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildImageSection(product, l10n, isDark),
+              _buildProductInfo(product, l10n, displayStock, isDark),
+              TieredPricingWidget(
+                product: product,
+                quantity: _quantity,
+                onTierSelected: (minQty) => setState(() {
+                  _selectedTierMin = minQty;
+                  _quantity = minQty;
+                }),
+                onRfqTap: () => _showRFQDialog(product, l10n),
+                isDark: isDark,
+              ),
+              _buildTabs(product, l10n, isDark),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: ProductBottomBar(
@@ -189,13 +161,21 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
         onIncrement: () => setState(() => _quantity++),
         onSaveToProject: () => _saveToProject(product, l10n),
         onAddToCart: () => _addToCart(product, l10n),
-        onBuyNow: () => _buyNow(product, l10n, displayStock),
+        onBuyNow: () {
+          _buyNow(product, l10n, displayStock);
+        },
         isDark: isDark,
       ),
     );
   }
 
   Widget _buildImageSection(Product product, AppLocalizations l10n, bool isDark) {
+    final imageUrls = product.images.isNotEmpty
+        ? (List<ProductImage>.from(product.images)..sort((a, b) => a.sortOrder.compareTo(b.sortOrder)))
+            .map((i) => i.url)
+            .toList()
+        : <String>[product.primaryImageUrl];
+
     return Container(
       color: isDark ? AppColors.darkSurface : Colors.white,
       padding: const EdgeInsets.all(24),
@@ -205,15 +185,51 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen>
             aspectRatio: 1,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: Container(
-                color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
-child: product_image.ProductNetworkImage(
-  imageUrl: product.primaryImageUrl,
-  categorySlug: product.category.slug,
-),
-              ),
+              child: imageUrls.length > 1
+                  ? PageView.builder(
+                      itemCount: imageUrls.length,
+                      onPageChanged: (index) => setState(() => _currentImagePage = index),
+                      itemBuilder: (context, index) => Container(
+                        color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+                        child: product_image.ProductNetworkImage(
+                          imageUrl: imageUrls[index],
+                          categorySlug: product.category.slug,
+                        ),
+                      ),
+                    )
+                  : Container(
+                      color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+                      child: product_image.ProductNetworkImage(
+                        imageUrl: imageUrls.first,
+                        categorySlug: product.category.slug,
+                      ),
+                    ),
             ),
           ),
+          if (imageUrls.length > 1)
+            Positioned(
+              bottom: 12,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(imageUrls.length, (index) {
+                  final isActive = index == _currentImagePage;
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: isActive ? 20 : 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                      color: isActive
+                          ? AppColors.mitsubishiRed
+                          : (isDark ? Colors.white38 : Colors.black26),
+                    ),
+                  );
+                }),
+              ),
+            ),
           Positioned(
             top: 8,
             left: 8,
@@ -433,86 +449,20 @@ child: product_image.ProductNetworkImage(
   }
 
   Widget _buildDocsTab(AppLocalizations l10n, bool isDark) {
-    return ListView(
-      padding: const EdgeInsets.all(24),
-      children: [
-        _buildDocItem(
-          'Datasheet ${l10n.specifications}',
-          'PDF • 2.4 MB',
-          Icons.picture_as_pdf,
-          Colors.red,
-          l10n,
-          isDark,
-        ),
-        const SizedBox(height: 12),
-        _buildDocItem(
-          'Manual Instalasi',
-          'PDF • 5.1 MB',
-          Icons.menu_book,
-          Colors.blue,
-          l10n,
-          isDark,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDocItem(
-    String title,
-    String subtitle,
-    IconData icon,
-    Color color,
-    AppLocalizations l10n,
-    bool isDark,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurfaceVariant : null,
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: isDark ? 0.2 : 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: color, size: 20),
+          Icon(
+            Icons.description_outlined,
+            size: 48,
+            color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          TextButton(
-            onPressed: () {},
-            child: Row(
-              children: [
-                const Icon(Icons.download, size: 14),
-                const SizedBox(width: 4),
-                Text(l10n.download),
-              ],
+          const SizedBox(height: 12),
+          Text(
+            l10n.comingSoon,
+            style: TextStyle(
+              color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
             ),
           ),
         ],
@@ -553,7 +503,15 @@ child: product_image.ProductNetworkImage(
 
   void _addToCart(Product product, AppLocalizations l10n) {
     if (!ref.read(authProvider).isAuthenticated) {
-      AppToast.show(context, 'Anda belum login. Silakan login terlebih dahulu.', isError: true, bottomOffset: 100);
+      AppToast.show(context, AppLocalizations.of(context).notLoggedIn, isError: true, bottomOffset: 100);
+      return;
+    }
+    if (product.price <= 0) {
+      showProductPriceNotSetDialog(
+        context: context,
+        productName: product.name,
+        locale: Localizations.localeOf(context).languageCode,
+      );
       return;
     }
     setState(() => _isAddingToCart = true);
@@ -582,9 +540,21 @@ child: product_image.ProductNetworkImage(
     });
   }
 
-  void _buyNow(Product product, AppLocalizations l10n, int displayStock) {
+  Future<void> _buyNow(
+    Product product,
+    AppLocalizations l10n,
+    int displayStock,
+  ) async {
     if (!ref.read(authProvider).isAuthenticated) {
-      AppToast.show(context, 'Anda belum login. Silakan login terlebih dahulu.', isError: true, bottomOffset: 100);
+      AppToast.show(context, AppLocalizations.of(context).notLoggedIn, isError: true, bottomOffset: 100);
+      return;
+    }
+    if (product.price <= 0) {
+      showProductPriceNotSetDialog(
+        context: context,
+        productName: product.name,
+        locale: Localizations.localeOf(context).languageCode,
+      );
       return;
     }
     if (_quantity > displayStock) {
@@ -597,7 +567,7 @@ child: product_image.ProductNetworkImage(
       return;
     }
 
-    ref.read(cartProvider.notifier).addItem(
+    await ref.read(cartProvider.notifier).addItem(
       product.idString,
       _quantity,
       snapshot: CartProductSnapshot(
@@ -606,8 +576,36 @@ child: product_image.ProductNetworkImage(
         primaryImageUrl: product.primaryImageUrl,
       ),
     );
-    ref.read(selectedCartItemsProvider.notifier).state = {product.idString};
 
+    if (!mounted) return;
+
+    final cartState = ref.read(cartProvider);
+    final matchingItem = cartState.items
+        .where((item) => item.productId == product.idString)
+        .toList();
+
+    if (cartState.error != null || matchingItem.isEmpty) {
+      AppToast.show(
+        context,
+        l10n.errorGeneric,
+        isError: true,
+        bottomOffset: 100,
+      );
+      return;
+    }
+
+    matchingItem.sort((a, b) {
+      final aIsLocal = a.id.startsWith('local-');
+      final bIsLocal = b.id.startsWith('local-');
+      if (aIsLocal != bIsLocal) {
+        return aIsLocal ? 1 : -1;
+      }
+      return b.createdAt.compareTo(a.createdAt);
+    });
+
+    ref.read(selectedCartItemsProvider.notifier).state = {
+      matchingItem.first.id,
+    };
     context.pushNamed(AppRoute.checkout);
   }
 

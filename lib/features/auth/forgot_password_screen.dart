@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../core/config/env_config.dart';
 import '../../core/constants/app_colors.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -205,14 +206,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     try {
       await Supabase.instance.client.auth.resetPasswordForEmail(
         _emailController.text.trim(),
-        redirectTo: 'io.otomasiku.app://login-callback',
+        redirectTo: '${EnvConfig.deepLinkScheme}://login-callback',
       );
       if (mounted) setState(() { _sent = true; _isLoading = false; });
-    } on AuthException catch (e) {
+    } on AuthException catch (_) {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message), backgroundColor: AppColors.mitsubishiRed),
+          SnackBar(content: Text(AppLocalizations.of(context).errorGeneric), backgroundColor: AppColors.mitsubishiRed),
         );
       }
     }

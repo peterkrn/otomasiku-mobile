@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 
 import '../../core/errors/app_exception.dart';
 import '../../core/network/api_response.dart';
 import '../../models/order.dart';
+import 'order_detail_parser.dart';
 
 abstract class PaymentRepository {
   /// Fetch the current payment/order status for [orderId].
@@ -18,7 +18,6 @@ class PaymentRepositoryImpl implements PaymentRepository {
   @override
   Future<Order> getPaymentStatus(String orderId) async {
     final response = await _dio.get('/orders/$orderId');
-    if (kDebugMode) debugPrint('=== PAYMENT STATUS RAW: ${response.data}');
     final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(
       response.data as Map<String, dynamic>,
       null,
@@ -32,11 +31,9 @@ class PaymentRepositoryImpl implements PaymentRepository {
       );
     }
 
-    try {
-      return Order.fromJson(apiResponse.data!);
-    } catch (e) {
-      if (kDebugMode) debugPrint('=== ORDER PARSE ERROR: $e\nDATA: ${apiResponse.data}');
-      rethrow;
-    }
+    return parseOrderDetailData(
+      apiResponse.data!,
+      statusCode: response.statusCode ?? 200,
+    );
   }
 }

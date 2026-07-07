@@ -39,7 +39,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     final allSelected = cartItems.isNotEmpty && selectedIds.length == cartItems.length;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final selectedItems = cartItems.where((item) => selectedIds.contains(item.productId)).toList();
+    final selectedItems = cartItems.where((item) => selectedIds.contains(item.id)).toList();
     final subtotal = selectedItems.fold(0, (sum, item) => sum + item.productSnapshot.price * item.quantity);
     final totalItems = selectedItems.fold(0, (sum, item) => sum + item.quantity);
 
@@ -191,12 +191,12 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               ),
               itemBuilder: (context, index) {
                 final item = cartItems[index];
-                final isSelected = selectedIds.contains(item.productId);
+                final isSelected = selectedIds.contains(item.id);
                 return CartItemCard(
                   item: item,
                   isSelected: isSelected,
                   isDark: isDark,
-                  onSelectionChanged: (selected) => _toggleItemSelection(item.productId, selected),
+                  onSelectionChanged: (selected) => _toggleItemSelection(item.id, selected),
                   onQuantityChanged: (newQty) {
                     ref.read(cartProvider.notifier).updateQuantity(
                           item.id,
@@ -285,17 +285,17 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     if (allSelected) {
       notifier.state = {};
     } else {
-      notifier.state = cartItems.map((item) => item.productId).toSet();
+      notifier.state = cartItems.map((item) => item.id).toSet();
     }
   }
 
-  void _toggleItemSelection(String productId, bool selected) {
+  void _toggleItemSelection(String cartItemId, bool selected) {
     final notifier = ref.read(selectedCartItemsProvider.notifier);
     final current = Set<String>.from(notifier.state);
     if (selected) {
-      current.add(productId);
+      current.add(cartItemId);
     } else {
-      current.remove(productId);
+      current.remove(cartItemId);
     }
     notifier.state = current;
   }
@@ -318,7 +318,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           TextButton(
             onPressed: () {
               ref.read(cartProvider.notifier).removeItem(item.id);
-              _toggleItemSelection(item.productId, false);
+              _toggleItemSelection(item.id, false);
               Navigator.pop(ctx);
             },
             style: TextButton.styleFrom(

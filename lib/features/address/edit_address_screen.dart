@@ -31,6 +31,14 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
   bool _setAsDefault = false;
   bool _isSubmitting = false;
 
+  void _handleBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(AppRoute.profile);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -100,14 +108,14 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
         ref.invalidate(addressListProvider);
         AppToast.show(
           context,
-          _isEditing ? 'Alamat berhasil disimpan' : 'Alamat berhasil ditambahkan',
+          _isEditing ? AppLocalizations.of(context).addressSaved : AppLocalizations.of(context).addressAdded,
           isError: false,
         );
         context.pop();
       }
     } catch (e) {
       if (mounted) {
-        AppToast.show(context, 'Gagal menyimpan alamat', isError: true);
+        AppToast.show(context, AppLocalizations.of(context).addressSaveFailed, isError: true);
       }
     } finally {
       if (mounted) {
@@ -124,13 +132,7 @@ class _EditAddressScreenState extends ConsumerState<EditAddressScreen> {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,
       appBar: AppBar(
-        leading: BackButton(onPressed: () {
-          if (context.canPop()) {
-            context.pop();
-          } else {
-            context.goNamed(AppRoute.home);
-          }
-        }),
+        leading: BackButton(onPressed: _handleBack),
         title: Text(_isEditing ? l10n.editAddress : l10n.addAddress),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
         foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,

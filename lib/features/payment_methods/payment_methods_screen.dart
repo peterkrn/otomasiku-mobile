@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/config/env_config.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/app_router.dart';
+import '../../../core/utils/whatsapp_helper.dart';
 import '../../../core/widgets/app_toast.dart';
 import '../../../l10n/app_localizations.dart';
 
@@ -15,10 +17,22 @@ class PaymentMethodsScreen extends StatefulWidget {
 }
 
 class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
-  final String _vaNumber = '1234 5678 9012 3456';
+  final String _vaNumber = EnvConfig.bcaVaNumber;
   bool _atmExpanded = false;
   bool _mbankingExpanded = false;
   bool _klikbcaExpanded = false;
+
+  List<String> get _supportContacts {
+    final contacts = <String>[];
+    if (EnvConfig.hasSupportWhatsapp) {
+      contacts.add('WhatsApp: ${EnvConfig.supportWhatsappDisplay}');
+    }
+    final supportEmail = EnvConfig.supportEmail.trim();
+    if (supportEmail.isNotEmpty) {
+      contacts.add('Email: $supportEmail');
+    }
+    return contacts;
+  }
 
   void _copyVaNumber() {
     Clipboard.setData(ClipboardData(text: _vaNumber.replaceAll(' ', '')));
@@ -45,7 +59,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         ),
         title: Text(l10n.paymentMethods),
         backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
-        foregroundColor: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+        foregroundColor: isDark
+            ? AppColors.darkTextPrimary
+            : AppColors.textPrimary,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -68,7 +84,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.border,
+        ),
       ),
       child: Column(
         children: [
@@ -107,8 +125,8 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Virtual Account BCA',
+                      Text(
+                        l10n.bcaVirtualAccount,
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -116,7 +134,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                         ),
                       ),
                       Text(
-                        'Transfer dari rekening BCA mana saja',
+                        l10n.paymentVaTransferFrom,
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.8),
                           fontSize: 12,
@@ -126,7 +144,10 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
@@ -151,19 +172,25 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Nomor Virtual Account',
+                  l10n.vaNumberLabel,
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isDark ? AppColors.bcaBlue.withValues(alpha: 0.15) : AppColors.bcaBlue.withValues(alpha: 0.05),
+                    color: isDark
+                        ? AppColors.bcaBlue.withValues(alpha: 0.15)
+                        : AppColors.bcaBlue.withValues(alpha: 0.05),
                     border: Border.all(
-                      color: isDark ? AppColors.bcaBlue.withValues(alpha: 0.4) : AppColors.bcaBlue.withValues(alpha: 0.3),
+                      color: isDark
+                          ? AppColors.bcaBlue.withValues(alpha: 0.4)
+                          : AppColors.bcaBlue.withValues(alpha: 0.3),
                     ),
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -176,7 +203,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 2,
-                            color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                            color: isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.textPrimary,
                           ),
                         ),
                       ),
@@ -207,15 +236,23 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
-                bottom: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.border),
+                top: BorderSide(
+                  color: isDark ? AppColors.darkBorder : AppColors.border,
+                ),
+                bottom: BorderSide(
+                  color: isDark ? AppColors.darkBorder : AppColors.border,
+                ),
               ),
             ),
             child: Column(
               children: [
-                _buildDetailRow('Atas Nama', 'PT Otomasiku Indonesia', isDark),
+                _buildDetailRow(
+                  l10n.paymentAccountHolder,
+                  EnvConfig.bcaAccountName,
+                  isDark,
+                ),
                 const SizedBox(height: 8),
-                _buildDetailRow('Jenis', 'Virtual Account', isDark),
+                _buildDetailRow(l10n.paymentType, l10n.virtualAccount, isDark),
                 const SizedBox(height: 8),
                 _buildDetailRow('Bank', 'BCA', isDark),
               ],
@@ -229,54 +266,56 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Cara Pembayaran',
+                  l10n.paymentHowTo,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 12),
                 _buildExpandableInstruction(
                   icon: Icons.account_balance,
-                  title: 'via ATM BCA',
+                  title: l10n.paymentViaAtm,
                   expanded: _atmExpanded,
                   onTap: () => setState(() => _atmExpanded = !_atmExpanded),
-                  steps: const [
-                    'Masukkan kartu ATM dan PIN Anda',
-                    'Pilih menu Transfer',
-                    'Pilih Ke Rekening BCA Virtual Account',
-                    'Masukkan nomor VA: 1234567890123456',
-                    'Masukkan nominal sesuai tagihan lalu konfirmasi',
+                  steps: [
+                    l10n.atmStep1,
+                    l10n.atmStep2,
+                    l10n.atmStep3,
+                    l10n.atmStep4,
                   ],
                   isDark: isDark,
                 ),
                 const SizedBox(height: 8),
                 _buildExpandableInstruction(
                   icon: Icons.phone_android,
-                  title: 'via BCA Mobile / myBCA',
+                  title: l10n.paymentViaMBanking,
                   expanded: _mbankingExpanded,
-                  onTap: () => setState(() => _mbankingExpanded = !_mbankingExpanded),
-                  steps: const [
-                    'Buka aplikasi BCA Mobile atau myBCA',
-                    'Login dengan PIN / biometrik',
-                    'Pilih Transfer → BCA Virtual Account',
-                    'Masukkan nomor VA: 1234567890123456',
-                    'Cek detail dan konfirmasi pembayaran',
+                  onTap: () =>
+                      setState(() => _mbankingExpanded = !_mbankingExpanded),
+                  steps: [
+                    l10n.mbankingStep1,
+                    l10n.mbankingStep2,
+                    l10n.mbankingStep3,
+                    l10n.mbankingStep4,
                   ],
                   isDark: isDark,
                 ),
                 const SizedBox(height: 8),
                 _buildExpandableInstruction(
                   icon: Icons.language,
-                  title: 'via KlikBCA Internet Banking',
+                  title: l10n.paymentViaInternetBanking,
                   expanded: _klikbcaExpanded,
-                  onTap: () => setState(() => _klikbcaExpanded = !_klikbcaExpanded),
-                  steps: const [
-                    'Login di klikbca.com',
-                    'Pilih Transfer Dana → Transfer ke BCA Virtual Account',
-                    'Masukkan nomor VA: 1234567890123456',
-                    'Masukkan nominal dan konfirmasi dengan KeyBCA',
+                  onTap: () =>
+                      setState(() => _klikbcaExpanded = !_klikbcaExpanded),
+                  steps: [
+                    l10n.ibankingStep1,
+                    l10n.ibankingStep2,
+                    l10n.ibankingStep3,
+                    l10n.ibankingStep4,
                   ],
                   isDark: isDark,
                 ),
@@ -296,7 +335,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+            color: isDark
+                ? AppColors.darkTextSecondary
+                : AppColors.textSecondary,
           ),
         ),
         Text(
@@ -326,7 +367,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurfaceVariant : AppColors.surfaceVariant,
+              color: isDark
+                  ? AppColors.darkSurfaceVariant
+                  : AppColors.surfaceVariant,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -339,7 +382,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                      color: isDark
+                          ? AppColors.darkTextPrimary
+                          : AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -347,7 +392,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   expanded
                       ? Icons.keyboard_arrow_up
                       : Icons.keyboard_arrow_down,
-                  color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                  color: isDark
+                      ? AppColors.darkTextTertiary
+                      : AppColors.textTertiary,
                   size: 20,
                 ),
               ],
@@ -370,7 +417,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                         '${entry.key + 1}. ',
                         style: TextStyle(
                           fontSize: 12,
-                          color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                          color: isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.textSecondary,
                         ),
                       ),
                       Expanded(
@@ -378,7 +427,9 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                           entry.value,
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                            color: isDark
+                                ? AppColors.darkTextSecondary
+                                : AppColors.textSecondary,
                           ),
                         ),
                       ),
@@ -396,24 +447,24 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.bcaBlue.withValues(alpha: 0.15) : AppColors.bcaBlue.withValues(alpha: 0.05),
+        color: isDark
+            ? AppColors.bcaBlue.withValues(alpha: 0.15)
+            : AppColors.bcaBlue.withValues(alpha: 0.05),
         border: Border.all(
-          color: isDark ? AppColors.bcaBlue.withValues(alpha: 0.4) : AppColors.bcaBlue.withValues(alpha: 0.2),
+          color: isDark
+              ? AppColors.bcaBlue.withValues(alpha: 0.4)
+              : AppColors.bcaBlue.withValues(alpha: 0.2),
         ),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.info_outline,
-            color: AppColors.bcaBlue,
-            size: 20,
-          ),
+          Icon(Icons.info_outline, color: AppColors.bcaBlue, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Pembayaran akan diverifikasi otomatis. Pastikan nominal yang ditransfer sesuai dengan total tagihan agar pesanan dapat diproses.',
+              l10n.paymentAutoVerify,
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? Colors.blue.shade300 : AppColors.bcaBlue,
@@ -427,12 +478,16 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   }
 
   Widget _buildSupportCard(AppLocalizations l10n, bool isDark) {
+    final supportContacts = _supportContacts;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.border,
+        ),
       ),
       child: Row(
         children: [
@@ -443,11 +498,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               color: AppColors.success.withValues(alpha: isDark ? 0.2 : 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              Icons.headset_mic,
-              color: AppColors.success,
-              size: 20,
-            ),
+            child: Icon(Icons.headset_mic, color: AppColors.success, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -455,27 +506,40 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Butuh bantuan?',
+                  l10n.supportNeedHelp,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? AppColors.darkTextPrimary : AppColors.textPrimary,
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.textPrimary,
                   ),
                 ),
                 Text(
-                  'Hubungi tim kami di 021-1234-5678',
+                  supportContacts.isEmpty
+                      ? l10n.supportContactPhone
+                      : supportContacts.join('\n'),
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.textSecondary,
                   ),
                 ),
               ],
             ),
           ),
           ElevatedButton.icon(
-            onPressed: () {
-              AppToast.show(context, l10n.openingWhatsApp, isError: false);
-            },
+            onPressed: EnvConfig.hasSupportWhatsapp
+                ? () async {
+                    AppToast.show(
+                      context,
+                      l10n.openingWhatsApp,
+                      isError: false,
+                    );
+                    await WhatsAppHelper.openRfq();
+                  }
+                : null,
             icon: const Icon(Icons.chat, size: 14),
             label: Text(l10n.chat),
             style: ElevatedButton.styleFrom(

@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../l10n/app_localizations.dart';
+import '../../models/order.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/order_provider.dart';
 import '../../providers/address_provider.dart';
-import '../../providers/theme_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -20,9 +20,10 @@ class ProfileScreen extends ConsumerWidget {
 
     final orders = ordersAsync.valueOrNull ?? [];
     final totalOrders = orders.length;
-    final completedOrders = orders.where((o) => o.status == 'delivered').length;
-    final processingOrders = orders.where((o) =>
-      o.status == 'processing' || o.status == 'shipped').length;
+    final completedOrders =
+        orders.where((o) => isCompletedOrderStatus(o.status)).length;
+    final processingOrders =
+        orders.where((o) => isFulfillmentOrderStatus(o.status)).length;
 
     final addressCount = addressesAsync.valueOrNull?.length ?? 0;
 
@@ -58,7 +59,6 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildUserCard(AppLocalizations l10n, WidgetRef ref) {
-    final isDark = ref.watch(themeProvider) == ThemeMode.dark;
     final authState = ref.watch(authProvider);
     final profile = authState.profile;
 
@@ -236,16 +236,6 @@ class ProfileScreen extends ConsumerWidget {
                 : l10n.noAddressSaved,
             onTap: () => context.pushNamed(AppRoute.shipping),
           ),
-          _buildDivider(context),
-          _buildMenuItem(
-            context,
-            icon: Icons.credit_card,
-            iconColor: AppColors.success,
-            title: l10n.paymentMethods,
-            subtitle: l10n.bcaVirtualAccount,
-            onTap: () => context.pushNamed(AppRoute.paymentMethods),
-            isLast: true,
-          ),
         ],
       ),
     );
@@ -258,7 +248,6 @@ class ProfileScreen extends ConsumerWidget {
     required String title,
     required String subtitle,
     required VoidCallback onTap,
-    bool isLast = false,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -378,15 +367,15 @@ class _LogoutDialogState extends State<_LogoutDialog> {
     return AlertDialog(
       title: Text(widget.l10n.logout),
       content: _isLoading
-          ? const Row(
+          ? Row(
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-                SizedBox(width: 16),
-                Text('Sedang keluar...'),
+                const SizedBox(width: 16),
+                Text(widget.l10n.loggingOut),
               ],
             )
           : Text(widget.l10n.logoutConfirm),

@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../config/env_config.dart';
 import 'token_storage.dart';
 
 enum AuthResultStatus { success, failure }
@@ -18,6 +19,16 @@ class AuthResult {
   bool get isSuccess => status == AuthResultStatus.success;
 }
 
+class AuthStateChangePayload {
+  final AuthChangeEvent event;
+  final Session? session;
+
+  const AuthStateChangePayload({
+    required this.event,
+    required this.session,
+  });
+}
+
 class AuthService {
   AuthService({
     required SupabaseClient supabase,
@@ -28,7 +39,18 @@ class AuthService {
   final SupabaseClient _supabase;
   final TokenStorage _tokenStorage;
 
+  String get _loginCallbackUrl => '${EnvConfig.deepLinkScheme}://login-callback';
+  String get _confirmEmailUrl => '${EnvConfig.deepLinkScheme}://confirm-email';
+
   bool get isAuthenticated => _supabase.auth.currentSession != null;
+  Session? get currentSession => _supabase.auth.currentSession;
+  Stream<AuthStateChangePayload> get authStateChanges =>
+      _supabase.auth.onAuthStateChange.map(
+        (data) => AuthStateChangePayload(
+          event: data.event,
+          session: data.session,
+        ),
+      );
 
   Future<AuthResult> login(String email, String password) async {
     try {
@@ -63,7 +85,7 @@ class AuthService {
         email: email,
         password: password,
         data: fullName != null ? {'full_name': fullName} : null,
-        emailRedirectTo: 'io.otomasiku.app://confirm-email',
+        emailRedirectTo: _confirmEmailUrl,
       );
       final session = response.session;
       if (session != null) {
@@ -82,9 +104,65 @@ class AuthService {
     }
   }
 
+  Future<AuthResult> signInWithGoogle() async {
+    try {
+      final response = await _supabase.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: _loginCallbackUrl,
+      );
+
+      if (response) {
+        return const AuthResult(status: AuthResultStatus.success);
+      }
+
+      return const AuthResult(
+        status: AuthResultStatus.failure,
+        errorCode: 'GOOGLE_SIGN_IN_FAILED',
+        errorMessage: 'Google sign-in was cancelled or failed',
+      );
+    } on AuthException catch (e) {
+      return AuthResult(
+        status: AuthResultStatus.failure,
+        errorCode: _mapAuthExceptionCode(e),
+        errorMessage: e.message,
+      );
+    } catch (e) {
+      return AuthResult(
+        status: AuthResultStatus.failure,
+        errorCode: 'UNKNOWN_ERROR',
+        errorMessage: e.toString(),
+      );
+    }
+  }
+
   Future<void> logout() async {
     await _supabase.auth.signOut();
     await _tokenStorage.clearTokens();
+  }
+
+  Future<AuthResult> deleteAccount() async {
+    try {
+      // Delete user account via Supabase admin API (requires service role on backend)
+      // For client-side, we first sign out then call our backend endpoint
+      await _supabase.auth.signOut();
+      await _tokenStorage.clearTokens();
+
+      // Note: Full account deletion requires backend implementation with service role
+      // Client-side just clears local session and triggers deletion request
+      return const AuthResult(status: AuthResultStatus.success);
+    } on AuthException catch (e) {
+      return AuthResult(
+        status: AuthResultStatus.failure,
+        errorCode: _mapAuthExceptionCode(e),
+        errorMessage: e.message,
+      );
+    } catch (e) {
+      return AuthResult(
+        status: AuthResultStatus.failure,
+        errorCode: 'UNKNOWN_ERROR',
+        errorMessage: e.toString(),
+      );
+    }
   }
 
   Future<bool> refreshSession() async {

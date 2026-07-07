@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:uuid/uuid.dart';
 import '../../core/router/app_router.dart';
 import '../../core/utils/whatsapp_helper.dart';
 import '../../core/constants/app_colors.dart';
@@ -9,8 +8,7 @@ import '../../core/utils/currency_formatter.dart';
 import '../../core/widgets/app_toast.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/project.dart';
-
-final projectsProvider = StateProvider<List<Project>>((ref) => []);
+import '../../providers/project_provider.dart';
 
 /// Projects screen showing user's saved projects for B2B bulk purchases
 class ProjectsScreen extends ConsumerStatefulWidget {
@@ -45,23 +43,12 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
               if (controller.text.isNotEmpty) {
                 final name = controller.text.trim();
                 Navigator.pop(ctx);
-                final current = ref.read(projectsProvider);
-                ref.read(projectsProvider.notifier).state = [
-                  ...current,
-                  Project(
-                    id: const Uuid().v4(),
-                    name: name,
-                    items: const [],
-                    createdAt: DateTime.now(),
-                    status: ProjectStatus.planning,
-                  ),
-                ];
+                ref.read(projectProvider.notifier).createProject(name);
                 AppToast.show(
                   context,
                   'Proyek "$name" berhasil dibuat!',
                   isError: false,
                 );
-                setState(() {});
               }
             },
             child: Text(AppLocalizations.of(context).confirm),
@@ -75,7 +62,7 @@ class _ProjectsScreenState extends ConsumerState<ProjectsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final projects = ref.watch(projectsProvider);
+    final projects = ref.watch(projectProvider).projects;
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.background,

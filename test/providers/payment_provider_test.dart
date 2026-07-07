@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:otomasiku_mobile/core/errors/app_exception.dart';
+import 'package:otomasiku_mobile/data/repositories/fake_payment_repository.dart';
 import 'package:otomasiku_mobile/data/repositories/payment_repository.dart';
 import 'package:otomasiku_mobile/models/order.dart';
 import 'package:otomasiku_mobile/providers/payment_provider.dart';
@@ -23,41 +24,51 @@ Order _order({
   String id = 'order-1',
   String paymentStatus = 'pending',
   String status = 'processing',
-}) =>
-    Order(
-      id: id,
-      orderNumber: 'ORD-001',
-      status: status,
-      paymentStatus: paymentStatus,
-      totalAmount: 500000,
-      shippingAddress: _kAddress,
-      items: const [],
-      createdAt: DateTime(2026),
-      updatedAt: DateTime(2026),
-    );
+}) => Order(
+  id: id,
+  orderNumber: 'ORD-001',
+  status: status,
+  paymentStatus: paymentStatus,
+  totalAmount: 500000,
+  shippingAddress: _kAddress,
+  items: const [],
+  createdAt: DateTime(2026),
+  updatedAt: DateTime(2026),
+);
 
 ProviderContainer _container(_MockPaymentRepository repo) => ProviderContainer(
-      overrides: [paymentRepositoryProvider.overrideWithValue(repo)],
-    );
+  overrides: [paymentRepositoryProvider.overrideWithValue(repo)],
+);
 
 // ---------------------------------------------------------------------------
 // Mock
 // ---------------------------------------------------------------------------
 
 class _MockPaymentRepository implements PaymentRepository {
-  final List<Order> _responses;
+  final List<Object> _responses;
   int _callCount = 0;
   bool shouldThrow;
 
-  _MockPaymentRepository({required List<Order> responses, this.shouldThrow = false})
-      : _responses = responses;
+  _MockPaymentRepository({
+    required List<Object> responses,
+    this.shouldThrow = false,
+  }) : _responses = responses;
 
   @override
   Future<Order> getPaymentStatus(String orderId) async {
     if (shouldThrow) throw ApiException(code: 'SERVER_ERROR', statusCode: 500);
-    final idx = _callCount < _responses.length ? _callCount : _responses.length - 1;
+    final idx = _callCount < _responses.length
+        ? _callCount
+        : _responses.length - 1;
     _callCount++;
-    return _responses[idx];
+    final response = _responses[idx];
+    if (response is Order) {
+      return response;
+    }
+    if (response is ApiException) {
+      throw response;
+    }
+    throw StateError('Unsupported scripted response: $response');
   }
 }
 
@@ -71,15 +82,15 @@ void main() {
   // Fix: FakePaymentRepository injected via Riverpod override in debug builds.
   // These tests verify the polling provider CONTRACT via PaymentRepository.
   // -------------------------------------------------------------------------
-  group('Bug #5 — PaymentPollingNotifier', () {
+  group('Bug #5 — PaymentNotifier', () {
     test('returns order immediately when already paid', () async {
       final repo = _MockPaymentRepository(
-        responses: [_order(paymentStatus: 'paid', status: 'confirmed')],
+        responses: [_order(paymentStatus: 'paid', status: 'processing')],
       );
       final container = _container(repo);
       addTearDown(container.dispose);
 
-      final order = await container.read(paymentPollingProvider('order-1').future);
+      final order = await container.read(paymentProvider('order-1').future);
 
       expect(order.paymentStatus, 'paid');
     });
@@ -91,7 +102,7 @@ void main() {
       final container = _container(repo);
       addTearDown(container.dispose);
 
-      final order = await container.read(paymentPollingProvider('order-1').future);
+      final order = await container.read(paymentProvider('order-1').future);
 
       expect(order.paymentStatus, 'pending');
     });
@@ -103,38 +114,82 @@ void main() {
 
       await Future.delayed(Duration.zero); // let build() settle
 
-      final state = container.read(paymentPollingProvider('order-1'));
+      final state = container.read(paymentProvider('order-1'));
       expect(state.hasError || state.isLoading, isTrue);
     });
 
-    test('checkNow re-fetches and updates state', () async {
+    test('refresh re-fetches and updates state', () async {
       final repo = _MockPaymentRepository(
         responses: [
           _order(paymentStatus: 'pending'),
-          _order(paymentStatus: 'paid', status: 'confirmed'),
+          _order(paymentStatus: 'paid', status: 'processing'),
         ],
       );
       final container = _container(repo);
       addTearDown(container.dispose);
 
-      await container.read(paymentPollingProvider('order-1').future);
+      await container.read(paymentProvider('order-1').future);
 
-      await container.read(paymentPollingProvider('order-1').notifier).checkNow('order-1');
+      await container
+          .read(paymentProvider('order-1').notifier)
+          .refresh('order-1');
 
-      final state = container.read(paymentPollingProvider('order-1'));
+      final state = container.read(paymentProvider('order-1'));
       expect(state.value?.paymentStatus, 'paid');
     });
+
+    test('retries once when the order is not ready yet', () async {
+      final repo = _MockPaymentRepository(
+        responses: [
+          const ApiException(code: 'ORDER_NOT_READY', statusCode: 503),
+          _order(paymentStatus: 'pending'),
+        ],
+      );
+      final container = _container(repo);
+      addTearDown(container.dispose);
+
+      final order = await container.read(paymentProvider('order-1').future);
+
+      expect(order.paymentStatus, 'pending');
+    });
+
+    test(
+      'retries multiple times when the payment order is still warming up',
+      () async {
+        final repo = _MockPaymentRepository(
+          responses: [
+            const ApiException(code: 'ORDER_NOT_READY', statusCode: 503),
+            const ApiException(code: 'ORDER_NOT_READY', statusCode: 503),
+            _order(paymentStatus: 'pending'),
+          ],
+        );
+        final container = _container(repo);
+        addTearDown(container.dispose);
+
+        final order = await container.read(paymentProvider('order-1').future);
+
+        expect(order.paymentStatus, 'pending');
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
   // FakePaymentRepository contract (the debug simulation)
   // -------------------------------------------------------------------------
   group('FakePaymentRepository — debug simulation contract', () {
+    test('returns a non-placeholder total amount', () async {
+      final repo = FakePaymentRepository();
+
+      final order = await repo.getPaymentStatus('sim-order-1');
+
+      expect(order.totalAmount, greaterThan(0));
+    });
+
     test('simulated order has required fields', () {
       final simOrder = Order(
         id: 'sim-order-1',
         orderNumber: 'SIM-sim-order-1',
-        status: 'confirmed',
+        status: 'processing',
         paymentStatus: 'paid',
         totalAmount: 0,
         shippingAddress: _kAddress,
@@ -144,7 +199,7 @@ void main() {
       );
 
       expect(simOrder.paymentStatus, 'paid');
-      expect(simOrder.status, 'confirmed');
+      expect(simOrder.status, 'processing');
       expect(simOrder.id, startsWith('sim-'));
     });
   });

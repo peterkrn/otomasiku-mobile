@@ -59,4 +59,5 @@ class DefaultFirebaseOptions {
     projectId: 'otomasiku-mobile',
     storageBucket: 'otomasiku-mobile.firebasestorage.app',
   );
+
 }

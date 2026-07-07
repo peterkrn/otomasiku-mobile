@@ -85,7 +85,7 @@ class CompareScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Tambahkan produk untuk dibandingkan',
+            l10n.compareEmptyHint,
             style: TextStyle(
               fontSize: 14,
               color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
@@ -116,10 +116,14 @@ class CompareScreen extends ConsumerWidget {
     List<Product> products,
     bool isDark,
   ) {
+    const tableBorderWidth = 1.0;
     const labelColumnWidth = 80.0;
     const productColumnWidth = 140.0;
+    final showAddColumn = products.isNotEmpty;
 
-    final totalColumns = products.length + 1;
+    final totalColumns = products.length + (showAddColumn ? 1 : 0);
+    final contentWidth = labelColumnWidth + totalColumns * productColumnWidth;
+    final tableWidth = contentWidth + (tableBorderWidth * 2);
 
     final attributeKeys = ['series', 'variant', 'unit', 'minOrder', 'stock', 'price'];
 
@@ -127,22 +131,54 @@ class CompareScreen extends ConsumerWidget {
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         scrollDirection: Axis.horizontal,
-        child: Container(
-          width: labelColumnWidth + totalColumns * productColumnWidth,
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.darkSurface : Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildProductRow(context, l10n, ref, products, labelColumnWidth, productColumnWidth, isDark, true),
-              ...attributeKeys.map((key) => _buildAttributeRow(key, products, labelColumnWidth, productColumnWidth, isDark, true)),
-              _buildBuyButtonRow(context, l10n, products, labelColumnWidth, productColumnWidth, isDark, true),
-            ],
+        child: SizedBox(
+          width: tableWidth,
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkSurface : Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.border),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: SizedBox(
+              width: contentWidth,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildProductRow(
+                    context,
+                    l10n,
+                    ref,
+                    products,
+                    labelColumnWidth,
+                    productColumnWidth,
+                    isDark,
+                    showAddColumn,
+                  ),
+                  ...attributeKeys.map(
+                    (key) => _buildAttributeRow(
+                      key,
+                      l10n,
+                      products,
+                      labelColumnWidth,
+                      productColumnWidth,
+                      isDark,
+                      showAddColumn,
+                    ),
+                  ),
+                  _buildBuyButtonRow(
+                    context,
+                    l10n,
+                    products,
+                    labelColumnWidth,
+                    productColumnWidth,
+                    isDark,
+                    showAddColumn,
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -173,10 +209,10 @@ class CompareScreen extends ConsumerWidget {
             height: 270,
             padding: const EdgeInsets.all(16),
             color: isDark ? AppColors.darkSurfaceVariant : const Color(0xFFF9FAFB),
-            child: const Align(
+            child: Align(
               alignment: Alignment.bottomLeft,
               child: Text(
-                'PRODUK',
+                l10n.compareSpecProduct,
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
@@ -208,10 +244,10 @@ class CompareScreen extends ConsumerWidget {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-child: product_image.ProductNetworkImage(
-  imageUrl: product.primaryImageUrl,
-  categorySlug: product.category.slug,
-),
+                          child: product_image.ProductNetworkImage(
+                            imageUrl: product.primaryImageUrl,
+                            categorySlug: product.category.slug,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -232,6 +268,8 @@ child: product_image.ProductNetworkImage(
                           fontSize: 11,
                           color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -243,7 +281,7 @@ child: product_image.ProductNetworkImage(
                         ),
                       ),
                       const SizedBox(height: 4),
-                      _buildStockBadge(product, isDark),
+                      _buildStockBadge(product, l10n, isDark),
                     ],
                   ),
                   Positioned(
@@ -292,22 +330,37 @@ child: product_image.ProductNetworkImage(
               child: Center(
                 child: GestureDetector(
                   onTap: () => context.goNamed(AppRoute.home),
-                  child: Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isDark ? AppColors.darkBorder : AppColors.border,
-                        width: 2,
-                        style: BorderStyle.solid,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isDark ? AppColors.darkBorder : AppColors.border,
+                            width: 2,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.add,
+                          size: 24,
+                          color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
+                        ),
                       ),
-                    ),
-                    child: Icon(
-                      Icons.add,
-                      size: 24,
-                      color: isDark ? AppColors.darkTextTertiary : AppColors.textTertiary,
-                    ),
+                      const SizedBox(height: 10),
+                      Text(
+                        l10n.compareAddProduct,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? AppColors.darkTextSecondary : AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -317,21 +370,21 @@ child: product_image.ProductNetworkImage(
     );
   }
 
-  Widget _buildStockBadge(Product product, bool isDark) {
+  Widget _buildStockBadge(Product product, AppLocalizations l10n, bool isDark) {
     String text;
     Color bgColor;
     Color textColor;
 
     if (product.isOutOfStock) {
-      text = 'Habis';
+      text = l10n.stockEmpty;
       bgColor = isDark ? AppColors.mitsubishiRed.withValues(alpha: 0.2) : const Color(0xFFFEE2E2);
       textColor = AppColors.mitsubishiRed;
     } else if (product.isLowStock) {
-      text = 'Stok ${product.stock}';
+      text = l10n.stockLow(product.stock);
       bgColor = isDark ? Colors.orange.withValues(alpha: 0.2) : const Color(0xFFFEF3C7);
       textColor = isDark ? Colors.orange.shade300 : const Color(0xFFD97706);
     } else {
-      text = '${product.stock} unit';
+      text = l10n.stockUnit(product.stock);
       bgColor = isDark ? Colors.green.withValues(alpha: 0.2) : const Color(0xFFDCFCE7);
       textColor = isDark ? Colors.green.shade300 : const Color(0xFF16A34A);
     }
@@ -355,6 +408,7 @@ child: product_image.ProductNetworkImage(
 
   Widget _buildAttributeRow(
     String attributeKey,
+    AppLocalizations l10n,
     List<Product> products,
     double labelWidth,
     double columnWidth,
@@ -375,7 +429,7 @@ child: product_image.ProductNetworkImage(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             color: isDark ? AppColors.darkSurfaceVariant : const Color(0xFFF9FAFB),
             child: Text(
-              _getLabelForKey(attributeKey),
+              _getLabelForKey(l10n, attributeKey),
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
@@ -480,16 +534,23 @@ child: product_image.ProductNetworkImage(
     );
   }
 
-  String _getLabelForKey(String key) {
-    const labels = {
-      'series': 'SERIES',
-      'variant': 'VARIAN',
-      'unit': 'SATUAN',
-      'minOrder': 'MIN ORDER',
-      'stock': 'STOK',
-      'price': 'HARGA',
-    };
-    return labels[key] ?? key.toUpperCase();
+  String _getLabelForKey(AppLocalizations l10n, String key) {
+    switch (key) {
+      case 'series':
+        return l10n.compareSpecSeries;
+      case 'variant':
+        return l10n.compareSpecVariant;
+      case 'unit':
+        return l10n.compareSpecUnit;
+      case 'minOrder':
+        return l10n.compareSpecMinOrder;
+      case 'stock':
+        return l10n.compareSpecStock;
+      case 'price':
+        return l10n.compareSpecPrice;
+      default:
+        return key.toUpperCase();
+    }
   }
 
   String _getAttributeValue(Product product, String key) {

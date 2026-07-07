@@ -1,18 +1,22 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../core/converters/to_string_converter.dart';
+
 import '../core/utils/bigint_converter.dart';
 
 part 'cart_item.g.dart';
 
 @JsonSerializable()
 class CartItem {
-  @_ToStringConverter()
+  @ToStringConverter()
   final String id;
-  @_ToStringConverter()
+  @ToStringConverter()
   final String productId;
   final int quantity;
   final CartProductSnapshot productSnapshot;
   final DateTime createdAt;
+  @JsonKey(defaultValue: true)
+  final bool isAvailable;
 
   const CartItem({
     required this.id,
@@ -20,6 +24,7 @@ class CartItem {
     required this.quantity,
     required this.productSnapshot,
     required this.createdAt,
+    this.isAvailable = true,
   });
 
   factory CartItem.fromJson(Map<String, dynamic> json) =>
@@ -35,7 +40,7 @@ class CartProductSnapshot {
   @BigIntStringConverter()
   final int price;
 
-  @JsonKey(defaultValue: '')
+  @JsonKey(name: 'imageUrl', defaultValue: '')
   final String primaryImageUrl;
 
   const CartProductSnapshot({
@@ -50,12 +55,3 @@ class CartProductSnapshot {
   Map<String, dynamic> toJson() => _$CartProductSnapshotToJson(this);
 }
 
-class _ToStringConverter implements JsonConverter<String, dynamic> {
-  const _ToStringConverter();
-
-  @override
-  String fromJson(dynamic value) => value.toString();
-
-  @override
-  dynamic toJson(String value) => value;
-}

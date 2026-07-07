@@ -77,12 +77,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   json_serializable: ^6.9.5
   build_runner: ^2.4.15
-  flutter_launcher_icons: ^0.14.3
-
-flutter_launcher_icons:
-  android: true
-  image_path: assets/images/logo.png
-  min_sdk_android: 21
+  flutter_launcher_icons: ^0.14.0
 
 flutter:
   uses-material-design: true
@@ -91,6 +86,7 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - assets/icon/
     - .env
     - assets/images/products/
     - assets/images/products/inverter/
@@ -98,3 +94,10 @@ flutter:
     - assets/images/products/servo/
     - assets/images/products/hmi/
     - assets/images/qris/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#E7192D"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"

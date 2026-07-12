@@ -1,0 +1,10 @@
+What's New in v1.0.0
+
+- Browse 125+ industrial automation products (Mitsubishi, Danfoss)
+- Search and filter by category and brand
+- Add to cart and checkout with BCA Virtual Account
+- Real-time payment status tracking
+- Order history and status updates
+- Profile management with address book
+- Dark mode and language switching (ID/EN)
+- Account deletion with data privacy controls

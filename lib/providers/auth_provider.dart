@@ -12,7 +12,9 @@ import '../core/router/remembered_route_store.dart';
 import '../data/repositories/auth_repository.dart';
 import '../data/repositories/profile_repository.dart';
 import '../models/user_profile.dart';
+import 'address_provider.dart';
 import 'cart_provider.dart';
+import 'order_provider.dart';
 import 'repository_providers.dart';
 
 final tokenStorageProvider = Provider<TokenStorage>((ref) {
@@ -32,11 +34,14 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final profileRepository = ref.read(profileRepositoryProvider);
   final tokenStorage = ref.read(tokenStorageProvider);
   return AuthNotifier(
+    ref,
     authService,
     authRepository,
     profileRepository,
     tokenStorage,
     onAuthenticated: () {
+      ref.invalidate(addressListProvider);
+      ref.invalidate(orderListProvider);
       ref.read(cartProvider.notifier).loadCart();
     },
   );
@@ -88,6 +93,7 @@ class AuthState {
 
 class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(
+    this._ref,
     this._authService,
     this._authRepository,
     this._profileRepository,
@@ -101,6 +107,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _init();
   }
 
+  final Ref _ref;
   final AuthService _authService;
   final AuthRepository _authRepository;
   final ProfileRepository _profileRepository;
@@ -108,6 +115,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final VoidCallback? _onAuthenticated;
   late final StreamSubscription<AuthStateChangePayload> _authStateSubscription;
   bool _awaitingGoogleOAuth = false;
+
+  void _invalidateUserScopedProviders() {
+    _ref.invalidate(addressListProvider);
+    _ref.invalidate(orderListProvider);
+    _ref.invalidate(cartProvider);
+    _ref.read(selectedCartItemsProvider.notifier).state = {};
+  }
 
   void _init() {
     if (_authService.isAuthenticated) {
@@ -150,6 +164,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> login(String email, String password, {bool rememberMe = true}) async {
     state = state.copyWith(isLoading: true, errorCode: null);
+    _invalidateUserScopedProviders();
 
     final result = await _authService.login(email, password);
 
@@ -215,6 +230,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     String password,
   ) async {
     state = state.copyWith(isLoading: true, errorCode: null);
+    _invalidateUserScopedProviders();
 
     final result = await _authService.register(email, password, name);
 
@@ -258,6 +274,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
     await RememberedRouteStore.instance.clear();
     await _authService.logout();
+    _invalidateUserScopedProviders();
     state = const AuthState(isBootstrapped: true);
   }
 
@@ -281,6 +298,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       if (result.isSuccess) {
         await RememberedRouteStore.instance.clear();
+        _invalidateUserScopedProviders();
         state = const AuthState(isBootstrapped: true, isLoading: false);
         return true;
       } else {
@@ -324,6 +342,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
     if (payload.event == AuthChangeEvent.signedIn && payload.session != null) {
       _awaitingGoogleOAuth = false;
+      _invalidateUserScopedProviders();
       _applySession(payload.session!);
       await _bootstrap();
       state = state.copyWith(isBootstrapped: true);

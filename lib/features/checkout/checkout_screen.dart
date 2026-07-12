@@ -58,6 +58,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   Future<void> _loadAddresses() async {
     try {
+      ref.invalidate(addressListProvider);
       final addresses = await ref.read(addressListProvider.future);
       final defaultAddr = addresses.where((a) => a.isDefault).isNotEmpty
           ? addresses.firstWhere((a) => a.isDefault)

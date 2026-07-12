@@ -777,7 +777,7 @@ packages:
     dependency: transitive
     description:
       name: image_picker_windows
-      sha256: d248c86454a72b5495a31c56f060cf73a41c7ff541689327b1a7dbccc33adfae
+      sha256: d248c86554a72b5495a31c56f060cf73a41c7ff541689327b1a7dbccc33adfae
       url: "https://pub.dev"
     source: hosted
     version: "0.2.2"
